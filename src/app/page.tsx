@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { HeroSection } from '@/components/hero-section';
-// import { IngredientEntry } from '@/components/ingredient-entry';
+import { IngredientEntry } from '@/components/ingredient-entry';
 // import { RecipeSection } from '@/components/recipe-section';
 // import { Footer } from '@/components/footer';
 export default function HomePage() {
@@ -28,7 +28,7 @@ export default function HomePage() {
       }} transition={{
         delay: 0.3
       }} className="my-12" data-unique-id="3f233247-1213-4fe3-a252-b291a7d6a1fe" data-file-name="app/page.tsx">
-          {/* <IngredientEntry /> */}
+          <IngredientEntry />
         </motion.div>
         
         <motion.div initial={{
