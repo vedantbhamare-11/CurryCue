@@ -26,3 +26,15 @@ export type ModelProvider =
   tags: string[];
   missingIngredients?: Ingredient[];
 };
+
+export type UserPreferences = {
+  dietaryRestrictions: string[];
+  allergies: string[];
+  cuisinePreferences: string[];
+  skillLevel: 'beginner' | 'intermediate' | 'advanced';
+  mealTypes?: string[];
+  cookingTime?: {
+    min: number;
+    max: number;
+  };
+};
