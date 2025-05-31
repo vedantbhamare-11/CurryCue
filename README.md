@@ -34,3 +34,8 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+================================================================
+
+# CurryCue
+
+CurryCue helps you decide what to cook based on the ingredients you already have at home. Whether you’re craving a quick lunch or a hearty dinner, just tell CurryCue what’s in your kitchen — and it will instantly suggest delicious Indian recipes curated to your taste, time, and available groceries.
