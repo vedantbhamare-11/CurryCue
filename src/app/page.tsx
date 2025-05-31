@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { HeroSection } from '@/components/hero-section';
 import { IngredientEntry } from '@/components/ingredient-entry';
-// import { RecipeSection } from '@/components/recipe-section';
+import { RecipeSection } from '@/components/recipe-section';
 // import { Footer } from '@/components/footer';
 export default function HomePage() {
   const [scrollY, setScrollY] = useState(0);
@@ -38,7 +38,7 @@ export default function HomePage() {
       }} transition={{
         delay: 0.6
       }} className="my-16" data-unique-id="5ce3b6e9-4ac6-4af1-9a24-6200ba05d6d1" data-file-name="app/page.tsx">
-          {/* <RecipeSection /> */}
+          <RecipeSection />
         </motion.div>
       </main>
       
