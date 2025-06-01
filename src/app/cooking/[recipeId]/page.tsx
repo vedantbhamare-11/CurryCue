@@ -31,21 +31,21 @@ export default function CookingModePage() {
     router.back();
   };
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center" data-unique-id="069de918-e871-44b3-826b-734376ddb94c" data-file-name="app/cooking/[recipeId]/page.tsx">
-        <div className="flex flex-col items-center gap-4" data-unique-id="9d41f98b-5b0e-4216-b04c-35fb435a9663" data-file-name="app/cooking/[recipeId]/page.tsx">
+    return <div className="min-h-screen flex items-center justify-center" data-unique-id="5184d654-bff6-4598-aea1-c06398dcb5c9" data-file-name="app/cooking/[recipeId]/page.tsx">
+        <div className="flex flex-col items-center gap-4" data-unique-id="06451e67-b64f-4c7c-8f01-1c4caa6e92e4" data-file-name="app/cooking/[recipeId]/page.tsx">
           <Loader2 className="w-12 h-12 text-primary animate-spin" />
-          <p className="text-muted-foreground" data-unique-id="8025d1af-8979-4175-9a66-6128c4cc9e75" data-file-name="app/cooking/[recipeId]/page.tsx"><span className="editable-text" data-unique-id="2ec33909-4c99-4729-b80e-51de7a64a9e3" data-file-name="app/cooking/[recipeId]/page.tsx">Loading cooking mode...</span></p>
+          <p className="text-muted-foreground" data-unique-id="1a0cb6f7-e381-4fa5-b736-7be4392f8d09" data-file-name="app/cooking/[recipeId]/page.tsx"><span className="editable-text" data-unique-id="a6326f79-2e52-4a88-a910-0b1023f5edb1" data-file-name="app/cooking/[recipeId]/page.tsx">Loading cooking mode...</span></p>
         </div>
       </div>;
   }
   if (!recipe) {
-    return <div className="min-h-screen flex items-center justify-center" data-unique-id="e331165b-3310-4f27-b00b-ad261a4f73bf" data-file-name="app/cooking/[recipeId]/page.tsx">
-        <div className="bg-card border border-border rounded-lg p-8 max-w-md text-center" data-unique-id="2d702775-8ad2-442b-9618-5bb53914b125" data-file-name="app/cooking/[recipeId]/page.tsx">
-          <h1 className="text-2xl font-bold mb-4" data-unique-id="8c403692-81c4-4879-8f1b-098b5bd82c6d" data-file-name="app/cooking/[recipeId]/page.tsx"><span className="editable-text" data-unique-id="64a7c730-f844-45d7-997d-ad1a15d89ff9" data-file-name="app/cooking/[recipeId]/page.tsx">Recipe Not Found</span></h1>
-          <p className="text-muted-foreground mb-6" data-unique-id="078f5e46-0411-428b-bde3-088f4a5edc22" data-file-name="app/cooking/[recipeId]/page.tsx"><span className="editable-text" data-unique-id="91ace960-ba8d-4a3e-970b-010325f4d024" data-file-name="app/cooking/[recipeId]/page.tsx">
+    return <div className="min-h-screen flex items-center justify-center" data-unique-id="5c2038b4-ac6c-4133-8fc0-f3cd670580d1" data-file-name="app/cooking/[recipeId]/page.tsx">
+        <div className="bg-card border border-border rounded-lg p-8 max-w-md text-center" data-unique-id="d8d41cff-64a9-43eb-b178-79b2c8224180" data-file-name="app/cooking/[recipeId]/page.tsx">
+          <h1 className="text-2xl font-bold mb-4" data-unique-id="1697412d-f372-4aec-80df-bfbc2617c32e" data-file-name="app/cooking/[recipeId]/page.tsx"><span className="editable-text" data-unique-id="996f8c9f-f48d-423d-a3fa-18094661e155" data-file-name="app/cooking/[recipeId]/page.tsx">Recipe Not Found</span></h1>
+          <p className="text-muted-foreground mb-6" data-unique-id="07bfa918-16e0-4f6f-95f1-56b9dc66444f" data-file-name="app/cooking/[recipeId]/page.tsx"><span className="editable-text" data-unique-id="b7843584-f1fb-4508-a768-83d1eec240f6" data-file-name="app/cooking/[recipeId]/page.tsx">
             We couldn't find the recipe you're looking for. It may have been deleted or is no longer available.
           </span></p>
-          <button onClick={() => router.push('/recipes')} className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors" data-unique-id="47615ef1-1b7a-47c7-8eed-403fd0e0f581" data-file-name="app/cooking/[recipeId]/page.tsx"><span className="editable-text" data-unique-id="561d8150-2da6-49ba-a05b-5ad8cada4fae" data-file-name="app/cooking/[recipeId]/page.tsx">
+          <button onClick={() => router.push('/recipes')} className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors" data-unique-id="cce951b1-04d2-488b-89d1-e3fae050f815" data-file-name="app/cooking/[recipeId]/page.tsx"><span className="editable-text" data-unique-id="0b57a0a1-2420-4622-bf9d-f28dd493a0be" data-file-name="app/cooking/[recipeId]/page.tsx">
             Browse Recipes
           </span></button>
         </div>

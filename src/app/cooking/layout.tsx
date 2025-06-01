@@ -3,7 +3,7 @@ export default function CookingLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div className="min-h-screen bg-background" data-unique-id="79d03b63-ce50-47e1-b518-a9280cb067dc" data-file-name="app/cooking/layout.tsx" data-dynamic-text="true">
+  return <div className="min-h-screen bg-background" data-unique-id="6949cc43-6bce-42fc-aae7-9b7a36401124" data-file-name="app/cooking/layout.tsx" data-dynamic-text="true">
       {children}
     </div>;
 }

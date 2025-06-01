@@ -27,7 +27,7 @@ export default function HomePage() {
         y: 0
       }} transition={{
         delay: 0.3
-      }} className="my-12" data-unique-id="3f233247-1213-4fe3-a252-b291a7d6a1fe" data-file-name="app/page.tsx">
+      }} className="my-16" data-unique-id="3f233247-1213-4fe3-a252-b291a7d6a1fe" data-file-name="app/page.tsx">
           <IngredientEntry />
         </motion.div>
         

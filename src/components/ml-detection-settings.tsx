@@ -21,8 +21,8 @@ export function MLDetectionSettings({
   className
 }: MLDetectionSettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
-  return <div className={cn("relative", className)} data-unique-id="33a1f3c0-9a33-4485-bec6-d0541eec9a69" data-file-name="components/ml-detection-settings.tsx" data-dynamic-text="true">
-      <button onClick={() => setIsOpen(!isOpen)} className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:bg-muted/50 transition-colors" data-unique-id="bc064d76-2a1f-4953-910d-49ad7a1d6c44" data-file-name="components/ml-detection-settings.tsx">
+  return <div className={cn("relative mb-4", className)} data-unique-id="33a1f3c0-9a33-4485-bec6-d0541eec9a69" data-file-name="components/ml-detection-settings.tsx" data-dynamic-text="true">
+      <button onClick={() => setIsOpen(!isOpen)} className="flex items-center gap-2 px-3  h-12 rounded-lg border border-border hover:bg-muted/50 transition-colors" data-unique-id="bc064d76-2a1f-4953-910d-49ad7a1d6c44" data-file-name="components/ml-detection-settings.tsx">
         <Settings className="w-4 h-4" />
         <span className="text-sm" data-unique-id="d4ffea9a-adec-4d4a-8976-30a10ad69185" data-file-name="components/ml-detection-settings.tsx"><span className="editable-text" data-unique-id="972d0986-39d6-47c5-93f3-b11d08a70e6a" data-file-name="components/ml-detection-settings.tsx">ML Settings</span></span>
       </button>
@@ -38,7 +38,6 @@ export function MLDetectionSettings({
       y: 10
     }} className="absolute right-0 top-full mt-2 z-10 bg-card rounded-lg shadow-lg border border-border p-4 w-72" onMouseLeave={() => setIsOpen(false)} data-unique-id="1a0fdd11-3fd5-4b90-a541-4ae22a1c6041" data-file-name="components/ml-detection-settings.tsx">
           <div className="flex items-center gap-2 mb-4" data-unique-id="6e631e40-ca7e-4cbf-b9a3-5a6525c8b34c" data-file-name="components/ml-detection-settings.tsx">
-            <Scan className="w-5 h-5 text-primary" />
             <h3 className="font-medium" data-unique-id="c2d7de12-1ae8-4f2a-9495-1675d1c37a39" data-file-name="components/ml-detection-settings.tsx"><span className="editable-text" data-unique-id="525c0f53-d9e1-4e9c-8cbd-5398bbeee8bf" data-file-name="components/ml-detection-settings.tsx">ML Detection Settings</span></h3>
           </div>
 

@@ -4,12 +4,12 @@ import { motion } from 'framer-motion';
 import { Mic, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 export default function CookingCommandsPage() {
-  return <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 dark:from-zinc-900 dark:to-amber-950" data-unique-id="ca66ba09-421d-4ec8-8827-97551471ead7" data-file-name="app/cooking-commands/page.tsx">
-      <main className="container mx-auto px-4 py-8" data-unique-id="522744e0-6252-40ff-84d2-e14cf76ad5df" data-file-name="app/cooking-commands/page.tsx">
-        <div className="mb-8" data-unique-id="0a3d536d-bd10-4c96-8890-ec9e0f0c571d" data-file-name="app/cooking-commands/page.tsx">
-          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4" data-unique-id="75b31d3c-6284-43fa-bcbe-2df3a4af91e1" data-file-name="app/cooking-commands/page.tsx">
+  return <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 dark:from-zinc-900 dark:to-amber-950" data-unique-id="49058b0d-5222-4efe-8dab-a8089139d50a" data-file-name="app/cooking-commands/page.tsx">
+      <main className="container mx-auto px-4 py-8" data-unique-id="058a124d-5616-48ae-9ced-e94237d4ea04" data-file-name="app/cooking-commands/page.tsx">
+        <div className="mb-8" data-unique-id="208b8949-57d7-4ff8-ab25-8a9ffdb54a72" data-file-name="app/cooking-commands/page.tsx">
+          <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4" data-unique-id="87650fd0-21c3-40e5-bb47-1f95f766616e" data-file-name="app/cooking-commands/page.tsx">
             <ArrowLeft className="w-4 h-4" />
-            <span data-unique-id="28f93ad4-2d58-4e73-8da5-c9049953205b" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="de2948e6-8142-4b9d-aa8c-f08f21f56dd5" data-file-name="app/cooking-commands/page.tsx">Back to home</span></span>
+            <span data-unique-id="d4919b1d-5188-4b70-8760-baca276975eb" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="d3cb3f93-8111-4c1f-b3e2-9bf784bd7156" data-file-name="app/cooking-commands/page.tsx">Back to home</span></span>
           </Link>
           
           <motion.h1 initial={{
@@ -18,10 +18,10 @@ export default function CookingCommandsPage() {
         }} animate={{
           opacity: 1,
           y: 0
-        }} className="text-3xl md:text-4xl font-bold mb-2" data-unique-id="faba11c3-dd90-4397-a5a6-46087ae8f254" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="051c528b-7028-40c0-9f63-0e296f56371f" data-file-name="app/cooking-commands/page.tsx">
+        }} className="text-3xl md:text-4xl font-bold mb-2" data-unique-id="9a093cd8-3e23-4972-8e46-9a1ca70c9621" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="a0c81b3f-efd3-4d0b-a04e-b8969dc090e7" data-file-name="app/cooking-commands/page.tsx">
             Voice Commands Reference
           </span></motion.h1>
-          <p className="text-muted-foreground" data-unique-id="c8623226-21b4-450d-9ca0-42732fcf3926" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="2c225c72-1bbe-4d4a-b7c3-0750ada26272" data-file-name="app/cooking-commands/page.tsx">
+          <p className="text-muted-foreground" data-unique-id="dd5a9034-38f7-499d-a6c9-1205de290a0a" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="44098220-9a7f-4ae3-909e-f9483bb7b1f2" data-file-name="app/cooking-commands/page.tsx">
             Complete list of voice commands available in cooking mode
           </span></p>
         </div>
@@ -34,116 +34,116 @@ export default function CookingCommandsPage() {
         y: 0
       }} transition={{
         delay: 0.1
-      }} className="bg-card rounded-2xl p-6 md:p-8 shadow-sm border border-border mb-8" data-unique-id="4023d5f6-ebd6-4abb-aa93-295f351f7a54" data-file-name="app/cooking-commands/page.tsx">
-          <div className="flex items-center gap-3 mb-6" data-unique-id="386bc1ea-076d-4cde-82fb-8de792313716" data-file-name="app/cooking-commands/page.tsx">
-            <div className="bg-primary/10 p-3 rounded-full" data-unique-id="9c0a86ff-b9be-4684-ad0a-c293a2a0ed5a" data-file-name="app/cooking-commands/page.tsx">
+      }} className="bg-card rounded-2xl p-6 md:p-8 shadow-sm border border-border mb-8" data-unique-id="024b9d6d-7a18-4b0c-bc41-0cc7c28b2183" data-file-name="app/cooking-commands/page.tsx">
+          <div className="flex items-center gap-3 mb-6" data-unique-id="0eb6326f-0517-4ce1-ae13-76b3346f7a22" data-file-name="app/cooking-commands/page.tsx">
+            <div className="bg-primary/10 p-3 rounded-full" data-unique-id="e91d61db-b536-4a82-bb16-53cb21c6af22" data-file-name="app/cooking-commands/page.tsx">
               <Mic className="w-6 h-6 text-primary" />
             </div>
-            <div data-unique-id="655121bb-9cf2-4eb9-9373-c13f3c35e601" data-file-name="app/cooking-commands/page.tsx">
-              <h2 className="text-xl font-bold" data-unique-id="6637dc96-8ccd-49aa-91c9-43cd88e3e84c" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="f18cebf1-f835-4a45-8672-18eae3aa3553" data-file-name="app/cooking-commands/page.tsx">Voice Command System</span></h2>
-              <p className="text-muted-foreground" data-unique-id="87610ac0-61b8-4385-a542-4ebc6ef7f925" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="8c0be377-510b-4f89-86f7-beb235369ad2" data-file-name="app/cooking-commands/page.tsx">Hands-free cooking with voice control</span></p>
+            <div data-unique-id="c1283b29-8926-4beb-a8c0-6865165d91e5" data-file-name="app/cooking-commands/page.tsx">
+              <h2 className="text-xl font-bold" data-unique-id="2e60b623-4aac-4912-a802-0bae36b6d7fd" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="a561b4fa-e175-4d28-8da0-09a9c2679bed" data-file-name="app/cooking-commands/page.tsx">Voice Command System</span></h2>
+              <p className="text-muted-foreground" data-unique-id="27f7d869-4a65-4659-b43b-714d78e198a3" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="34e8cd94-2a3e-4106-ace0-187e83bd61f4" data-file-name="app/cooking-commands/page.tsx">Hands-free cooking with voice control</span></p>
             </div>
           </div>
           
-          <p className="mb-6" data-unique-id="49560608-df29-4542-9528-4d3f27ceb399" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="a2050d1b-da0b-4a77-a88f-28c0d934164b" data-file-name="app/cooking-commands/page.tsx">
+          <p className="mb-6" data-unique-id="35571cd8-c46f-4d8d-8d51-df112ca41b4d" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="ba8c21bb-e179-48f7-a461-142052d7b683" data-file-name="app/cooking-commands/page.tsx">
             The voice command system allows you to control the cooking interface without touching your device.
             This is especially useful when your hands are busy or messy while cooking. Simply enable voice commands
             in the cooking mode and speak clearly to navigate through the recipe.
           </span></p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-unique-id="68149a0a-78d5-409a-8315-708512de5688" data-file-name="app/cooking-commands/page.tsx">
-            <div className="bg-muted/30 rounded-xl p-5" data-unique-id="537c6aa6-f20c-44a2-bcd6-193932c2ba8f" data-file-name="app/cooking-commands/page.tsx">
-              <h3 className="font-bold text-lg mb-4 flex items-center gap-2" data-unique-id="27745f37-7a5f-4b82-808d-53fc90b0f50a" data-file-name="app/cooking-commands/page.tsx">
-                <span className="bg-primary/20 text-primary w-8 h-8 rounded-full flex items-center justify-center" data-unique-id="6c4de0cc-498b-42f5-9335-d6926c65b44f" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="937bda4a-62bd-4c17-ab46-afdd98fd4e20" data-file-name="app/cooking-commands/page.tsx">1</span></span><span className="editable-text" data-unique-id="7af0b464-560c-44de-aaaf-bed2f6cbe013" data-file-name="app/cooking-commands/page.tsx">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-unique-id="26c6a7ea-f585-4d7a-83c9-aafdaf909b6b" data-file-name="app/cooking-commands/page.tsx">
+            <div className="bg-muted/30 rounded-xl p-5" data-unique-id="71219273-c4e2-4644-a83f-e2b29033eace" data-file-name="app/cooking-commands/page.tsx">
+              <h3 className="font-bold text-lg mb-4 flex items-center gap-2" data-unique-id="b5b10561-220f-4bb1-8090-1fca4eb31c3f" data-file-name="app/cooking-commands/page.tsx">
+                <span className="bg-primary/20 text-primary w-8 h-8 rounded-full flex items-center justify-center" data-unique-id="3989d290-dfff-4a5c-a8dd-04bbb9fa9eeb" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="8d9002b8-9412-4db6-942a-676a385bdc2a" data-file-name="app/cooking-commands/page.tsx">1</span></span><span className="editable-text" data-unique-id="9f462e59-dd41-4132-8790-0864ce04ff4c" data-file-name="app/cooking-commands/page.tsx">
                 Step Navigation Commands
               </span></h3>
               
-              <div className="space-y-3" data-unique-id="ce59540d-c20b-4ce4-b78f-4fcc8caeadab" data-file-name="app/cooking-commands/page.tsx">
-                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="8732edb7-c012-41be-9bed-93af9c92cea0" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="41713dc9-8113-4136-828b-4809acb67dce" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="bd6afaaa-ba8f-4616-b863-bcdb1a4c914f" data-file-name="app/cooking-commands/page.tsx">"Next step" / "Go forward"</span></div>
-                  <p className="text-sm text-muted-foreground" data-unique-id="e575cdaf-2e88-4100-a3d2-8fba72af8eef" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="cd83493a-0456-4cdb-8d76-9569ba7c52d7" data-file-name="app/cooking-commands/page.tsx">Move to the next step in the recipe</span></p>
+              <div className="space-y-3" data-unique-id="ac26c944-bf2e-42b0-a564-f7257560513c" data-file-name="app/cooking-commands/page.tsx">
+                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="0529f428-61dd-4884-9726-98c943d1b8fc" data-file-name="app/cooking-commands/page.tsx">
+                  <div className="font-medium mb-1" data-unique-id="c681ec39-30cc-47cb-9d8f-175758b789d5" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="12f7f2ec-7294-479f-a18c-959d610d1a3c" data-file-name="app/cooking-commands/page.tsx">"Next step" / "Go forward"</span></div>
+                  <p className="text-sm text-muted-foreground" data-unique-id="f7c98cfc-c9f3-4e56-bea7-027d5f73e477" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="bb4bb1d1-51bc-4f15-8d6b-ee75120800d0" data-file-name="app/cooking-commands/page.tsx">Move to the next step in the recipe</span></p>
                 </div>
                 
-                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="a0f5b7a7-1856-4bdc-b1e9-1f3cd5bfd4cc" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="ce8b9d08-6794-4e6c-b51a-d666524c2751" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="ac0c408c-380d-4c64-98f5-56d95d31ae0a" data-file-name="app/cooking-commands/page.tsx">"Previous step" / "Go back"</span></div>
-                  <p className="text-sm text-muted-foreground" data-unique-id="89dc70c1-0fe0-4509-9035-2dc860b1f47c" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="4eb5070f-547f-4b73-bf32-2d60283f44a7" data-file-name="app/cooking-commands/page.tsx">Return to the previous step</span></p>
+                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="c0ec8030-1d2c-4ab7-bed3-7108ddea27f8" data-file-name="app/cooking-commands/page.tsx">
+                  <div className="font-medium mb-1" data-unique-id="df43f160-47f0-42da-bdbe-f135ab0188f3" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="49edd0c4-1ba5-43a5-a601-303616256bd3" data-file-name="app/cooking-commands/page.tsx">"Previous step" / "Go back"</span></div>
+                  <p className="text-sm text-muted-foreground" data-unique-id="745434a1-aa85-48ea-8236-0c5cb3c4ac9f" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="45b063b1-ff3f-4cb8-bf4b-291f97ce8b88" data-file-name="app/cooking-commands/page.tsx">Return to the previous step</span></p>
                 </div>
                 
-                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="1b97c5fa-8b09-4a31-9d79-8e91c0cdf080" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="08142f6e-3770-4f4e-9f57-018a682c9bc7" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="648631d0-e3cd-40c4-afc9-3d16cafba9a7" data-file-name="app/cooking-commands/page.tsx">"Go to step [number]" / "Jump to step [number]"</span></div>
-                  <p className="text-sm text-muted-foreground" data-unique-id="3e2a6988-1b29-46c3-bd1d-a9d9dc06824b" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="d5ed2763-a85e-4525-bcc0-d5aa11301abd" data-file-name="app/cooking-commands/page.tsx">Navigate directly to a specific step</span></p>
+                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="c1ab67bc-7e80-4349-83cc-fe027dbd36e2" data-file-name="app/cooking-commands/page.tsx">
+                  <div className="font-medium mb-1" data-unique-id="7f864f0e-edeb-4a13-97a4-68458a6f4304" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="af23bf27-c93e-476f-af3e-00b12d473d8d" data-file-name="app/cooking-commands/page.tsx">"Go to step [number]" / "Jump to step [number]"</span></div>
+                  <p className="text-sm text-muted-foreground" data-unique-id="608a1b01-69dd-477c-aceb-d98f93adf818" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="d38bcb42-5618-4e05-b6af-9be7a8e4ef32" data-file-name="app/cooking-commands/page.tsx">Navigate directly to a specific step</span></p>
                 </div>
                 
-                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="2ead0d75-30c2-4b4b-91b4-822fad0ceb84" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="bd7667bd-7420-41e8-a4f2-77076a0f1e04" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="db75f85b-3239-4d3e-b171-9b28dbffa2d8" data-file-name="app/cooking-commands/page.tsx">"Read step" / "Repeat step" / "What does it say"</span></div>
-                  <p className="text-sm text-muted-foreground" data-unique-id="bccc9802-2585-4b93-a7be-1091162c28c9" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="4662013c-d3b2-44bd-8fd7-666af5e36f75" data-file-name="app/cooking-commands/page.tsx">Have the current step read aloud</span></p>
+                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="52b8f482-7028-4334-a038-623b541cca73" data-file-name="app/cooking-commands/page.tsx">
+                  <div className="font-medium mb-1" data-unique-id="adf41db7-9691-48be-ba76-70be092a6d2a" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="ad1c57cd-baac-43ea-a583-0d67ad3191d7" data-file-name="app/cooking-commands/page.tsx">"Read step" / "Repeat step" / "What does it say"</span></div>
+                  <p className="text-sm text-muted-foreground" data-unique-id="7aba1a63-c0cc-4392-af81-77729092ad48" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="59d1758e-a982-4e79-a275-2b38f020a0f3" data-file-name="app/cooking-commands/page.tsx">Have the current step read aloud</span></p>
                 </div>
               </div>
             </div>
             
-            <div className="bg-muted/30 rounded-xl p-5" data-unique-id="f78f51b8-cf22-4c3a-9824-8cd261a3fd2a" data-file-name="app/cooking-commands/page.tsx">
-              <h3 className="font-bold text-lg mb-4 flex items-center gap-2" data-unique-id="562a69f7-bbb0-4dbc-a536-dc6b4e20809f" data-file-name="app/cooking-commands/page.tsx">
-                <span className="bg-primary/20 text-primary w-8 h-8 rounded-full flex items-center justify-center" data-unique-id="20c96837-d188-427b-8c08-a43317254112" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="a7d352f6-fb6c-44a6-9308-108fede4dcc6" data-file-name="app/cooking-commands/page.tsx">2</span></span><span className="editable-text" data-unique-id="57c39ac9-215c-470e-a189-e0f08ffe386d" data-file-name="app/cooking-commands/page.tsx">
+            <div className="bg-muted/30 rounded-xl p-5" data-unique-id="3ab67d86-3146-4fc0-a116-bb516be1b8f0" data-file-name="app/cooking-commands/page.tsx">
+              <h3 className="font-bold text-lg mb-4 flex items-center gap-2" data-unique-id="4ff511bd-3a60-4944-b87d-9e0de9c14fcf" data-file-name="app/cooking-commands/page.tsx">
+                <span className="bg-primary/20 text-primary w-8 h-8 rounded-full flex items-center justify-center" data-unique-id="f7f47b6b-7d5f-4431-b73f-76eb902cd0ac" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="319a17bc-454b-4cf3-888b-685ab142df89" data-file-name="app/cooking-commands/page.tsx">2</span></span><span className="editable-text" data-unique-id="52788b39-bca6-45bb-ae52-09db247b4407" data-file-name="app/cooking-commands/page.tsx">
                 Ingredient Commands
               </span></h3>
               
-              <div className="space-y-3" data-unique-id="75e62f90-3e0b-4053-8d6a-b2810022b357" data-file-name="app/cooking-commands/page.tsx">
-                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="8639c6c5-b5b3-4e8f-b6ea-93ce48588f6d" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="4446bf38-13b7-44fc-b8c1-c1c870a98ca8" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="3fbc8c26-600e-43ba-a732-73635d188c10" data-file-name="app/cooking-commands/page.tsx">"Next ingredient" / "Following ingredient"</span></div>
-                  <p className="text-sm text-muted-foreground" data-unique-id="631b5b83-e4ad-48c3-82ab-d24181260dbe" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="779bb19c-7377-4217-8b44-d67cea21680b" data-file-name="app/cooking-commands/page.tsx">Move to the next ingredient in the list</span></p>
+              <div className="space-y-3" data-unique-id="2af9c574-6203-487a-9e99-53484330e44c" data-file-name="app/cooking-commands/page.tsx">
+                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="1947f5f1-1e62-4d66-b750-d0480d046bd6" data-file-name="app/cooking-commands/page.tsx">
+                  <div className="font-medium mb-1" data-unique-id="0abf67a0-c9c1-4b42-b802-16e867c1c1f3" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="4944bcde-1076-410a-b3a4-a71c399a0e10" data-file-name="app/cooking-commands/page.tsx">"Next ingredient" / "Following ingredient"</span></div>
+                  <p className="text-sm text-muted-foreground" data-unique-id="6e3228c6-9f2b-4c2a-89a9-bf266c9ed531" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="0015e680-ccb8-44b3-ad43-0d05a4f51f60" data-file-name="app/cooking-commands/page.tsx">Move to the next ingredient in the list</span></p>
                 </div>
                 
-                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="da081f09-3ccf-4d0e-af75-8fa9e861e561" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="b44a72ac-1476-426f-bd94-69fdac22bd89" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="b26f5edd-37e4-4a89-86d1-7819147b1f0d" data-file-name="app/cooking-commands/page.tsx">"Previous ingredient" / "Last ingredient"</span></div>
-                  <p className="text-sm text-muted-foreground" data-unique-id="3b0e679a-238a-480d-b865-f359abae144a" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="f8cfa9b6-8455-444c-bcbe-cc0f052445f5" data-file-name="app/cooking-commands/page.tsx">Go back to the previous ingredient</span></p>
+                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="afe01a2f-fd20-4a48-93a6-7c5698d3e667" data-file-name="app/cooking-commands/page.tsx">
+                  <div className="font-medium mb-1" data-unique-id="5f6f8934-94b1-43be-9bdc-fb8f101c5123" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="6b84409c-e57a-43b1-a232-cd5af898d779" data-file-name="app/cooking-commands/page.tsx">"Previous ingredient" / "Last ingredient"</span></div>
+                  <p className="text-sm text-muted-foreground" data-unique-id="0ceae683-00af-46bd-aa2e-1ac3820d53f6" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="459b1bfa-ff34-4c55-a0d7-58d0dc06f0ec" data-file-name="app/cooking-commands/page.tsx">Go back to the previous ingredient</span></p>
                 </div>
                 
-                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="feafa71f-2586-4faf-81ed-8056be431e1e" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="9d06e5a0-2ebc-4bac-9ff7-f3d51013f94b" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="7128a1cf-e977-49ff-b1f0-a00a29c97e64" data-file-name="app/cooking-commands/page.tsx">"List ingredients" / "Show ingredients" / "What ingredients"</span></div>
-                  <p className="text-sm text-muted-foreground" data-unique-id="500fb8a3-1461-48bc-8f13-b64d1fcb6b50" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="0a00b314-f91d-429d-9df4-5680dc3dc29c" data-file-name="app/cooking-commands/page.tsx">Display and read all ingredients</span></p>
+                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="5eb91e3c-baf4-44a1-be45-98f1d9940899" data-file-name="app/cooking-commands/page.tsx">
+                  <div className="font-medium mb-1" data-unique-id="3e3470c6-3341-4680-a4ac-83158675cc9c" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="4d9a2148-47ce-4ba6-b702-55893f9ecdb6" data-file-name="app/cooking-commands/page.tsx">"List ingredients" / "Show ingredients" / "What ingredients"</span></div>
+                  <p className="text-sm text-muted-foreground" data-unique-id="a7c3b2bd-7810-454c-9a9a-0fb3f94139ca" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="21856941-2dd4-4e78-91c4-b3d666fd59e0" data-file-name="app/cooking-commands/page.tsx">Display and read all ingredients</span></p>
                 </div>
                 
-                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="502e5f4f-7a66-4e04-92e5-c0b0301b1391" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="a2861d13-a118-46e8-8351-93e58333a31c" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="b96eb4f1-1d05-4ee7-811d-d0df66ac799c" data-file-name="app/cooking-commands/page.tsx">"Read ingredient [number]" / "Tell me about ingredient [number]"</span></div>
-                  <p className="text-sm text-muted-foreground" data-unique-id="edb5af04-d927-444a-9899-c37a5f5ea66b" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="f8bf66cc-a861-498d-be8c-ba09bd020723" data-file-name="app/cooking-commands/page.tsx">Read a specific ingredient by its number</span></p>
+                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="2f15499e-ad33-4b09-b68f-d06c7ad56d71" data-file-name="app/cooking-commands/page.tsx">
+                  <div className="font-medium mb-1" data-unique-id="698659b9-73d0-48bc-8440-5f4789eb3618" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="abf030ad-794e-4606-8d64-e1a749c7190b" data-file-name="app/cooking-commands/page.tsx">"Read ingredient [number]" / "Tell me about ingredient [number]"</span></div>
+                  <p className="text-sm text-muted-foreground" data-unique-id="9ba1f99b-833d-4e85-aa13-fee5e5a77d45" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="3c684da1-f787-43c0-b692-d9c53f8fec37" data-file-name="app/cooking-commands/page.tsx">Read a specific ingredient by its number</span></p>
                 </div>
               </div>
             </div>
             
-            <div className="bg-muted/30 rounded-xl p-5" data-unique-id="addf092e-5d79-4837-8447-1eca7f94cda6" data-file-name="app/cooking-commands/page.tsx">
-              <h3 className="font-bold text-lg mb-4 flex items-center gap-2" data-unique-id="6f54688b-4ed1-4600-a2db-2926cfdf72f8" data-file-name="app/cooking-commands/page.tsx">
-                <span className="bg-primary/20 text-primary w-8 h-8 rounded-full flex items-center justify-center" data-unique-id="ca457798-e947-4a2f-a1d0-c2c77a53ceac" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="8db2cdbf-7b21-4b7a-8853-fe550fa23af2" data-file-name="app/cooking-commands/page.tsx">3</span></span><span className="editable-text" data-unique-id="d80d936c-3613-42be-9304-467841c066e1" data-file-name="app/cooking-commands/page.tsx">
+            <div className="bg-muted/30 rounded-xl p-5" data-unique-id="d59fd05d-c47e-4f7f-81a4-2962fadb7a5a" data-file-name="app/cooking-commands/page.tsx">
+              <h3 className="font-bold text-lg mb-4 flex items-center gap-2" data-unique-id="ddc37811-d262-4802-a69f-7065e3b75c0f" data-file-name="app/cooking-commands/page.tsx">
+                <span className="bg-primary/20 text-primary w-8 h-8 rounded-full flex items-center justify-center" data-unique-id="472980d0-2ad0-4836-bb3d-fa19b6ee6e14" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="79395889-b585-4fb6-bae2-6a3d1caec082" data-file-name="app/cooking-commands/page.tsx">3</span></span><span className="editable-text" data-unique-id="06b46938-4304-4593-806e-ac6d46a3df49" data-file-name="app/cooking-commands/page.tsx">
                 Timer Commands
               </span></h3>
               
-              <div className="space-y-3" data-unique-id="a12cb327-8d75-41ae-b021-26b4d12753e2" data-file-name="app/cooking-commands/page.tsx">
-                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="45b0a651-5175-498f-bfa6-c433276332c7" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="63a85ece-9100-44b6-a2c0-06570ae1d881" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="0158d095-64a4-4bd2-9b58-d0ce28d87d61" data-file-name="app/cooking-commands/page.tsx">"Start timer [number] minutes" / "Set timer for [number] minutes"</span></div>
-                  <p className="text-sm text-muted-foreground" data-unique-id="a49d4629-ab80-4b0f-9621-e1c8914f5909" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="333c26fd-be96-45cc-bb55-a791c48f9000" data-file-name="app/cooking-commands/page.tsx">Start a countdown timer for the specified minutes</span></p>
+              <div className="space-y-3" data-unique-id="0b12d1da-6058-4bd4-9ada-ae52dfe42e04" data-file-name="app/cooking-commands/page.tsx">
+                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="6c0c8a74-92dc-4709-b9b0-79b040779c5a" data-file-name="app/cooking-commands/page.tsx">
+                  <div className="font-medium mb-1" data-unique-id="b4a6cd04-aa5b-4131-8a01-bfbbc7671c59" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="62892f9b-1ebd-482f-8759-f7decb0f8025" data-file-name="app/cooking-commands/page.tsx">"Start timer [number] minutes" / "Set timer for [number] minutes"</span></div>
+                  <p className="text-sm text-muted-foreground" data-unique-id="fa3edcb3-a5ac-46f3-aac1-5ced27848d35" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="b0f7a006-513e-439d-aec5-d56a185d3cea" data-file-name="app/cooking-commands/page.tsx">Start a countdown timer for the specified minutes</span></p>
                 </div>
                 
-                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="2ca9b38c-2883-4b2c-8d95-9a0937d6adba" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="087584d5-7f5f-4f6a-bb8e-bb7ac017c1ba" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="30fc76e8-10eb-425e-b443-c8d732a31edf" data-file-name="app/cooking-commands/page.tsx">"Stop timer" / "Cancel timer" / "End timer"</span></div>
-                  <p className="text-sm text-muted-foreground" data-unique-id="46ed9212-9505-4d14-8086-72201322adc7" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="10eaa202-3e77-4e01-8eff-ef55a76f958b" data-file-name="app/cooking-commands/page.tsx">Stop the currently running timer</span></p>
+                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="16e3692c-bcde-4e1b-8d67-e84d358caa36" data-file-name="app/cooking-commands/page.tsx">
+                  <div className="font-medium mb-1" data-unique-id="33ce8d86-b859-4faf-ad9e-90bad0988871" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="8e312cc1-db7d-4c8b-870a-1e38d650ce6c" data-file-name="app/cooking-commands/page.tsx">"Stop timer" / "Cancel timer" / "End timer"</span></div>
+                  <p className="text-sm text-muted-foreground" data-unique-id="f1ab418b-ce0e-4004-8516-b7a16f317949" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="1b684e6e-9cb1-4f52-8739-274973905741" data-file-name="app/cooking-commands/page.tsx">Stop the currently running timer</span></p>
                 </div>
               </div>
             </div>
             
-            <div className="bg-muted/30 rounded-xl p-5" data-unique-id="4403859b-da69-4e4b-b7e2-743881c65284" data-file-name="app/cooking-commands/page.tsx">
-              <h3 className="font-bold text-lg mb-4 flex items-center gap-2" data-unique-id="c1389da9-d635-4cf1-9746-7d769349392d" data-file-name="app/cooking-commands/page.tsx">
-                <span className="bg-primary/20 text-primary w-8 h-8 rounded-full flex items-center justify-center" data-unique-id="48d92058-d665-4ab6-996f-2286f9da04f1" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="27f113b8-09a4-401e-b198-db75c6ae6a03" data-file-name="app/cooking-commands/page.tsx">4</span></span><span className="editable-text" data-unique-id="86c45108-bce1-4157-9e66-ddc8097b6585" data-file-name="app/cooking-commands/page.tsx">
+            <div className="bg-muted/30 rounded-xl p-5" data-unique-id="2b99c661-28e6-4ce6-9480-fda094662722" data-file-name="app/cooking-commands/page.tsx">
+              <h3 className="font-bold text-lg mb-4 flex items-center gap-2" data-unique-id="e260fe5b-652f-4f2f-bee2-87379c701a90" data-file-name="app/cooking-commands/page.tsx">
+                <span className="bg-primary/20 text-primary w-8 h-8 rounded-full flex items-center justify-center" data-unique-id="b5757c42-3914-4933-ada6-cbc70a610355" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="3a0175e7-3503-44b2-b02f-e84ad487ae78" data-file-name="app/cooking-commands/page.tsx">4</span></span><span className="editable-text" data-unique-id="2d83abd2-9ea1-4da0-b49b-9ba30a70f584" data-file-name="app/cooking-commands/page.tsx">
                 Display & Control Commands
               </span></h3>
               
-              <div className="space-y-3" data-unique-id="4791c111-5195-4893-918a-e35cd0401b48" data-file-name="app/cooking-commands/page.tsx">
-                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="19f68b9f-1326-456c-999c-3cf2515add79" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="aecdc5bb-2a21-4e50-9efb-ac1d535fbd71" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="84d74844-2792-4576-9364-7dda3f5e01f9" data-file-name="app/cooking-commands/page.tsx">"Fullscreen" / "Full screen"</span></div>
-                  <p className="text-sm text-muted-foreground" data-unique-id="cec41bf3-332e-4d59-9566-fe0103937915" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="e649b16e-1737-4e78-b1c2-3daf348fcaa4" data-file-name="app/cooking-commands/page.tsx">Toggle fullscreen mode</span></p>
+              <div className="space-y-3" data-unique-id="6ad84ca5-04b5-4e2f-9539-a35e142278b1" data-file-name="app/cooking-commands/page.tsx">
+                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="d6b42baf-e303-4ba6-9f9e-3dbad0b4c518" data-file-name="app/cooking-commands/page.tsx">
+                  <div className="font-medium mb-1" data-unique-id="be44d78e-9040-4ee0-b6ee-f9cef0d831f3" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="c942f044-7094-42c4-8a4c-8c9d11e16d16" data-file-name="app/cooking-commands/page.tsx">"Fullscreen" / "Full screen"</span></div>
+                  <p className="text-sm text-muted-foreground" data-unique-id="21719ff1-13ef-40f8-b955-2ece7cfc1f36" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="f54ef61c-3bef-449d-8f51-66fcc9d5b96e" data-file-name="app/cooking-commands/page.tsx">Toggle fullscreen mode</span></p>
                 </div>
                 
-                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="f08c4a94-e9db-49de-a20f-27dd10af610b" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="dc5d3a07-658d-49ac-8e50-7608050b394d" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="66fdfe85-d4b5-4099-b136-0570f4c13da3" data-file-name="app/cooking-commands/page.tsx">"Exit" / "Close" / "Quit"</span></div>
-                  <p className="text-sm text-muted-foreground" data-unique-id="4ed10758-3e4b-47e9-8805-032988868850" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="169fd0a7-d3c9-4ba1-86e3-503bbb8a8ae9" data-file-name="app/cooking-commands/page.tsx">Exit the cooking mode</span></p>
+                <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="cb691f88-1f61-439e-b623-cc6e0b5051cd" data-file-name="app/cooking-commands/page.tsx">
+                  <div className="font-medium mb-1" data-unique-id="a4795ad3-2712-4cb6-974c-e922eb43d279" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="698a65d2-57fa-4940-a7b5-a5e53e6e5ec3" data-file-name="app/cooking-commands/page.tsx">"Exit" / "Close" / "Quit"</span></div>
+                  <p className="text-sm text-muted-foreground" data-unique-id="ca41657c-e35f-45a0-946f-a8be1ff6c980" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="defc70d6-326d-4cfd-a996-a9b4b76ba0eb" data-file-name="app/cooking-commands/page.tsx">Exit the cooking mode</span></p>
                 </div>
               </div>
             </div>
@@ -158,47 +158,47 @@ export default function CookingCommandsPage() {
         y: 0
       }} transition={{
         delay: 0.2
-      }} className="bg-card rounded-2xl p-6 shadow-sm border border-border mb-8" data-unique-id="ccfd6b42-5d98-4025-98a8-8de395287ffd" data-file-name="app/cooking-commands/page.tsx">
-          <h3 className="font-bold text-lg mb-4" data-unique-id="e46ed52e-f9d0-4f96-83c0-34775491ef60" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="b01d9639-f57e-473d-b3e8-8e5c1ebef779" data-file-name="app/cooking-commands/page.tsx">Tips for Better Voice Recognition</span></h3>
+      }} className="bg-card rounded-2xl p-6 shadow-sm border border-border mb-8" data-unique-id="a56a348e-64d0-47c1-856c-18156d0def5c" data-file-name="app/cooking-commands/page.tsx">
+          <h3 className="font-bold text-lg mb-4" data-unique-id="f7b58e1c-6061-4b1d-8736-26357043eb86" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="1fdead15-da66-4342-b3c8-da03ee6b1541" data-file-name="app/cooking-commands/page.tsx">Tips for Better Voice Recognition</span></h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-unique-id="e3005918-60ae-43e8-b6de-ea886447a73a" data-file-name="app/cooking-commands/page.tsx">
-            <div className="flex items-start gap-3" data-unique-id="4d32f2cf-0987-4aee-9257-856b227644c3" data-file-name="app/cooking-commands/page.tsx">
-              <div className="bg-primary/10 p-2 rounded-full" data-unique-id="22ba3e02-88d7-4b9d-9edc-3b05a25f9894" data-file-name="app/cooking-commands/page.tsx">
-                <span className="text-primary font-bold" data-unique-id="8ff5c676-f2ef-4990-8bc5-1773c441ff60" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="2afb6206-e4e6-46e7-8947-aa67c5720c61" data-file-name="app/cooking-commands/page.tsx">1</span></span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-unique-id="3c8a5158-5fe1-4b87-aded-89bc72838833" data-file-name="app/cooking-commands/page.tsx">
+            <div className="flex items-start gap-3" data-unique-id="84fe58ad-42de-4db5-9bf2-83c083ccd2bf" data-file-name="app/cooking-commands/page.tsx">
+              <div className="bg-primary/10 p-2 rounded-full" data-unique-id="f7792db1-ed1a-4001-b331-45d090ab4a40" data-file-name="app/cooking-commands/page.tsx">
+                <span className="text-primary font-bold" data-unique-id="5396ee39-61c3-479d-adc2-a0c99777a54d" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="b6718c2e-551f-4384-bdb0-aaaba24549ea" data-file-name="app/cooking-commands/page.tsx">1</span></span>
               </div>
-              <div data-unique-id="d0380b6b-8a21-452b-9b9e-99ca75965832" data-file-name="app/cooking-commands/page.tsx">
-                <p className="font-medium" data-unique-id="69b5834a-ae4e-422c-93cb-0e6f78bdaa41" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="7fb20164-6a09-4ac9-83c4-efd5f3f0bac1" data-file-name="app/cooking-commands/page.tsx">Speak clearly and at a moderate pace</span></p>
-                <p className="text-sm text-muted-foreground" data-unique-id="e36ab76d-e008-40ee-94d0-6a7f5a43a53f" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="23f8bf19-326a-4790-ad1e-f7d18d532095" data-file-name="app/cooking-commands/page.tsx">Avoid speaking too quickly or mumbling</span></p>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3" data-unique-id="1a77342e-fb04-4aba-b87b-dca6eaebc569" data-file-name="app/cooking-commands/page.tsx">
-              <div className="bg-primary/10 p-2 rounded-full" data-unique-id="8963f93b-1364-40ea-96ac-2a7f4f5e7585" data-file-name="app/cooking-commands/page.tsx">
-                <span className="text-primary font-bold" data-unique-id="79809f8f-4b00-487b-ad3f-227d1e6fd4e0" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="e02ce161-ffd3-4df9-a7fb-0406fbbfe30c" data-file-name="app/cooking-commands/page.tsx">2</span></span>
-              </div>
-              <div data-unique-id="5c11f432-2d18-4025-accd-44051ef6a2b9" data-file-name="app/cooking-commands/page.tsx">
-                <p className="font-medium" data-unique-id="81189557-8896-4670-9211-76177af2206a" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="8e92e40c-1fa4-40a4-a1b3-64bf29636f5f" data-file-name="app/cooking-commands/page.tsx">Reduce background noise</span></p>
-                <p className="text-sm text-muted-foreground" data-unique-id="86ad97c5-18c7-4c86-ab4a-4cea30d0d00e" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="10695c32-467e-4a78-820b-1c550f0026f4" data-file-name="app/cooking-commands/page.tsx">Try to minimize kitchen appliance noise when giving commands</span></p>
+              <div data-unique-id="1a0b7433-9705-4d68-b50a-13c2d8e91fbd" data-file-name="app/cooking-commands/page.tsx">
+                <p className="font-medium" data-unique-id="3dfc934e-420a-4547-b443-ad8230a39fc5" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="32d816d9-c3f8-4f25-be64-d09d291c8954" data-file-name="app/cooking-commands/page.tsx">Speak clearly and at a moderate pace</span></p>
+                <p className="text-sm text-muted-foreground" data-unique-id="090d53f8-9a9f-4dee-8393-cb8e5a5264df" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="9edfe601-1928-4760-8cd5-9b1482dc0be9" data-file-name="app/cooking-commands/page.tsx">Avoid speaking too quickly or mumbling</span></p>
               </div>
             </div>
             
-            <div className="flex items-start gap-3" data-unique-id="2d8ab5a8-9a3f-46bc-b9a6-b31a2f316517" data-file-name="app/cooking-commands/page.tsx">
-              <div className="bg-primary/10 p-2 rounded-full" data-unique-id="e1ee497c-9e4d-4687-94e8-0551ea14971d" data-file-name="app/cooking-commands/page.tsx">
-                <span className="text-primary font-bold" data-unique-id="6a3385cf-2ba7-4fe2-8409-70967fa0f384" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="bc689c2c-4820-4bad-83f8-6a53cd116da1" data-file-name="app/cooking-commands/page.tsx">3</span></span>
+            <div className="flex items-start gap-3" data-unique-id="94d9b9ad-a7f2-4230-bd7d-6741db8b33b2" data-file-name="app/cooking-commands/page.tsx">
+              <div className="bg-primary/10 p-2 rounded-full" data-unique-id="e48b9cb7-4f50-4698-ac6b-3b12da886bea" data-file-name="app/cooking-commands/page.tsx">
+                <span className="text-primary font-bold" data-unique-id="4267677b-9009-44bd-873f-e611f30f736b" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="0408b824-91d7-4669-8151-74caea062c0a" data-file-name="app/cooking-commands/page.tsx">2</span></span>
               </div>
-              <div data-unique-id="83cdc11b-dc25-47c2-a9a0-29bc33d6c02b" data-file-name="app/cooking-commands/page.tsx">
-                <p className="font-medium" data-unique-id="04121de8-6be3-4386-a412-076b0a671d31" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="9bad4c10-d62e-4567-8f74-9f97921c1b5f" data-file-name="app/cooking-commands/page.tsx">Use the exact command phrases</span></p>
-                <p className="text-sm text-muted-foreground" data-unique-id="c9c4d45f-d46f-4ee8-bb1b-64f91727413e" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="d4e4f392-3e7f-419d-aa31-f9e90aefbc26" data-file-name="app/cooking-commands/page.tsx">The system works best when you use the exact phrases listed</span></p>
+              <div data-unique-id="57826448-956d-4f69-8456-84704446d3f5" data-file-name="app/cooking-commands/page.tsx">
+                <p className="font-medium" data-unique-id="adbac9bb-298a-48b1-b958-8d29dd6a6588" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="1ef0d694-da8e-41ca-b343-19438390f520" data-file-name="app/cooking-commands/page.tsx">Reduce background noise</span></p>
+                <p className="text-sm text-muted-foreground" data-unique-id="22318871-6304-42b8-9090-2a705e855cc8" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="f196485c-52de-4ae4-9159-a660864947a6" data-file-name="app/cooking-commands/page.tsx">Try to minimize kitchen appliance noise when giving commands</span></p>
               </div>
             </div>
             
-            <div className="flex items-start gap-3" data-unique-id="e73c6b15-b659-4746-9afd-8a5b3d6129d2" data-file-name="app/cooking-commands/page.tsx">
-              <div className="bg-primary/10 p-2 rounded-full" data-unique-id="86711979-3d7a-4c1b-a80f-4c9ee69cdae8" data-file-name="app/cooking-commands/page.tsx">
-                <span className="text-primary font-bold" data-unique-id="ff8d297e-17c5-4390-b972-96b0533cb2ff" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="c437a76e-c25d-4fd6-ae8f-5f3e10da418a" data-file-name="app/cooking-commands/page.tsx">4</span></span>
+            <div className="flex items-start gap-3" data-unique-id="0f60424d-9643-432a-a4b5-bff5611f18ad" data-file-name="app/cooking-commands/page.tsx">
+              <div className="bg-primary/10 p-2 rounded-full" data-unique-id="176d9ee8-d811-414c-ab9b-28b71efc9862" data-file-name="app/cooking-commands/page.tsx">
+                <span className="text-primary font-bold" data-unique-id="f884b920-1c66-471b-8176-2b8d23f00b1e" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="3e2f0062-2a04-49df-b4a9-0560be1ebdf5" data-file-name="app/cooking-commands/page.tsx">3</span></span>
               </div>
-              <div data-unique-id="a7f8a3c1-298b-4187-a082-eef40848beea" data-file-name="app/cooking-commands/page.tsx">
-                <p className="font-medium" data-unique-id="2aebd482-a1d4-4113-b154-db90a2866c6c" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="cef68050-5583-4e76-8087-a8739650a74c" data-file-name="app/cooking-commands/page.tsx">Wait for feedback</span></p>
-                <p className="text-sm text-muted-foreground" data-unique-id="4da7e163-d832-49af-a805-e24e1f044269" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="8a155a1e-9682-4304-954d-27281219d256" data-file-name="app/cooking-commands/page.tsx">After giving a command, wait for visual or audio confirmation</span></p>
+              <div data-unique-id="203003df-e769-4b8b-895f-9bb563697a54" data-file-name="app/cooking-commands/page.tsx">
+                <p className="font-medium" data-unique-id="187434e4-4693-4b1a-87f2-01e9cae8667f" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="67947ac7-2c28-4ceb-9c14-b66a441d46ee" data-file-name="app/cooking-commands/page.tsx">Use the exact command phrases</span></p>
+                <p className="text-sm text-muted-foreground" data-unique-id="d0c135d4-ab97-44d0-a158-66540ffcf70d" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="82d1b541-e651-40bd-b0b5-c4be0b68c692" data-file-name="app/cooking-commands/page.tsx">The system works best when you use the exact phrases listed</span></p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-3" data-unique-id="8bb08c0f-9df9-40ea-9d7f-769afc15497c" data-file-name="app/cooking-commands/page.tsx">
+              <div className="bg-primary/10 p-2 rounded-full" data-unique-id="2d2d6136-527d-43e3-9c19-79c859f28545" data-file-name="app/cooking-commands/page.tsx">
+                <span className="text-primary font-bold" data-unique-id="16a2c183-e387-4b1e-91a1-24f9a3acac34" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="1e5b1096-a5dd-46ee-b6a4-d093488bae6b" data-file-name="app/cooking-commands/page.tsx">4</span></span>
+              </div>
+              <div data-unique-id="f313ba94-d656-4e07-9c96-7789d2dcb5d1" data-file-name="app/cooking-commands/page.tsx">
+                <p className="font-medium" data-unique-id="7b585496-6a94-4bed-90eb-29b9b53ddf89" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="d0833052-1d7b-423f-a798-2f10af1884ca" data-file-name="app/cooking-commands/page.tsx">Wait for feedback</span></p>
+                <p className="text-sm text-muted-foreground" data-unique-id="835a60fa-e238-492f-9fc7-fa5a998db6e6" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="8ee4f888-9120-4e10-9e3c-436d8052de65" data-file-name="app/cooking-commands/page.tsx">After giving a command, wait for visual or audio confirmation</span></p>
               </div>
             </div>
           </div>

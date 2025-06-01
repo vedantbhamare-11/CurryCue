@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { VoiceCommandParser, VoiceCommandAction } from './voice-command-parser';
 import { CookingAssistant } from './cooking-assistant';
+import { CompletionCelebration } from './completion-celebration';
 interface CookingModeProps {
   recipe: Recipe;
   onClose: () => void;
@@ -27,10 +28,11 @@ export function CookingMode({
   const [timerRemaining, setTimerRemaining] = useState(0);
   const [showAssistant, setShowAssistant] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const speechSynthRef = useRef<SpeechSynthesis | null>(null);
-  const speechRecognitionRef = useRef<SpeechRecognition | null>(null);
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const speechRecognitionRef = useRef<SpeechRecognition | null>(null); // eslint-disable-line no-undef
+  const timerIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Initialize Web Speech API
   useEffect(() => {
@@ -40,7 +42,7 @@ export function CookingMode({
       // Initialize speech recognition if available
       if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
         const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-        speechRecognitionRef.current = new SpeechRecognitionAPI();
+        speechRecognitionRef.current = new SpeechRecognitionAPI() as unknown as SpeechRecognition; // eslint-disable-line no-undef
         if (speechRecognitionRef.current) {
           speechRecognitionRef.current.continuous = true;
           speechRecognitionRef.current.interimResults = false;
@@ -101,7 +103,9 @@ export function CookingMode({
       timerIntervalRef.current = setInterval(() => {
         setTimerRemaining(prev => {
           if (prev <= 1) {
-            clearInterval(timerIntervalRef.current as NodeJS.Timeout);
+            if (timerIntervalRef.current) {
+              clearInterval(timerIntervalRef.current);
+            }
             setTimerRunning(false);
             speak("Timer complete!");
             toast.success("Timer complete!");
@@ -134,10 +138,15 @@ export function CookingMode({
           setIsFullscreen(true);
         }
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen().catch(err => {
-            console.error('Error attempting to exit fullscreen:', err);
-          });
+        if (typeof document !== 'undefined') {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().catch(err => {
+              console.error('Error attempting to exit fullscreen:', err);
+            });
+          } else {
+            // Fallback for browsers that don't support fullscreen
+            setIsFullscreen(false);
+          }
         } else {
           // Fallback for browsers that don't support fullscreen
           setIsFullscreen(false);
@@ -327,6 +336,12 @@ export function CookingMode({
       if (isSpeechEnabled) {
         speak("You've reached the end of the recipe. Congratulations!");
       }
+      // Show celebration when recipe is completed
+      setShowCelebration(true);
+      // Complete recipe for rewards system
+      if (typeof window !== 'undefined' && (window as any).completeRecipe) {
+        (window as any).completeRecipe();
+      }
     }
   };
 
@@ -388,47 +403,47 @@ export function CookingMode({
     setShowAssistant(!showAssistant);
   };
   return <VoiceCommandParser isListening={isListening} onCommand={handleVoiceCommandAction} totalSteps={recipe.steps.length} totalIngredients={recipe.ingredients.length} currentStep={currentStep} currentIngredient={currentIngredient}>
-      <div ref={containerRef} className={cn("bg-gradient-to-b from-background to-muted/30 text-foreground flex flex-col", "w-full h-full min-h-screen overflow-hidden relative", isFullscreen && "fixed inset-0 z-[100] max-h-screen")} data-unique-id="ae9c54d8-7b95-4c50-9914-3c249818c0d1" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+      <div ref={containerRef} className={cn("bg-gradient-to-b from-background to-muted/30 text-foreground flex flex-col", "w-full h-full min-h-screen overflow-hidden relative", isFullscreen && "fixed inset-0 z-[100] max-h-screen")} data-unique-id="f34cdaa8-e4dd-4563-b9e2-efe62d774ce3" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
         {/* Header */}
-        <div className="bg-card/80 backdrop-blur-md border-b border-border p-4 flex justify-between items-center" data-unique-id="43ec16bc-f1fb-4d5d-8a8a-13cf4f732e4a" data-file-name="components/cooking-mode.tsx">
-          <div className="flex items-center gap-3" data-unique-id="5322dcf3-a96b-43b0-9034-d11a425f2879" data-file-name="components/cooking-mode.tsx">
-            <button onClick={onClose} className="p-2 rounded-full hover:bg-muted transition-colors" aria-label="Exit cooking mode" data-unique-id="1621795d-4bdd-4b60-99e1-cbc1d20f26aa" data-file-name="components/cooking-mode.tsx">
+        <div className="bg-card/80 backdrop-blur-md border-b border-border p-4 flex justify-between items-center" data-unique-id="fa202a2b-fe88-4c7e-828f-1a26a8e5d6e9" data-file-name="components/cooking-mode.tsx">
+          <div className="flex items-center gap-3" data-unique-id="dba70607-e146-4b8e-8279-718085de0706" data-file-name="components/cooking-mode.tsx">
+            <button onClick={onClose} className="p-2 rounded-full hover:bg-muted transition-colors" aria-label="Exit cooking mode" data-unique-id="187b0c08-abf8-42fc-9db8-f19f53cbc59c" data-file-name="components/cooking-mode.tsx">
               <X className="w-5 h-5" />
             </button>
-            <h2 className="text-xl font-bold truncate" data-unique-id="7c90b70d-b1ca-4a4c-81c3-1ff2bfd27407" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">{recipe.title}</h2>
+            <h2 className="text-xl font-bold truncate" data-unique-id="c7b0d447-ec24-4054-9584-ba3d2df65fa8" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">{recipe.title}</h2>
           </div>
           
-          <div className="flex items-center gap-2" data-unique-id="94015716-46aa-4412-a892-0b99b12f9583" data-file-name="components/cooking-mode.tsx">
-            <button onClick={toggleAssistant} className={cn("p-2 rounded-full transition-colors", showAssistant ? "bg-primary text-primary-foreground" : "hover:bg-muted")} aria-label={showAssistant ? "Hide assistant" : "Show assistant"} data-unique-id="fb13e7c3-e7c4-432f-a08c-3f2a4fd547bf" data-file-name="components/cooking-mode.tsx">
+          <div className="flex items-center gap-2" data-unique-id="d34f7f82-58bc-450f-9b45-720bfbec8ca3" data-file-name="components/cooking-mode.tsx">
+            <button onClick={toggleAssistant} className={cn("p-2 rounded-full transition-colors", showAssistant ? "bg-primary text-primary-foreground" : "hover:bg-muted")} aria-label={showAssistant ? "Hide assistant" : "Show assistant"} data-unique-id="b5bf590e-23ba-4d59-87e9-59f8aff050b0" data-file-name="components/cooking-mode.tsx">
               <MessageSquare className="w-5 h-5" />
             </button>
             
-            <button onClick={toggleSpeech} className={cn("p-2 rounded-full transition-colors", isSpeechEnabled ? "bg-primary text-primary-foreground" : "hover:bg-muted")} aria-label={isSpeechEnabled ? "Disable text-to-speech" : "Enable text-to-speech"} data-unique-id="d3d6dd68-4323-4288-aa09-9f4f74e74045" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+            <button onClick={toggleSpeech} className={cn("p-2 rounded-full transition-colors", isSpeechEnabled ? "bg-primary text-primary-foreground" : "hover:bg-muted")} aria-label={isSpeechEnabled ? "Disable text-to-speech" : "Enable text-to-speech"} data-unique-id="ada9920e-e483-48da-9876-c34d6d03fef2" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
               {isSpeechEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
             </button>
             
-            <button onClick={toggleSpeechRecognition} className={cn("p-2 rounded-full transition-colors", isListening ? "bg-primary text-primary-foreground" : "hover:bg-muted")} aria-label={isListening ? "Disable voice commands" : "Enable voice commands"} data-unique-id="ebd6f849-5d0f-4d5e-acec-10c9ded288c6" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+            <button onClick={toggleSpeechRecognition} className={cn("p-2 rounded-full transition-colors", isListening ? "bg-primary text-primary-foreground" : "hover:bg-muted")} aria-label={isListening ? "Disable voice commands" : "Enable voice commands"} data-unique-id="cdd3c9dc-7ba3-47bb-8bed-7b56688ea580" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
               {isListening ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
             </button>
             
-            <button onClick={toggleFullscreen} className="p-2 rounded-full hover:bg-muted transition-colors" aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"} data-unique-id="b8fbae12-4903-472b-a132-6fb0522fc165" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+            <button onClick={toggleFullscreen} className="p-2 rounded-full hover:bg-muted transition-colors" aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"} data-unique-id="6f7da888-01d0-47af-8206-d3c444e329d8" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
               {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
             </button>
           </div>
         </div>
         
         {/* Main content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center" data-unique-id="5aa0c483-514e-459d-83ce-cf3e4bac9488" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center" data-unique-id="60c08edf-ccb4-4417-93de-e3b607d4eafa" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
           {/* Top controls */}
-          <div className="w-full max-w-3xl mb-4 flex justify-between" data-unique-id="0850285c-9964-40a6-9b4d-811afebfdea3" data-file-name="components/cooking-mode.tsx">
-            <button onClick={togglePause} className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors", isPaused ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80")} data-unique-id="4460c8c2-a20e-4825-b1cc-f266c75a2f74" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+          <div className="w-full max-w-3xl mb-4 flex justify-between" data-unique-id="a84f52bf-0397-462f-94ec-188d7380e992" data-file-name="components/cooking-mode.tsx">
+            <button onClick={togglePause} className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors", isPaused ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80")} data-unique-id="9e908e60-5a69-43ce-9803-65442c59119e" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
               {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-              <span className="text-sm" data-unique-id="f56ef4d0-ba6d-4f89-93c4-b842c445e4d8" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">{isPaused ? "Resume" : "Pause"}</span>
+              <span className="text-sm" data-unique-id="a02045dd-a74a-4ebc-873c-12968f2f35df" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">{isPaused ? "Resume" : "Pause"}</span>
             </button>
             
-            <button onClick={() => setShowIngredients(!showIngredients)} className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors", showIngredients ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80")} data-unique-id="01e4a96e-5941-42b0-9b13-10ef49e1a86b" data-file-name="components/cooking-mode.tsx">
+            <button onClick={() => setShowIngredients(!showIngredients)} className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors", showIngredients ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80")} data-unique-id="5a3c7bfe-5495-4de4-9aa6-388661cac97b" data-file-name="components/cooking-mode.tsx">
               <List className="w-4 h-4" />
-              <span className="text-sm" data-unique-id="fcaf2698-57ce-4cec-b0e8-fc3ef1668483" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="6e31ec6a-624e-462b-8ffa-eba3ca304ed3" data-file-name="components/cooking-mode.tsx">Ingredients</span></span>
+              <span className="text-sm" data-unique-id="767534d7-6f03-4569-b262-d20203babe2b" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="a8ffef65-beae-4171-9505-7eef4d7b5831" data-file-name="components/cooking-mode.tsx">Ingredients</span></span>
             </button>
           </div>
           
@@ -443,37 +458,37 @@ export function CookingMode({
           }} exit={{
             opacity: 0,
             height: 0
-          }} className="w-full max-w-3xl mb-6 overflow-hidden" data-unique-id="ef9e9a48-f8be-4539-97dd-4c0dfd3577a2" data-file-name="components/cooking-mode.tsx">
-                <div className="bg-card border border-border rounded-xl p-4 shadow-md" data-unique-id="07f6ec17-01dd-4dfa-a389-8b2be8e08191" data-file-name="components/cooking-mode.tsx">
-                  <h3 className="font-medium mb-3 flex items-center gap-2" data-unique-id="c8856c2e-b81c-433d-a235-11591366d381" data-file-name="components/cooking-mode.tsx">
-                    <span data-unique-id="ad404f68-49dc-43d2-85d6-48ab268599a3" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="4725860d-88ca-4043-8050-f934107ed9b4" data-file-name="components/cooking-mode.tsx">Ingredients</span></span>
-                    <span className="text-xs text-muted-foreground" data-unique-id="1c5df7c3-fbdf-4004-aa77-a4db08d0e3fa" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
-                      <span className="editable-text" data-unique-id="227c595b-f22a-4528-a93e-23c3cbe9b4a5" data-file-name="components/cooking-mode.tsx">(</span>{currentIngredient + 1}<span className="editable-text" data-unique-id="8fe84f34-f849-47a8-89c2-56285bf9e01b" data-file-name="components/cooking-mode.tsx">/</span>{recipe.ingredients.length}<span className="editable-text" data-unique-id="aa2c1459-b4ce-412d-a49d-e63614b60cab" data-file-name="components/cooking-mode.tsx">)</span>
+          }} className="w-full max-w-3xl mb-6 overflow-hidden" data-unique-id="8e98e9b3-af5c-48f1-b8f8-99482f4e7296" data-file-name="components/cooking-mode.tsx">
+                <div className="bg-card border border-border rounded-xl p-4 shadow-md" data-unique-id="2320378a-e906-4397-ad7f-0b2d1bf7ac3c" data-file-name="components/cooking-mode.tsx">
+                  <h3 className="font-medium mb-3 flex items-center gap-2" data-unique-id="a29ceeee-64e3-499e-ac23-d0c40e64d696" data-file-name="components/cooking-mode.tsx">
+                    <span data-unique-id="ed6930bd-bef0-4a9f-ae99-50352a644676" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="1e0a429b-d188-4089-9fc9-3245f3b3662c" data-file-name="components/cooking-mode.tsx">Ingredients</span></span>
+                    <span className="text-xs text-muted-foreground" data-unique-id="3e9f59a7-87d9-4263-abaa-bb36206c9ae0" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+                      <span className="editable-text" data-unique-id="f73c902e-5ec4-4bc3-8817-669a1709b30e" data-file-name="components/cooking-mode.tsx">(</span>{currentIngredient + 1}<span className="editable-text" data-unique-id="19e3fe9d-9f9b-475b-98e5-c345ccfe2151" data-file-name="components/cooking-mode.tsx">/</span>{recipe.ingredients.length}<span className="editable-text" data-unique-id="4a9a363a-48bd-448b-a25d-42e36adb0da0" data-file-name="components/cooking-mode.tsx">)</span>
                     </span>
                   </h3>
                   
-                  <div className="space-y-2 max-h-60 overflow-y-auto pr-2" data-unique-id="6b786b2d-75e6-4b3d-9b7a-6edd66f91ed1" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
-                    {recipe.ingredients.map((ingredient, index) => <button key={ingredient.id || index} onClick={() => setCurrentIngredient(index)} className={cn("w-full text-left p-2 rounded-lg transition-colors flex items-center gap-2", currentIngredient === index ? "bg-primary/10 border border-primary/30" : "hover:bg-muted")} data-unique-id="ddf8adfd-e638-46b8-a036-77097f804b48" data-file-name="components/cooking-mode.tsx">
-                        <div className={cn("w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0", currentIngredient === index ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")} data-unique-id="528b858e-0e06-46aa-ac46-017f5f0bbd47" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+                  <div className="space-y-2 max-h-60 overflow-y-auto pr-2" data-unique-id="c85deb61-6132-4c96-aec6-7c56b6ef6474" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+                    {recipe.ingredients.map((ingredient, index) => <button key={ingredient.id || index} onClick={() => setCurrentIngredient(index)} className={cn("w-full text-left p-2 rounded-lg transition-colors flex items-center gap-2", currentIngredient === index ? "bg-primary/10 border border-primary/30" : "hover:bg-muted")} data-unique-id="27ba95d7-a62b-46fc-9e0a-0a7ecd9f354f" data-file-name="components/cooking-mode.tsx">
+                        <div className={cn("w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0", currentIngredient === index ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")} data-unique-id="86553eba-9622-450c-82ec-19365bc7838f" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
                           {index + 1}
                         </div>
-                        <div data-unique-id="8fef9e58-633b-4ad9-8b6e-64a1441385fd" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
-                          <div className="font-medium" data-unique-id="4847a64a-c126-4d1d-95c6-49fa427f7208" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">{ingredient.name}</div>
-                          {ingredient.quantity && ingredient.unit && <div className="text-xs text-muted-foreground" data-unique-id="ac069697-54c1-4b55-b28f-13718eca19e9" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+                        <div data-unique-id="86c30b83-322e-41ea-9dbd-f548c9b1c475" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+                          <div className="font-medium" data-unique-id="8e42aa24-6a9f-421e-ace5-f03545e9a55b" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">{ingredient.name}</div>
+                          {ingredient.quantity && ingredient.unit && <div className="text-xs text-muted-foreground" data-unique-id="4e103220-e94d-46ed-88a2-fbf0693a0c92" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
                               {ingredient.quantity} {ingredient.unit}
                             </div>}
                         </div>
                       </button>)}
                   </div>
                   
-                  <div className="flex justify-between mt-4 pt-3 border-t border-border" data-unique-id="949c2d95-c2ca-424e-b38e-c9416ed96e06" data-file-name="components/cooking-mode.tsx">
-                    <button onClick={handlePreviousIngredient} disabled={currentIngredient === 0} className={cn("px-3 py-1 text-sm rounded-lg transition-colors flex items-center gap-1", currentIngredient === 0 ? "opacity-50 cursor-not-allowed text-muted-foreground" : "hover:bg-muted")} data-unique-id="e21b9bb8-1378-45b3-8556-5556d00cc487" data-file-name="components/cooking-mode.tsx">
+                  <div className="flex justify-between mt-4 pt-3 border-t border-border" data-unique-id="7de12343-d6e4-447d-b6e6-4668666652f3" data-file-name="components/cooking-mode.tsx">
+                    <button onClick={handlePreviousIngredient}  className={cn("px-3 py-1 text-sm rounded-lg transition-colors flex items-center gap-1", currentIngredient === 0 ? "bg-accent" : "hover:bg-muted")} data-unique-id="f95b5efa-11cd-42f0-abe6-03729394efae" data-file-name="components/cooking-mode.tsx">
                       <ChevronLeft className="w-4 h-4" />
-                      <span data-unique-id="df18278b-3cd9-4341-b0d9-bfe4a6489217" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="b91de932-2a0e-457a-904e-83068f0f50df" data-file-name="components/cooking-mode.tsx">Previous</span></span>
+                      <span data-unique-id="d6101a0b-d60d-4ea4-8693-4e6d6263db98" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="4ac50da7-9f69-4adb-8326-c314ed5a32a3" data-file-name="components/cooking-mode.tsx">Previous</span></span>
                     </button>
                     
-                    <button onClick={handleNextIngredient} disabled={currentIngredient === recipe.ingredients.length - 1} className={cn("px-3 py-1 text-sm rounded-lg transition-colors flex items-center gap-1", currentIngredient === recipe.ingredients.length - 1 ? "opacity-50 cursor-not-allowed text-muted-foreground" : "hover:bg-muted")} data-unique-id="c460f4a3-0a1a-41a4-a7bb-ef4ab06d81b7" data-file-name="components/cooking-mode.tsx">
-                      <span data-unique-id="16241bde-dcec-49ad-b6d3-5bbd4dbbb612" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="83a704ba-4290-462b-8d65-2766cbea6f9b" data-file-name="components/cooking-mode.tsx">Next</span></span>
+                    <button onClick={handleNextIngredient}  className={cn("px-3 py-1 text-sm rounded-lg transition-colors flex items-center gap-1", currentIngredient === recipe.ingredients.length - 1 ? "bg-accent" : "hover:bg-muted")} data-unique-id="959c7a73-3cf5-4ab4-a799-de9af484fb1e" data-file-name="components/cooking-mode.tsx">
+                      <span data-unique-id="33673795-6be7-4ab6-a8e7-779ec4d75157" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="0d613bdb-6edb-49ae-8923-78ba85aeedc5" data-file-name="components/cooking-mode.tsx">Next</span></span>
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
@@ -482,28 +497,28 @@ export function CookingMode({
           </AnimatePresence>
           
           {/* Progress indicator */}
-          <div className="w-full max-w-3xl mb-6" data-unique-id="663b4f7c-05ba-4de9-9933-4c7dc02539b1" data-file-name="components/cooking-mode.tsx">
-            <div className="flex justify-between items-center mb-2" data-unique-id="96ca55f6-9397-412d-a8b1-02ff223bf2d3" data-file-name="components/cooking-mode.tsx">
-              <span className="text-sm text-muted-foreground" data-unique-id="14f4b775-2fbd-4fd0-a434-35590974fbd1" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
-                <span className="editable-text" data-unique-id="55e53e87-34ec-477b-8479-42dbed33a281" data-file-name="components/cooking-mode.tsx">Step </span>{currentStep + 1}<span className="editable-text" data-unique-id="cdc42a86-ad2a-4f4c-a48a-86cbdfcbe68b" data-file-name="components/cooking-mode.tsx"> of </span>{recipe.steps.length}
+          <div className="w-full max-w-3xl mb-6" data-unique-id="a91e4199-e3a9-439e-b7af-e9e8620ab3d4" data-file-name="components/cooking-mode.tsx">
+            <div className="flex justify-between items-center mb-2" data-unique-id="9c4a4981-825a-470c-bf83-018bd3cca5f7" data-file-name="components/cooking-mode.tsx">
+              <span className="text-sm text-muted-foreground" data-unique-id="b4dade6d-fb9e-4ad8-a3a2-8886a0c98405" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+                <span className="editable-text" data-unique-id="35b8939d-45bc-4b63-907a-90e96e433073" data-file-name="components/cooking-mode.tsx">Step </span>{currentStep + 1}<span className="editable-text" data-unique-id="be4706c7-6847-4d5a-8781-9b7a5e7d5246" data-file-name="components/cooking-mode.tsx"> of </span>{recipe.steps.length}
               </span>
-              <span className="text-sm font-medium" data-unique-id="babfcc54-dc5f-4d0e-af33-129f7ff70474" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
-                {Math.round((currentStep + 1) / recipe.steps.length * 100)}<span className="editable-text" data-unique-id="57938839-9681-4b9d-a42b-04904b42c3aa" data-file-name="components/cooking-mode.tsx">% Complete</span>
+              <span className="text-sm font-medium" data-unique-id="6114dacf-4ce9-49bd-a17c-e2d804c989b2" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+                {Math.round((currentStep + 1) / recipe.steps.length * 100)}<span className="editable-text" data-unique-id="ee582874-fb5b-46bc-81a0-4e5a97e5a801" data-file-name="components/cooking-mode.tsx">% Complete</span>
               </span>
             </div>
-            <div className="w-full bg-muted h-2 rounded-full overflow-hidden" data-unique-id="5d71287c-ee60-4343-bfff-ea88d3812fa4" data-file-name="components/cooking-mode.tsx">
+            <div className="w-full bg-muted h-2 rounded-full overflow-hidden" data-unique-id="bff834bd-0992-40d2-a039-5e0d2cd62187" data-file-name="components/cooking-mode.tsx">
               <motion.div className="h-full bg-primary" initial={{
               width: `${currentStep / recipe.steps.length * 100}%`
             }} animate={{
               width: `${(currentStep + 1) / recipe.steps.length * 100}%`
             }} transition={{
               duration: 0.3
-            }} data-unique-id="10c9002d-8dba-45e6-b2a4-498f14907777" data-file-name="components/cooking-mode.tsx" />
+            }} data-unique-id="28c4ac51-748f-4045-845c-c01248036ff3" data-file-name="components/cooking-mode.tsx" />
             </div>
           </div>
           
           {/* Main content area - split into two columns when assistant is shown */}
-          <div className={cn("w-full max-w-3xl grid gap-6", showAssistant ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1")} data-unique-id="2787b77d-3374-4791-8843-61cb3ca07f7e" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+          <div className={cn("w-full max-w-3xl grid gap-6", showAssistant ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1")} data-unique-id="486c5660-7b99-4ded-875f-a4aca73a625b" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
             {/* Step content */}
             <motion.div key={currentStep} initial={{
             opacity: 0,
@@ -516,28 +531,28 @@ export function CookingMode({
             y: -20
           }} transition={{
             duration: 0.3
-          }} className="bg-card border border-border rounded-2xl p-6 md:p-8 shadow-lg" data-unique-id="728ee527-a763-457c-94f4-3f3821265c5e" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
-              <div className="flex items-center gap-3 mb-6" data-unique-id="655686ef-adc7-47e2-a23b-4e9135e9e1f3" data-file-name="components/cooking-mode.tsx">
-                <div className="bg-primary text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 text-lg font-bold" data-unique-id="71d31b45-477e-4e2a-a71d-b035e46b08f5" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+          }} className="bg-card border border-border rounded-2xl p-6 md:p-8 shadow-lg" data-unique-id="d2c83323-2aad-4b6c-b686-341b6adf2def" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+              <div className="flex items-center gap-3 mb-6" data-unique-id="2d330f39-04ee-4fbb-b796-e1aeeb57d804" data-file-name="components/cooking-mode.tsx">
+                <div className="bg-primary text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0 text-lg font-bold" data-unique-id="d1af7c6c-7f0e-4ade-9e13-87381ec36ce8" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
                   {currentStep + 1}
                 </div>
-                <h3 className="text-xl font-bold" data-unique-id="03f56b87-413b-44ad-88ce-9521ec2ba79f" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true"><span className="editable-text" data-unique-id="3fc857f8-654e-4c52-ad0a-8fe0346d9fc5" data-file-name="components/cooking-mode.tsx">Step </span>{currentStep + 1}</h3>
+                <h3 className="text-xl font-bold" data-unique-id="b9a0941c-9df2-4b01-954f-3ecc253310a8" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true"><span className="editable-text" data-unique-id="4786bfc4-c860-467a-9235-b2b89da1f3e6" data-file-name="components/cooking-mode.tsx">Step </span>{currentStep + 1}</h3>
               </div>
               
-              <p className="text-lg mb-6 leading-relaxed" data-unique-id="29b630fc-bd73-4067-aa1b-40c34046c878" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">{recipe.steps[currentStep]}</p>
+              <p className="text-lg mb-6 leading-relaxed" data-unique-id="b53b6564-8cb5-4d66-a222-27be3a80117e" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">{recipe.steps[currentStep]}</p>
               
               {/* Timer section */}
-              <div className="mt-6 border-t border-border pt-4" data-unique-id="3f950e74-ffc0-400a-b4d3-e509123f5f82" data-file-name="components/cooking-mode.tsx">
-                <h4 className="font-medium mb-3" data-unique-id="dc1326fd-315a-4df7-a74c-fa405b38252f" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="8b903f12-1fcc-49f7-99c6-0569b92ae3a2" data-file-name="components/cooking-mode.tsx">Need a timer?</span></h4>
-                <div className="flex flex-wrap gap-2" data-unique-id="976e7b70-97c1-4f89-9b4c-8146afb35725" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
-                  {[1, 3, 5, 10, 15].map(minutes => <button key={minutes} onClick={() => startTimer(minutes * 60)} className="px-3 py-1.5 bg-muted hover:bg-muted/80 rounded-lg text-sm transition-colors" data-unique-id="88144a80-d7d4-485f-84ba-01627717477a" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
-                      {minutes}<span className="editable-text" data-unique-id="bb803f59-17c3-4a36-81f2-4d9655deff94" data-file-name="components/cooking-mode.tsx"> min</span>
+              <div className="mt-6 border-t border-border pt-4" data-unique-id="5a7ab25f-cf80-4279-b39e-125eb12038b6" data-file-name="components/cooking-mode.tsx">
+                <h4 className="font-medium mb-3" data-unique-id="609034ba-39c2-421d-9e35-734eb919ec9b" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="db66e137-8c39-4cda-b185-be9a9cebfa9d" data-file-name="components/cooking-mode.tsx">Need a timer?</span></h4>
+                <div className="flex flex-wrap gap-2" data-unique-id="7d57dd89-ba71-4d90-a2df-a082a4f69445" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+                  {[1, 3, 5, 10, 15].map(minutes => <button key={minutes} onClick={() => startTimer(minutes * 60)} className="px-3 py-1.5 bg-muted hover:bg-muted/80 rounded-lg text-sm transition-colors" data-unique-id="f40ba045-c74e-4603-9c49-5c61beee7284" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+                      {minutes}<span className="editable-text" data-unique-id="69df8632-70d0-4f12-99bd-245fb0aade76" data-file-name="components/cooking-mode.tsx"> min</span>
                     </button>)}
                   
-                  {timerRunning && <div className="flex items-center gap-2 ml-2 bg-primary/10 px-3 py-1.5 rounded-lg" data-unique-id="49ceae45-2dc9-4771-9f33-ec02f20c9029" data-file-name="components/cooking-mode.tsx">
+                  {timerRunning && <div className="flex items-center gap-2 ml-2 bg-primary/10 px-3 py-1.5 rounded-lg" data-unique-id="a23cfc26-141d-460c-ac9f-77de7c7dc9dd" data-file-name="components/cooking-mode.tsx">
                       <Clock className="w-4 h-4 text-primary" />
-                      <span className="font-mono font-medium" data-unique-id="36427830-630d-41d0-b4f8-3deabd0f8931" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">{formatTime(timerRemaining)}</span>
-                      <button onClick={stopTimer} className="ml-1 p-1 rounded-full hover:bg-muted/80" aria-label="Stop timer" data-unique-id="f00d0286-f596-4cf9-b481-77e500e5de5d" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+                      <span className="font-mono font-medium" data-unique-id="16fcf9d7-2c0e-4a7b-8b99-87eaba925ffe" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">{formatTime(timerRemaining)}</span>
+                      <button onClick={stopTimer} className="ml-1 p-1 rounded-full hover:bg-muted/80" aria-label="Stop timer" data-unique-id="074497ef-b4c6-4977-b762-900041ea31ef" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
                         {timerRunning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
                       </button>
                     </div>}
@@ -550,92 +565,95 @@ export function CookingMode({
           </div>
           
           {/* Voice command help */}
-          {isListening && <div className="w-full max-w-3xl bg-muted/50 rounded-xl p-4 mb-6 mt-6" data-unique-id="3cc8ab26-24fe-44be-9520-eb88bc5de854" data-file-name="components/cooking-mode.tsx">
-              <h4 className="font-medium mb-2 flex items-center gap-2" data-unique-id="eff8e0ef-7b5a-4087-a566-36e484e7e7fb" data-file-name="components/cooking-mode.tsx">
+          {isListening && <div className="w-full max-w-3xl bg-muted/50 rounded-xl p-4 mb-6 mt-6" data-unique-id="1ed7f551-7ef9-49a8-839f-cc84f0965348" data-file-name="components/cooking-mode.tsx">
+              <h4 className="font-medium mb-2 flex items-center gap-2" data-unique-id="d78d7d1e-fefa-426b-9af5-f0b7c2535218" data-file-name="components/cooking-mode.tsx">
                 <Mic className="w-4 h-4 text-primary" />
-                <span className="editable-text" data-unique-id="1e81b451-a4f4-4a7b-9415-6a6e1dd3a201" data-file-name="components/cooking-mode.tsx">Voice Commands Available</span>
+                <span className="editable-text" data-unique-id="13f52db3-3007-4378-b702-dcbc36f78cd1" data-file-name="components/cooking-mode.tsx">Voice Commands Available</span>
               </h4>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" data-unique-id="e4d0e3ec-3436-4167-a5af-254d78f5982e" data-file-name="components/cooking-mode.tsx">
-                <div className="space-y-1" data-unique-id="8d58f059-f677-42bd-927d-e7255dcf17d6" data-file-name="components/cooking-mode.tsx">
-                  <div className="text-xs font-medium text-muted-foreground mb-1" data-unique-id="12698fd3-b099-41ce-b78e-7b79b7d86358" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="98e03c0c-2658-41f5-8337-10ff71c3408c" data-file-name="components/cooking-mode.tsx">Steps</span></div>
-                  <div className="flex items-center gap-2" data-unique-id="ad280e9f-bbaf-4e5d-81ad-c80437ccb7f6" data-file-name="components/cooking-mode.tsx">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="59b76821-ff6c-4193-9cb4-5167cd5d692d" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="6b427414-f81c-4109-8bc0-8fbf732f8794" data-file-name="components/cooking-mode.tsx">"Next step"</span></span>
-                    <span className="text-muted-foreground text-xs" data-unique-id="41e091ae-46a9-4304-a0db-84e018632512" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="6f407a9a-0834-4610-a2df-ed8a4f46bec3" data-file-name="components/cooking-mode.tsx">Next step</span></span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" data-unique-id="9f95ddba-b9e2-4670-8144-64362d8d0206" data-file-name="components/cooking-mode.tsx">
+                <div className="space-y-1" data-unique-id="5f0709b5-c59c-4063-866e-bf37e2a912f0" data-file-name="components/cooking-mode.tsx">
+                  <div className="text-xs font-medium text-muted-foreground mb-1" data-unique-id="b451cacc-806d-46ee-892a-0b067a81e4f2" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="ea06ff5b-3e6b-42d4-be88-a526f2f15d2a" data-file-name="components/cooking-mode.tsx">Steps</span></div>
+                  <div className="flex items-center gap-2" data-unique-id="c7b19726-9899-4492-a138-9b59c7430cf5" data-file-name="components/cooking-mode.tsx">
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="547e5457-d60a-4407-a9b9-a92125514bbd" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="5b97b636-43ef-488e-a9d9-2d59df513ad2" data-file-name="components/cooking-mode.tsx">"Next step"</span></span>
+                    <span className="text-muted-foreground text-xs" data-unique-id="0b0e8716-ed04-4737-9503-67aad32ee251" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="65726bf8-99d3-4c8d-9b01-c425f71fdc30" data-file-name="components/cooking-mode.tsx">Next step</span></span>
                   </div>
-                  <div className="flex items-center gap-2" data-unique-id="8e477c89-a7b0-4f54-92fc-f1635ae9ad73" data-file-name="components/cooking-mode.tsx">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="bd37fbd9-b918-4265-8105-639df4818cb9" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="0c0b6df6-ae7e-4274-862a-baf4f5790a4b" data-file-name="components/cooking-mode.tsx">"Go to step 3"</span></span>
-                    <span className="text-muted-foreground text-xs" data-unique-id="6284e9bc-e08c-478a-930a-9025a3d56633" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="c9872681-01ae-4deb-bbfe-d74d10bf0225" data-file-name="components/cooking-mode.tsx">Jump to step</span></span>
+                  <div className="flex items-center gap-2" data-unique-id="0c9d6bc4-b6c2-43f8-a76b-d766fa771fbc" data-file-name="components/cooking-mode.tsx">
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="847bb6f1-a38d-4196-9263-847f0210ec0f" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="32261b27-34ac-4d72-beca-8af7ca41c22b" data-file-name="components/cooking-mode.tsx">"Go to step 3"</span></span>
+                    <span className="text-muted-foreground text-xs" data-unique-id="bab80458-1bc4-4f84-abf5-ac19d4344cf0" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="82ce8bf7-d8c2-4ad7-9c72-0c9d2e239f67" data-file-name="components/cooking-mode.tsx">Jump to step</span></span>
                   </div>
-                  <div className="flex items-center gap-2" data-unique-id="6550bee1-3af0-416b-96b0-d8f3b49150a3" data-file-name="components/cooking-mode.tsx">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="84cc95e8-c80e-4498-aeeb-94eefef527de" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="252c065c-1096-41a3-93f5-815d9b81525d" data-file-name="components/cooking-mode.tsx">"Read step"</span></span>
-                    <span className="text-muted-foreground text-xs" data-unique-id="d051b95a-c510-42f8-8846-0da156077202" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="61805c1f-85d1-43dc-bc48-814444f92bc9" data-file-name="components/cooking-mode.tsx">Read current step</span></span>
-                  </div>
-                </div>
-                
-                <div className="space-y-1" data-unique-id="85bca024-5f48-4da9-8275-e4ef8be42a60" data-file-name="components/cooking-mode.tsx">
-                  <div className="text-xs font-medium text-muted-foreground mb-1" data-unique-id="44539437-7070-4445-b6a0-3cb804e570b3" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="f966e675-b78d-4573-b4a8-da5bfe4825bc" data-file-name="components/cooking-mode.tsx">Ingredients</span></div>
-                  <div className="flex items-center gap-2" data-unique-id="d7bc983a-8d53-4432-95e6-59bd31bf8231" data-file-name="components/cooking-mode.tsx">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="030b8fb8-7845-480a-a0fe-df24131dc370" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="216a340c-edb3-444d-8ce7-0ef4ba7dad40" data-file-name="components/cooking-mode.tsx">"Next ingredient"</span></span>
-                    <span className="text-muted-foreground text-xs" data-unique-id="afce8d39-d4a4-4992-a714-0fa2fca5a1d2" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="24b38641-8e29-47e9-a482-e4b7e40cd070" data-file-name="components/cooking-mode.tsx">Next ingredient</span></span>
-                  </div>
-                  <div className="flex items-center gap-2" data-unique-id="11e0f491-a1d3-42fc-8489-f37efc2fb3b3" data-file-name="components/cooking-mode.tsx">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="61634f33-5907-4bd6-9652-0dc1750c8e1c" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="5eeaaa63-ace1-4986-a88a-13c97568a66e" data-file-name="components/cooking-mode.tsx">"List ingredients"</span></span>
-                    <span className="text-muted-foreground text-xs" data-unique-id="d95d7ebd-11ef-482a-b4c8-b8149ce79fcf" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="895024f7-bdc4-48ef-9872-6eadb297a9a7" data-file-name="components/cooking-mode.tsx">Show all</span></span>
-                  </div>
-                  <div className="flex items-center gap-2" data-unique-id="e6bde410-0131-4b5f-906f-060ea4a8aa8f" data-file-name="components/cooking-mode.tsx">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="9c2e0420-4b7f-4e6d-822e-ef4968cec1cb" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="d811649d-df05-433a-b373-56101d351090" data-file-name="components/cooking-mode.tsx">"Read ingredient 2"</span></span>
-                    <span className="text-muted-foreground text-xs" data-unique-id="0dcda595-c1f4-49dd-9047-9d03e10eec68" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="2aaa530f-2a69-4ba1-adb2-5d6c70f0d46c" data-file-name="components/cooking-mode.tsx">Specific ingredient</span></span>
+                  <div className="flex items-center gap-2" data-unique-id="459c74c4-5eff-4a21-ae17-c212482137fc" data-file-name="components/cooking-mode.tsx">
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="220385ba-1993-4fce-b1b5-ca758dc825d9" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="3a156ea7-9160-4569-b28d-735d90d1378c" data-file-name="components/cooking-mode.tsx">"Read step"</span></span>
+                    <span className="text-muted-foreground text-xs" data-unique-id="5c99d93e-b92f-4114-b48d-0d0af0841834" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="1fbcaee4-6685-4cec-9c4b-2e78fab2664d" data-file-name="components/cooking-mode.tsx">Read current step</span></span>
                   </div>
                 </div>
                 
-                <div className="space-y-1" data-unique-id="930ab53b-547f-42f6-bd23-3172296570b5" data-file-name="components/cooking-mode.tsx">
-                  <div className="text-xs font-medium text-muted-foreground mb-1" data-unique-id="ef793f5e-5d96-4a3e-861a-976f83ac06b7" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="c5cb3cfc-38df-4e32-a017-0067f45ed935" data-file-name="components/cooking-mode.tsx">Timer</span></div>
-                  <div className="flex items-center gap-2" data-unique-id="0ec7085d-1108-4c3e-9f03-f562148af217" data-file-name="components/cooking-mode.tsx">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="f546e1ed-4665-40c2-b2f7-5c7dc8bdf1d5" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="83325aca-2f68-42f1-a068-e15b34f0aa06" data-file-name="components/cooking-mode.tsx">"Start timer 5 minutes"</span></span>
-                    <span className="text-muted-foreground text-xs" data-unique-id="90e18e7f-db9c-46fc-9843-e5ba8a351a37" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="13e42446-3916-4997-92a7-bf74b1027dff" data-file-name="components/cooking-mode.tsx">Set timer</span></span>
+                <div className="space-y-1" data-unique-id="c3862c07-e4b7-4bb2-b186-9b9a11af8dd4" data-file-name="components/cooking-mode.tsx">
+                  <div className="text-xs font-medium text-muted-foreground mb-1" data-unique-id="80e9d290-659c-47e8-8bfe-548d752b630c" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="7254d515-b292-4664-ad57-55c1509a727f" data-file-name="components/cooking-mode.tsx">Ingredients</span></div>
+                  <div className="flex items-center gap-2" data-unique-id="66442af5-1590-4e71-a59d-1e8ce2c7240f" data-file-name="components/cooking-mode.tsx">
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="67ae1be3-1fc4-493f-9aeb-3722bf5e1d77" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="badc1b50-eff3-45eb-8181-4409933052b6" data-file-name="components/cooking-mode.tsx">"Next ingredient"</span></span>
+                    <span className="text-muted-foreground text-xs" data-unique-id="5e50de40-bd1d-41db-85a9-7e76eb701019" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="ff4f805f-78fd-452c-8726-b1a6460dd38d" data-file-name="components/cooking-mode.tsx">Next ingredient</span></span>
                   </div>
-                  <div className="flex items-center gap-2" data-unique-id="1addd884-f692-4e97-9bf5-ff4eb69f2fc8" data-file-name="components/cooking-mode.tsx">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="d24e1bbc-07b5-4694-9edd-77f49c396157" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="cd1530dd-6266-415e-8b5e-eaeb3857ddb2" data-file-name="components/cooking-mode.tsx">"Stop timer"</span></span>
-                    <span className="text-muted-foreground text-xs" data-unique-id="cb0b063c-d140-4b36-afe5-cbaa2677e7d6" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="ac833446-b4fa-4cc4-915a-eecb3c9a1fc4" data-file-name="components/cooking-mode.tsx">Cancel timer</span></span>
+                  <div className="flex items-center gap-2" data-unique-id="5c6dc559-8293-470d-80cf-c14e25b8aba4" data-file-name="components/cooking-mode.tsx">
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="bb60c6d9-3ee3-453a-a014-c8043ecf2d8a" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="df0fc884-f8e9-4022-bed0-992ebc330db2" data-file-name="components/cooking-mode.tsx">"List ingredients"</span></span>
+                    <span className="text-muted-foreground text-xs" data-unique-id="5be83c9f-e64b-424d-b8f4-1848faffc283" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="1fb306ec-3ef1-43fe-af6a-f8ca0d974827" data-file-name="components/cooking-mode.tsx">Show all</span></span>
+                  </div>
+                  <div className="flex items-center gap-2" data-unique-id="e623d89f-641f-4491-97d3-7c5209c00742" data-file-name="components/cooking-mode.tsx">
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="eb1b43e4-d6ac-4185-b8f9-efe0d320af2a" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="585cb4fc-6624-472c-8868-6dd6994b5d10" data-file-name="components/cooking-mode.tsx">"Read ingredient 2"</span></span>
+                    <span className="text-muted-foreground text-xs" data-unique-id="3e7f907e-1b7e-45fc-b040-94cb6741b676" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="43e4c8b4-eee3-4971-8117-8ecff87edbbc" data-file-name="components/cooking-mode.tsx">Specific ingredient</span></span>
                   </div>
                 </div>
                 
-                <div className="space-y-1" data-unique-id="f46c33b0-2c4c-4c8a-8564-8bae489e02a9" data-file-name="components/cooking-mode.tsx">
-                  <div className="text-xs font-medium text-muted-foreground mb-1" data-unique-id="f9292d0c-90ab-4c05-af22-5cb2d7658680" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="63676320-067a-427a-b471-8f0309f54300" data-file-name="components/cooking-mode.tsx">Other</span></div>
-                  <div className="flex items-center gap-2" data-unique-id="5760bf58-4c1a-484e-9653-235f10226a17" data-file-name="components/cooking-mode.tsx">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="49237149-1efe-431e-8915-9038824b9aaa" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="51deabfb-8e90-466c-902d-aeb78afaf94c" data-file-name="components/cooking-mode.tsx">"Fullscreen"</span></span>
-                    <span className="text-muted-foreground text-xs" data-unique-id="84488e79-b2ed-49d1-957a-7106979d49de" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="18110d5c-01a8-4636-9955-9765e69baf55" data-file-name="components/cooking-mode.tsx">Toggle fullscreen</span></span>
+                <div className="space-y-1" data-unique-id="fcdcfc06-c0c6-46d9-b1d6-4b69b22f8eae" data-file-name="components/cooking-mode.tsx">
+                  <div className="text-xs font-medium text-muted-foreground mb-1" data-unique-id="f556af49-7fcc-49ec-967c-23eccde09d42" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="ca562f0c-1d85-43af-a27b-fc83e669af05" data-file-name="components/cooking-mode.tsx">Timer</span></div>
+                  <div className="flex items-center gap-2" data-unique-id="2780e1ae-3955-41ef-b58b-6d48d8549c4d" data-file-name="components/cooking-mode.tsx">
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="def50a4b-7fa5-4416-801e-1b96b52074b6" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="63c3b05d-22a1-44c0-91c2-263b38f8b2cb" data-file-name="components/cooking-mode.tsx">"Start timer 5 minutes"</span></span>
+                    <span className="text-muted-foreground text-xs" data-unique-id="e942d883-d088-4b08-b15d-169d4add3571" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="817512ef-84bf-4c30-8d6b-6e4ae1b95912" data-file-name="components/cooking-mode.tsx">Set timer</span></span>
                   </div>
-                  <div className="flex items-center gap-2" data-unique-id="9e671c97-8b5b-445f-83dc-a86bd333626f" data-file-name="components/cooking-mode.tsx">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="a0ba5c84-a390-4b8c-a3e7-219df281da25" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="229675de-e8df-41dd-960a-b1d676953f3b" data-file-name="components/cooking-mode.tsx">"Exit"</span></span>
-                    <span className="text-muted-foreground text-xs" data-unique-id="29587fa6-51ba-4d9a-b5d2-b41f696e2809" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="6ae666e6-ecf0-4abb-923e-b254cc493d8b" data-file-name="components/cooking-mode.tsx">Close cooking mode</span></span>
+                  <div className="flex items-center gap-2" data-unique-id="94b11455-9721-432a-adeb-7836790a5791" data-file-name="components/cooking-mode.tsx">
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="4c310439-6d92-43a2-918f-71c1b7f41d65" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="c094e8a7-981d-42d2-ba82-7579e1b72a63" data-file-name="components/cooking-mode.tsx">"Stop timer"</span></span>
+                    <span className="text-muted-foreground text-xs" data-unique-id="e05ffe3f-b121-451a-b71a-79a0e8dfeea9" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="3ac218bf-e881-40e5-b09c-4c17f29e72c0" data-file-name="components/cooking-mode.tsx">Cancel timer</span></span>
+                  </div>
+                </div>
+                
+                <div className="space-y-1" data-unique-id="153d3979-d632-41fb-b4af-5733a723420d" data-file-name="components/cooking-mode.tsx">
+                  <div className="text-xs font-medium text-muted-foreground mb-1" data-unique-id="16730ad7-891f-4326-9579-4ce58d3466d3" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="7991516b-345e-4872-977b-22e7bcdba626" data-file-name="components/cooking-mode.tsx">Other</span></div>
+                  <div className="flex items-center gap-2" data-unique-id="de0410d6-5bcd-49fc-8125-6d6a24ced1ad" data-file-name="components/cooking-mode.tsx">
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="ac19bb04-64bf-486b-ae06-d8e3e91862ba" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="00cf1190-75ac-43ff-800e-a19e8a3e1e42" data-file-name="components/cooking-mode.tsx">"Fullscreen"</span></span>
+                    <span className="text-muted-foreground text-xs" data-unique-id="859e2e58-7e06-4240-ad37-a08144cb544c" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="9efa46d5-4924-4fb4-baca-f036e8fcd17a" data-file-name="components/cooking-mode.tsx">Toggle fullscreen</span></span>
+                  </div>
+                  <div className="flex items-center gap-2" data-unique-id="84df1076-c815-4cea-808b-489c5e770c8d" data-file-name="components/cooking-mode.tsx">
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="4a32dd94-5c11-4530-bf10-6b78346d0dfe" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="b60fc604-90ac-426a-8b21-7ad6329d1b03" data-file-name="components/cooking-mode.tsx">"Exit"</span></span>
+                    <span className="text-muted-foreground text-xs" data-unique-id="e10f02fa-41e9-4b9e-a3ed-7be0488e8b5d" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="6d39de90-9660-4790-ab71-2551a77ad2ea" data-file-name="components/cooking-mode.tsx">Close cooking mode</span></span>
                   </div>
                 </div>
               </div>
               
-              <button onClick={() => window.open('/cooking-commands', '_blank')} className="mt-3 text-xs text-primary hover:underline" data-unique-id="a8b04155-ad62-44a5-9339-b6059a346803" data-file-name="components/cooking-mode.tsx">
-                <span className="editable-text" data-unique-id="03fc29fa-9ba4-42f2-9c72-353cc079510a" data-file-name="components/cooking-mode.tsx">View all commands</span>
+              <button onClick={() => window.open('/cooking-commands', '_blank')} className="mt-3 text-xs text-primary hover:underline" data-unique-id="df92b7b2-e39d-4208-9911-0ee2740ff879" data-file-name="components/cooking-mode.tsx">
+                <span className="editable-text" data-unique-id="67652433-20f1-4023-86bf-5865567e095f" data-file-name="components/cooking-mode.tsx">View all commands</span>
               </button>
             </div>}
         </div>
         
         {/* Navigation footer */}
-        <div className="bg-card/80 backdrop-blur-md border-t border-border p-4 flex justify-between items-center" data-unique-id="eb946076-dc4c-4a84-aefd-4dfd2bf192a8" data-file-name="components/cooking-mode.tsx">
-          <button onClick={handlePreviousStep} disabled={currentStep === 0} className={cn("flex items-center gap-2 px-4 py-2 rounded-lg transition-colors", currentStep === 0 ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground" : "bg-muted hover:bg-muted/80")} data-unique-id="5b91da20-e056-49c1-811f-d5d98266db50" data-file-name="components/cooking-mode.tsx">
+        <div className="bg-card/80 backdrop-blur-md border-t border-border p-4 flex justify-between items-center" data-unique-id="851c8bb0-a748-44b2-9c50-eb7bcf646bdd" data-file-name="components/cooking-mode.tsx">
+          <button onClick={handlePreviousStep}  className={cn("flex items-center gap-2 px-4 py-2 rounded-lg transition-colors", currentStep === 0 ? "bg-accent" : "bg-muted hover:bg-muted/80")} data-unique-id="f41156fb-c77a-45a3-a06d-00d052638442" data-file-name="components/cooking-mode.tsx">
             <ChevronLeft className="w-5 h-5" />
-            <span data-unique-id="7d6e5d6b-3be0-45ec-9f9f-97209bb3b826" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="1b32ba90-e567-49c3-b489-af69243ae097" data-file-name="components/cooking-mode.tsx">Previous</span></span>
+            <span data-unique-id="ddcaf59d-91dc-46c7-bac5-57b2e60fb222" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="243f80b9-52e8-4c2d-a3cd-d0e3b85c8e94" data-file-name="components/cooking-mode.tsx">Previous</span></span>
           </button>
           
-          <div className="flex gap-1" data-unique-id="b2e60dc6-b90b-42f3-bf79-1fc96d94b5e2" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
-            {recipe.steps.map((_, index) => <button key={index} onClick={() => setCurrentStep(index)} className={cn("w-2 h-2 rounded-full transition-all", currentStep === index ? "bg-primary w-4" : "bg-muted hover:bg-muted-foreground/50")} aria-label={`Go to step ${index + 1}`} data-unique-id="12f92cae-bdc3-4902-9c81-71a794e298fe" data-file-name="components/cooking-mode.tsx" />)}
+          <div className="flex gap-1" data-unique-id="f6893a94-1679-4737-8180-8a8ca79bd4b7" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+            {recipe.steps.map((_, index) => <button key={index} onClick={() => setCurrentStep(index)} className={cn("w-2 h-2 rounded-full transition-all", currentStep === index ? "bg-primary w-4" : "bg-muted hover:bg-muted-foreground/50")} aria-label={`Go to step ${index + 1}`} data-unique-id="2264c388-4c83-4e94-8a14-0ecf4021bbd7" data-file-name="components/cooking-mode.tsx" />)}
           </div>
           
-          <button onClick={handleNextStep} disabled={currentStep === recipe.steps.length - 1} className={cn("flex items-center gap-2 px-4 py-2 rounded-lg transition-colors", currentStep === recipe.steps.length - 1 ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground" : "bg-primary text-primary-foreground hover:bg-primary/90")} data-unique-id="26481bab-c317-4304-b193-9bc0f339d6a5" data-file-name="components/cooking-mode.tsx">
-            <span data-unique-id="a8b52216-7e84-4a19-b6bf-c77798f90a28" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="f84c2993-cb22-4c00-90c2-6583fdee6c26" data-file-name="components/cooking-mode.tsx">Next</span></span>
+          <button onClick={handleNextStep}  className={cn("flex items-center gap-2 px-4 py-2 rounded-lg transition-colors", currentStep === recipe.steps.length - 1 ? "bg-accent" : "bg-primary text-primary-foreground hover:bg-primary/90")} data-unique-id="6427ccdf-9298-4311-a085-da92d7335817" data-file-name="components/cooking-mode.tsx">
+            <span data-unique-id="ee9ca97e-09c6-4faf-ba64-e1c613182197" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="e45af173-b54e-424d-947c-8191b7ed0634" data-file-name="components/cooking-mode.tsx">Next</span></span>
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </div>
+      
+      {/* Completion Celebration */}
+      <CompletionCelebration isOpen={showCelebration} onClose={() => setShowCelebration(false)} recipeName={recipe.title} />
     </VoiceCommandParser>;
 }

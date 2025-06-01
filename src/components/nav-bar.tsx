@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Menu, Search, ShoppingCart, User, Coffee, X, MoonStar, Sun } from 'lucide-react';
+import { Menu, Search, ShoppingBag, User, ShoppingCart, Coffee, X, MoonStar, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 export function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,13 +71,10 @@ export function NavBar() {
             <div className="hidden md:flex items-center gap-2" data-unique-id="117f608e-2a76-44f3-a53d-026e9ea90b3d" data-file-name="components/nav-bar.tsx">
               
               <Link href="/grocery" className="p-2 rounded-full hover:bg-muted transition-colors relative" data-unique-id="552154c4-b188-47e4-b24c-163c73cb51fd" data-file-name="components/nav-bar.tsx">
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingBag className="w-5 h-5" />
                 <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center" data-unique-id="4cc73373-e649-48a4-bf38-ab6893d01269" data-file-name="components/nav-bar.tsx"><span className="editable-text" data-unique-id="4c4835c9-d867-449c-a07b-2a9382c5119f" data-file-name="components/nav-bar.tsx">3</span></span>
               </Link>
-              <button className="flex items-center gap-2 bg-primary text-primary-foreground rounded-full px-4 py-2 hover:bg-primary/90 transition-colors" data-unique-id="2087d298-3bf5-4c87-bb76-b5b35ae06907" data-file-name="components/nav-bar.tsx">
-                <User className="w-4 h-4" />
-                <span data-unique-id="8dd99259-2f91-4179-b46c-1a77b0c89b75" data-file-name="components/nav-bar.tsx"><span className="editable-text" data-unique-id="bd2654b6-7747-499e-8187-970e43f25808" data-file-name="components/nav-bar.tsx">Account</span></span>
-              </button>
+              
             </div>
           </div>
         </div>

@@ -131,37 +131,37 @@ export function CookingAssistant({
       onStepChange(currentStep - 1);
     }
   };
-  return <div className="bg-card border border-border rounded-xl overflow-hidden shadow-md flex flex-col" data-unique-id="999c4f5e-ab34-46fe-b224-8e1bea625506" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
+  return <div className="bg-card border border-border rounded-xl overflow-hidden shadow-md flex flex-col" data-unique-id="a5650078-cd65-4d88-a6ad-1e5454c3c8d6" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
       {/* Header */}
-      <div className="p-3 border-b border-border flex justify-between items-center bg-muted/30" data-unique-id="4e0529c5-2584-4145-95cb-75a4653c13ff" data-file-name="components/cooking-assistant.tsx">
-        <div className="flex items-center gap-2" data-unique-id="c2caa1d8-5130-445c-a6fa-8160f30a800b" data-file-name="components/cooking-assistant.tsx">
+      <div className="p-3 border-b border-border flex justify-between items-center bg-muted/30" data-unique-id="9a59dfda-2ba4-4a80-9e18-85da5f517645" data-file-name="components/cooking-assistant.tsx">
+        <div className="flex items-center gap-2" data-unique-id="f8510fd8-bf43-4875-95e3-9ccfe16270a2" data-file-name="components/cooking-assistant.tsx">
           <Bot className="w-5 h-5 text-primary" />
-          <h3 className="font-medium text-sm" data-unique-id="2f3f8441-f154-47b4-8e19-e2548787c97c" data-file-name="components/cooking-assistant.tsx"><span className="editable-text" data-unique-id="ddaab06c-66df-4746-a64a-4881bd5f5fa9" data-file-name="components/cooking-assistant.tsx">Cooking Assistant</span></h3>
+          <h3 className="font-medium text-sm" data-unique-id="b39eee0b-c4b4-45d3-9192-b2be8a508ebe" data-file-name="components/cooking-assistant.tsx"><span className="editable-text" data-unique-id="a6bf4c9f-c7e6-486f-ae74-9e18ba2dd83e" data-file-name="components/cooking-assistant.tsx">Cooking Assistant</span></h3>
         </div>
-        <div className="flex items-center gap-2" data-unique-id="7abd08a5-3563-40bb-a9d4-876541b870c3" data-file-name="components/cooking-assistant.tsx">
-          <button onClick={onPauseToggle} className={cn("p-1.5 rounded-full transition-colors", isPaused ? "bg-primary/20 text-primary" : "bg-muted hover:bg-muted/80")} aria-label={isPaused ? "Resume cooking" : "Pause cooking"} data-unique-id="4b810461-2e3a-4fac-9cc7-2ed0fc50634b" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
+        <div className="flex items-center gap-2" data-unique-id="493b1aee-a627-43b9-9980-6277d7bd59da" data-file-name="components/cooking-assistant.tsx">
+          <button onClick={onPauseToggle} className={cn("p-1.5 rounded-full transition-colors", isPaused ? "bg-primary/20 text-primary" : "bg-muted hover:bg-muted/80")} aria-label={isPaused ? "Resume cooking" : "Pause cooking"} data-unique-id="7ac8a9ac-e69b-401e-a8dd-1eacedc92a03" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
             {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
           </button>
-          <button onClick={() => setIsExpanded(!isExpanded)} className="p-1.5 rounded-full hover:bg-muted transition-colors" aria-label={isExpanded ? "Collapse chat" : "Expand chat"} data-unique-id="213182e3-f7f9-459b-9aaf-5d2f9c0986c3" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
+          <button onClick={() => setIsExpanded(!isExpanded)} className="p-1.5 rounded-full hover:bg-muted transition-colors" aria-label={isExpanded ? "Collapse chat" : "Expand chat"} data-unique-id="5b770ceb-2cea-4d3d-9a96-71f8d9cbf22f" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
             {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
           </button>
         </div>
       </div>
       
       {/* Progress indicator */}
-      <div className="px-3 py-2 bg-muted/20 border-b border-border" data-unique-id="cfa49689-7b6b-421b-8ef7-c1ca857b1d81" data-file-name="components/cooking-assistant.tsx">
-        <div className="flex justify-between items-center mb-1 text-xs" data-unique-id="ebdd315d-077c-4f61-b3e0-0e5d71c4d48f" data-file-name="components/cooking-assistant.tsx">
-          <span className="text-muted-foreground" data-unique-id="1c2c5f78-f7b4-4b1e-95cc-44d5113ac2ab" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true"><span className="editable-text" data-unique-id="c2af5874-27be-46d8-a2a9-6eb8177c162c" data-file-name="components/cooking-assistant.tsx">Step </span>{currentStep + 1}<span className="editable-text" data-unique-id="37c44e7b-069c-4288-8d55-7260887de3e3" data-file-name="components/cooking-assistant.tsx"> of </span>{recipe.steps.length}</span>
-          <span className="font-medium" data-unique-id="08fbfa15-8491-4879-b53b-5f605b563bc4" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">{Math.round((currentStep + 1) / recipe.steps.length * 100)}<span className="editable-text" data-unique-id="dbd25912-dfc4-473c-873f-6d59e5c4135e" data-file-name="components/cooking-assistant.tsx">% complete</span></span>
+      <div className="px-3 py-2 bg-muted/20 border-b border-border" data-unique-id="791265ab-f400-4352-b6a9-2514a0c7bc5c" data-file-name="components/cooking-assistant.tsx">
+        <div className="flex justify-between items-center mb-1 text-xs" data-unique-id="0d2d1ada-031f-42f1-a481-8dc2d87e53c3" data-file-name="components/cooking-assistant.tsx">
+          <span className="text-muted-foreground" data-unique-id="96f65bfe-6922-4d8c-bbdf-4d4c77222d51" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true"><span className="editable-text" data-unique-id="7e680670-b774-4a0b-b464-7b6288ca83f8" data-file-name="components/cooking-assistant.tsx">Step </span>{currentStep + 1}<span className="editable-text" data-unique-id="4d1e680a-49b6-4c23-a9d9-04df1152f9c4" data-file-name="components/cooking-assistant.tsx"> of </span>{recipe.steps.length}</span>
+          <span className="font-medium" data-unique-id="0eeeb88b-582f-4828-8dfb-cbdaa71939a3" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">{Math.round((currentStep + 1) / recipe.steps.length * 100)}<span className="editable-text" data-unique-id="c8eff67e-97d6-42aa-a1c9-4e2dba9365a9" data-file-name="components/cooking-assistant.tsx">% complete</span></span>
         </div>
-        <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden" data-unique-id="49496360-11e1-43d5-91ee-b127ccce5400" data-file-name="components/cooking-assistant.tsx">
+        <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden" data-unique-id="aad19a1d-5aeb-423c-913a-5874ba2cfab3" data-file-name="components/cooking-assistant.tsx">
           <motion.div className="h-full bg-primary" initial={{
           width: `${currentStep / recipe.steps.length * 100}%`
         }} animate={{
           width: `${(currentStep + 1) / recipe.steps.length * 100}%`
         }} transition={{
           duration: 0.3
-        }} data-unique-id="1dc80b70-9c1e-4e2c-b755-f2de4f0d6879" data-file-name="components/cooking-assistant.tsx" />
+        }} data-unique-id="458b68aa-b04e-41cb-ac84-725dc7de4c36" data-file-name="components/cooking-assistant.tsx" />
         </div>
       </div>
       
@@ -175,49 +175,49 @@ export function CookingAssistant({
       }} exit={{
         height: 0,
         opacity: 0
-      }} className="flex-1 overflow-hidden" data-unique-id="ae339677-755b-4305-a387-bddbb779abe9" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
+      }} className="flex-1 overflow-hidden" data-unique-id="d20e5a53-1db0-4596-b563-23591c9590dd" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
             {/* Messages container */}
-            <div className="h-[300px] overflow-y-auto p-3 space-y-3" data-unique-id="d7bc3df6-0d68-490c-b483-ea9a9ff8f790" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
-              {messages.map(message => <div key={message.id} className={cn("flex gap-2 max-w-[85%] animate-in fade-in-50", message.role === 'user' ? "ml-auto" : "mr-auto", message.role === 'system' && "w-full max-w-full")} data-unique-id="23013407-2044-4b0e-8023-fe1c8ab407ca" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
-                  {message.role !== 'user' && <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center" data-unique-id="2415d1f7-2d4b-4ede-b9be-eb943e9c9aa7" data-file-name="components/cooking-assistant.tsx">
+            <div className="h-[300px] overflow-y-auto p-3 space-y-3" data-unique-id="3d67c27d-f0cd-41c2-abdc-a3cf83af0cb5" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
+              {messages.map(message => <div key={message.id} className={cn("flex gap-2 max-w-[85%] animate-in fade-in-50", message.role === 'user' ? "ml-auto" : "mr-auto", message.role === 'system' && "w-full max-w-full")} data-unique-id="41669eb1-d634-46ad-93cd-562e3bac7570" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
+                  {message.role !== 'user' && <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center" data-unique-id="2c4c03c5-7e29-495b-a4ee-5d3be518d88d" data-file-name="components/cooking-assistant.tsx">
                       <Bot className="w-3.5 h-3.5 text-primary" />
                     </div>}
                   
-                  <div className={cn("rounded-lg p-2.5 text-sm", message.role === 'user' ? "bg-primary text-primary-foreground" : message.role === 'system' ? "bg-muted/50 text-muted-foreground w-full" : "bg-muted")} data-unique-id="32fbea9b-9d81-4300-a858-6834a89f1278" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
+                  <div className={cn("rounded-lg p-2.5 text-sm", message.role === 'user' ? "bg-primary text-primary-foreground" : message.role === 'system' ? "bg-muted/50 text-muted-foreground w-full" : "bg-muted")} data-unique-id="f4672e8d-25c6-4fdd-8b8d-a755bb9e833d" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
                     {message.content}
                   </div>
                   
-                  {message.role === 'user' && <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center" data-unique-id="a566c458-8c58-4ea6-8f6c-ca321d734c54" data-file-name="components/cooking-assistant.tsx">
+                  {message.role === 'user' && <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center" data-unique-id="28ae4c1b-d159-4ec6-9b2b-f7fafea2bb39" data-file-name="components/cooking-assistant.tsx">
                       <User className="w-3.5 h-3.5 text-primary" />
                     </div>}
                 </div>)}
               
-              {isLoading && <div className="flex gap-2 max-w-[85%] mr-auto" data-unique-id="d7d9e044-303a-43c4-87ff-ba30ceadafaf" data-file-name="components/cooking-assistant.tsx">
-                  <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center" data-unique-id="3e2cb032-8e26-4aef-8a1e-f16306551b28" data-file-name="components/cooking-assistant.tsx">
+              {isLoading && <div className="flex gap-2 max-w-[85%] mr-auto" data-unique-id="27193155-3aa1-4cb1-8b41-0268733a90ca" data-file-name="components/cooking-assistant.tsx">
+                  <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center" data-unique-id="c8c46eb2-ecef-4344-a24d-b69636aa279e" data-file-name="components/cooking-assistant.tsx">
                     <Bot className="w-3.5 h-3.5 text-primary" />
                   </div>
-                  <div className="bg-muted rounded-lg p-3" data-unique-id="c2f44494-c07f-4b04-af39-1be89ef4dc16" data-file-name="components/cooking-assistant.tsx">
+                  <div className="bg-muted rounded-lg p-3" data-unique-id="84055d3a-b11b-4497-8499-79523fcc9b3e" data-file-name="components/cooking-assistant.tsx">
                     <Loader2 className="w-4 h-4 animate-spin text-primary" />
                   </div>
                 </div>}
               
-              <div ref={messagesEndRef} data-unique-id="dfcbd8c5-5dbf-46d7-a60f-0ffda58d9819" data-file-name="components/cooking-assistant.tsx" />
+              <div ref={messagesEndRef} data-unique-id="605d7e1f-aef2-47dc-b761-4ba07dee1018" data-file-name="components/cooking-assistant.tsx" />
             </div>
             
             {/* Step navigation */}
-            <div className="flex justify-between p-2 border-t border-border bg-muted/20" data-unique-id="af726b84-e021-47c5-89d1-402a23854568" data-file-name="components/cooking-assistant.tsx">
-              <button onClick={handlePreviousStep} disabled={currentStep === 0} className={cn("px-3 py-1 text-xs rounded-md transition-colors", currentStep === 0 ? "opacity-50 cursor-not-allowed text-muted-foreground" : "hover:bg-muted")} data-unique-id="5cc55e09-5f1e-4c62-a715-a8517f2f1fdf" data-file-name="components/cooking-assistant.tsx"><span className="editable-text" data-unique-id="d5640e97-3714-4e31-85fa-c87a55a18162" data-file-name="components/cooking-assistant.tsx">
+            <div className="flex justify-between p-2 border-t border-border bg-muted/20" data-unique-id="b5aa93d4-810e-47bf-af87-24c56f39d7a5" data-file-name="components/cooking-assistant.tsx">
+              <button onClick={handlePreviousStep}  className={cn("px-3 py-1 text-xs rounded-md transition-colors", currentStep === 0 ? "bg-muted" : "hover:bg-muted")} data-unique-id="38a8eff4-f44d-4d3f-aa14-3ecf8abe4991" data-file-name="components/cooking-assistant.tsx"><span className="editable-text" data-unique-id="4e099085-5652-4991-8b5a-06077ae65474" data-file-name="components/cooking-assistant.tsx">
                 Previous Step
               </span></button>
-              <button onClick={handleNextStep} disabled={currentStep === recipe.steps.length - 1} className={cn("px-3 py-1 text-xs rounded-md transition-colors", currentStep === recipe.steps.length - 1 ? "opacity-50 cursor-not-allowed text-muted-foreground" : "bg-primary/10 text-primary hover:bg-primary/20")} data-unique-id="3f88607a-a1bb-418a-8a2f-2c30efad2201" data-file-name="components/cooking-assistant.tsx"><span className="editable-text" data-unique-id="6b6d5569-1f72-4c9f-8eb7-cccaa27cb8c3" data-file-name="components/cooking-assistant.tsx">
+              <button onClick={handleNextStep}  className={cn("px-3 py-1 text-xs rounded-md transition-colors", currentStep === recipe.steps.length - 1 ? "bg-muted" : "bg-primary/10 text-primary hover:bg-primary/20")} data-unique-id="8e788359-2036-409c-a498-8d045e3e437a" data-file-name="components/cooking-assistant.tsx"><span className="editable-text" data-unique-id="fdb6d12e-944a-432f-9c5d-7dd984cd7d8a" data-file-name="components/cooking-assistant.tsx">
                 Next Step
               </span></button>
             </div>
             
             {/* Input area */}
-            <div className="p-3 border-t border-border flex gap-2" data-unique-id="399b25d5-a85f-4f85-95f2-98f440cc9e7e" data-file-name="components/cooking-assistant.tsx">
-              <input ref={inputRef} type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} onKeyDown={handleKeyDown} placeholder="Ask about this step..." className="flex-1 px-3 py-2 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20 text-sm" disabled={isLoading} data-unique-id="52e4c802-c4ce-4bb0-aa54-1581cf14c5f3" data-file-name="components/cooking-assistant.tsx" />
-              <button onClick={handleSendMessage} disabled={!inputValue.trim() || isLoading} className={cn("p-2 rounded-lg transition-colors", !inputValue.trim() || isLoading ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground" : "bg-primary text-primary-foreground hover:bg-primary/90")} data-unique-id="999cf8a1-4930-4b07-8ce1-12fcf9e6aed2" data-file-name="components/cooking-assistant.tsx">
+            <div className="p-3 border-t border-border flex gap-2" data-unique-id="da893e05-5ae6-4ba7-a7c4-7043f08c1e7e" data-file-name="components/cooking-assistant.tsx">
+              <input ref={inputRef} type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} onKeyDown={handleKeyDown} placeholder="Ask about this step..." className="flex-1 px-3 py-2 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20 text-sm"  data-unique-id="86a1873b-db54-4a2b-b6e6-e6c0f46c56d0" data-file-name="components/cooking-assistant.tsx" />
+              <button onClick={handleSendMessage} className={cn("p-2 rounded-lg transition-colors", !inputValue.trim() || isLoading ? "bg-muted" : "bg-primary text-primary-foreground hover:bg-primary/90")} data-unique-id="c357dd97-8572-40e6-af9a-994c9c3bd407" data-file-name="components/cooking-assistant.tsx">
                 <Send className="w-4 h-4" />
               </button>
             </div>

@@ -20,6 +20,120 @@ const recipeGenerationLimiter = new RateLimiter({
 });
 
 /**
+ * Smart ingredient selection based on inventory size
+ * @param ingredients Available ingredients
+ * @returns Selected ingredients for recipe generation
+ */
+function selectIngredientsForRecipe(ingredients: Ingredient[]): Ingredient[] {
+  const totalIngredients = ingredients.length;
+  
+  // If more than 10 ingredients, use a subset (3-7 ingredients)
+  if (totalIngredients > 10) {
+    // Prioritize main ingredients (proteins, grains, vegetables)
+    const priorityIngredients = ingredients.filter(ing => 
+      isPriorityIngredient(ing.name.toLowerCase())
+    );
+    
+    const otherIngredients = ingredients.filter(ing => 
+      !isPriorityIngredient(ing.name.toLowerCase())
+    );
+    
+    // Take 2-3 priority ingredients and 2-4 others
+    const selectedPriority = priorityIngredients.slice(0, 3);
+    const selectedOthers = otherIngredients.slice(0, 4);
+    
+    return [...selectedPriority, ...selectedOthers].slice(0, 7);
+  }
+  
+  // If 3-5 ingredients, use all of them
+  if (totalIngredients >= 3 && totalIngredients <= 5) {
+    return ingredients;
+  }
+  
+  // For other cases, return all ingredients
+  return ingredients;
+}
+
+/**
+ * Check if an ingredient should be prioritized in recipe selection
+ * @param ingredientName Name of the ingredient
+ * @returns Whether ingredient is high priority
+ */
+function isPriorityIngredient(ingredientName: string): boolean {
+  const priorityKeywords = [
+    // Proteins
+    'chicken', 'fish', 'meat', 'paneer', 'tofu', 'egg', 'dal', 'lentil',
+    // Grains & Starches
+    'rice', 'wheat', 'bread', 'pasta', 'potato', 'quinoa',
+    // Main Vegetables
+    'tomato', 'onion', 'garlic', 'ginger', 'bell pepper', 'cauliflower', 'broccoli'
+  ];
+  
+  return priorityKeywords.some(keyword => ingredientName.includes(keyword));
+}
+
+/**
+ * Get assumed pantry ingredients based on cuisine type
+ * @param cuisineType Type of cuisine
+ * @returns Array of assumed basic ingredients
+ */
+function getAssumedIngredientsForCuisine(cuisineType: string): string[] {
+  const cuisine = cuisineType.toLowerCase();
+  
+  if (cuisine.includes('indian') || cuisine.includes('south indian')) {
+    return [
+      'Salt',
+      'Oil (vegetable/sunflower/ghee)',
+      'Turmeric',
+      'Red Chili Powder',
+      'Cumin Seeds',
+      'Mustard Seeds',
+      'Garam Masala',
+      'Curry Leaves (for South Indian)',
+      'Asafoetida (Hing)'
+    ];
+  }
+  
+  if (cuisine.includes('italian')) {
+    return [
+      'Salt',
+      'Black Pepper',
+      'Olive Oil',
+      'Black Pepper',
+      'Dried Herbs (Basil/Oregano)'
+    ];
+  }
+  
+  if (cuisine.includes('chinese') || cuisine.includes('asian')) {
+    return [
+      'Salt',
+      'Soy Sauce',
+      'Vegetable Oil',
+      'Garlic',
+      'Ginger',
+      'White Pepper'
+    ];
+  }
+  
+  if (cuisine.includes('mexican')) {
+    return [
+      'Salt',
+      'Vegetable Oil',
+      'Cumin',
+      'Chili Powder',
+      'Black Pepper'
+    ];
+  }
+  
+  // General/Default pantry assumptions
+  return [
+    'Salt',
+    'Vegetable Oil',
+    'Black Pepper'
+  ];
+}
+
+/**
  * Generate recipes based on ingredients and preferences using AI
  * @param options Recipe generation options including ingredients and preferences
  * @param provider AI model provider to use (default: azure-gpt-4o)
@@ -41,8 +155,11 @@ export async function generateRecipes(
       throw new Error("No ingredients provided for recipe generation");
     }
     
-    // Format ingredients for the prompt
-    const ingredientsList = ingredients.map(ing => {
+    // Smart ingredient selection logic
+    const selectedIngredients = selectIngredientsForRecipe(ingredients);
+    
+    // Format selected ingredients for the prompt
+    const ingredientsList = selectedIngredients.map(ing => {
       if (ing.quantity && ing.unit) {
         return `${ing.name} (${ing.quantity} ${ing.unit})`;
       }
@@ -72,47 +189,72 @@ export async function generateRecipes(
     if (maxCookingTime) additionalSpecs += `\nMaximum cooking time: ${maxCookingTime} minutes`;
     if (servings) additionalSpecs += `\nServings: ${servings}`;
     
-    // Create the prompt for the AI
+    // Determine smart pantry assumptions based on cuisine
+    const assumedIngredients = getAssumedIngredientsForCuisine(cuisineType || 'general');
+    const assumedIngredientsText = assumedIngredients.length > 0 
+      ? `\nAssumed basic pantry ingredients (do not include in ingredient list): ${assumedIngredients.join(', ')}`
+      : '';
+    
+    // Create the authentic recipe generation prompt
     const prompt = `
-      Generate 3 unique and creative recipes using some or all of these ingredients: ${ingredientsList}.
+      STRICT RULES FOR AUTHENTIC RECIPE GENERATION:
+      
+      1. ONLY suggest authentic, traditional, and well-known recipes from the specified cuisine
+      2. DO NOT create fusion or invented recipes
+      3. If cuisine is specified, suggest only dishes from that cuisine tradition
+      4. Use ONLY the provided ingredients plus assumed pantry basics
+      5. Suggest recipes that are commonly known and have established cooking methods
+      
+      Available ingredients from user's inventory: ${ingredientsList}
+      ${assumedIngredientsText}
       ${dietaryInfo}
       ${additionalSpecs}
       
-      For each recipe, provide:
-      1. A creative name
-      2. A brief description
-      3. Cooking time in minutes
-      4. Difficulty level (easy, medium, or hard)
-      5. List of ingredients with quantities
-      6. Step-by-step cooking instructions
-      7. Cuisine type
-      8. Tags (e.g., "quick", "vegetarian", "comfort food")
+      Generate 3 AUTHENTIC recipes following these guidelines:
+      - For Indian cuisine: Suggest dishes like Khichdi, Jeera Rice, Dal Tadka, etc.
+      - For Italian cuisine: Suggest dishes like Pasta Aglio e Olio, Risotto, etc.
+      - For Chinese cuisine: Suggest dishes like Fried Rice, Simple Stir-fry, etc.
+      - Only use ingredients from the provided list plus assumed basics
       
-      Format your response as a JSON array with the following structure:
+      Format your response as a JSON array with this EXACT structure:
       [
         {
           "id": "1",
-          "title": "Recipe Name",
+          "title": "Authentic Recipe Name",
           "description": "Brief description",
           "matchPercentage": 95,
           "cookTime": 30,
           "difficulty": "easy",
           "image": "",
-          "ingredients": [
-            {"id": "i1", "name": "Ingredient 1", "quantity": "1", "unit": "cup"},
-            {"id": "i2", "name": "Ingredient 2", "quantity": "2", "unit": "tablespoons"}
+          "usedIngredients": [
+            {"id": "i1", "name": "Rice", "quantity": "1", "unit": "cup"},
+            {"id": "i2", "name": "Moong Dal", "quantity": "1/2", "unit": "cup"}
+          ],
+          "assumedIngredients": [
+            {"name": "Salt", "quantity": "to taste"},
+            {"name": "Turmeric", "quantity": "1/2", "unit": "tsp"},
+            {"name": "Oil", "quantity": "1", "unit": "tbsp"}
           ],
           "steps": [
-            "Step 1: Do this",
-            "Step 2: Do that"
+            "Step 1: Wash and soak rice and dal for 15 minutes",
+            "Step 2: Heat oil in a pot, add turmeric",
+            "Step 3: Add rice and dal, stir for 2 minutes",
+            "Step 4: Add water (2:1 ratio), salt to taste",
+            "Step 5: Cook on medium heat for 20 minutes until soft"
           ],
-          "cuisine": "Italian",
-          "tags": ["quick", "pasta", "vegetarian"]
+          "cuisine": "${cuisineType || 'Indian'}",
+          "tags": ["authentic", "traditional", "healthy"]
         }
       ]
       
-      Calculate the match percentage based on how many of the user's ingredients are used in the recipe.
-      Leave the image field empty.
+      IMPORTANT:
+      - Calculate match percentage based on how many user ingredients are used
+      - Keep recipes simple and authentic
+      - Provide clear, minimal steps
+      - Include estimated cooking time
+      - Separate user ingredients from assumed pantry ingredients
+      - Only suggest recipes you are confident are authentic to the cuisine
+      
       Return ONLY the JSON array, nothing else.
     `;
     
@@ -138,9 +280,9 @@ export async function generateRecipes(
     }
     
     try {
-      const recipes = JSON.parse(jsonText) as Recipe[];
+      const aiRecipes = JSON.parse(jsonText) as any[];
       
-      if (!Array.isArray(recipes) || recipes.length === 0) {
+      if (!Array.isArray(aiRecipes) || aiRecipes.length === 0) {
         throw new Error("No valid recipes returned from AI service");
       }
       
@@ -153,10 +295,36 @@ export async function generateRecipes(
         'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd'
       ];
       
-      return recipes.map((recipe, index) => ({
-        ...recipe,
-        image: recipeImages[index % recipeImages.length]
-      }));
+      // Transform AI response to match Recipe interface
+      const recipes: Recipe[] = aiRecipes.map((aiRecipe, index) => {
+        // Combine used ingredients and assumed ingredients
+        const allIngredients = [
+          ...(aiRecipe.usedIngredients || []),
+          ...(aiRecipe.assumedIngredients || []).map((assumed: any) => ({
+            ...assumed,
+            id: `assumed-${Date.now()}-${Math.random()}`,
+            isAssumed: true
+          }))
+        ];
+        
+        return {
+          id: aiRecipe.id || `recipe-${Date.now()}-${index}`,
+          title: aiRecipe.title,
+          description: aiRecipe.description,
+          matchPercentage: aiRecipe.matchPercentage || 85,
+          cookTime: aiRecipe.cookTime || 30,
+          difficulty: aiRecipe.difficulty || 'medium',
+          image: recipeImages[index % recipeImages.length],
+          ingredients: allIngredients,
+          steps: aiRecipe.steps || [],
+          cuisine: aiRecipe.cuisine || cuisineType || 'General',
+          tags: aiRecipe.tags || ['authentic'],
+          usedIngredients: aiRecipe.usedIngredients || [],
+          assumedIngredients: aiRecipe.assumedIngredients || []
+        };
+      });
+      
+      return recipes;
     } catch (parseError) {
       console.error("Failed to parse recipe JSON:", parseError);
       throw new Error("Failed to parse AI response into valid recipe format");
