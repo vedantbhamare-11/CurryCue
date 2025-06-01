@@ -113,11 +113,11 @@ export function HeroSection() {
                 data-file-name="components/hero-section.tsx"
               >
                 <div
-                  className="bg-primary/10 dark:bg-primary/20 p-2 rounded-full"
+                  className="bg-accent/10 dark:bg-accent/20 p-2 rounded-full"
                   data-unique-id="efba9f56-10e4-408b-964b-3b0df549abfa"
                   data-file-name="components/hero-section.tsx"
                 >
-                  <ChefHat className="text-primary w-5 h-5" />
+                  <ChefHat className="text-accent w-5 h-5" />
                 </div>
                 <span
                   data-unique-id="d44b262b-d5e8-41d4-9dfc-0fb0e08fe8d8"

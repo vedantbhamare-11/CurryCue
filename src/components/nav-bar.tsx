@@ -40,7 +40,7 @@ export function NavBar() {
             x: 0
           }} transition={{
             duration: 0.4
-          }} className="font-heading text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent" data-unique-id="cdba0758-e05a-4cca-816c-c3f4da3e20b0" data-file-name="components/nav-bar.tsx"><span className="editable-text" data-unique-id="cc49a246-fe8a-4e1d-9dbe-d51a63e3f00d" data-file-name="components/nav-bar.tsx">
+          }} className="font-heading text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent" data-unique-id="cdba0758-e05a-4cca-816c-c3f4da3e20b0" data-file-name="components/nav-bar.tsx"><span className="editable-text" data-unique-id="cc49a246-fe8a-4e1d-9dbe-d51a63e3f00d" data-file-name="components/nav-bar.tsx">
               CurryCue
             </span></motion.span>
           </Link>
