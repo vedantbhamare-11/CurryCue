@@ -49,7 +49,7 @@ export function HeroSection() {
             className="flex  flex-col items-center gap-3"
           >
             <h1
-              className="text-2xl md:text-5xl lg:text-6xl font-semibold text-center leading-tight mb-4"
+              className="text-2xl md:text-5xl lg:text-6xl font-semibold text-center leading-tight lg:mb-4"
               data-unique-id="e386d944-bf12-4af9-9511-18a6a174b047"
               data-file-name="components/hero-section.tsx"
             >

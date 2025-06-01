@@ -60,9 +60,6 @@ export function NavBar() {
           
           {/* Action buttons */}
           <div className="flex items-center gap-3" data-unique-id="5cd0e5ba-0eb1-45de-b83c-b07060db47a3" data-file-name="components/nav-bar.tsx">
-            <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-muted transition-colors" aria-label="Toggle theme" data-unique-id="191c119d-e88f-4838-8ac7-de2557e53530" data-file-name="components/nav-bar.tsx" data-dynamic-text="true">
-              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <MoonStar className="w-5 h-5" />}
-            </button>
             
             <button className="p-2 rounded-full hover:bg-muted transition-colors md:hidden" onClick={toggleMenu} data-unique-id="e2b2e970-d776-44bf-915b-3b6eed246244" data-file-name="components/nav-bar.tsx" data-dynamic-text="true">
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -100,21 +97,12 @@ export function NavBar() {
               <Link href="/recipes" className="px-4 py-3 hover:bg-muted rounded-md transition-colors" onClick={() => setIsOpen(false)} data-unique-id="7621db2b-171b-428e-8f89-6cc735a527bb" data-file-name="components/nav-bar.tsx"><span className="editable-text" data-unique-id="195c8857-08da-49dd-88a3-4be30545ced9" data-file-name="components/nav-bar.tsx">
                 Recipes
               </span></Link>
-              <div className="border-t border-border my-2" data-unique-id="1f7303ee-8234-4b44-ba3b-b22d9542f320" data-file-name="components/nav-bar.tsx"></div>
               <div className="px-4 py-3 flex items-center justify-between" data-unique-id="90b4a671-b38f-4471-a277-f39580e259a5" data-file-name="components/nav-bar.tsx">
-                <button className="flex items-center gap-2" data-unique-id="ec27beda-64c8-40e0-891a-450de974dd87" data-file-name="components/nav-bar.tsx">
-                  <Search className="w-5 h-5" />
-                  <span data-unique-id="61de7490-9f23-4daa-967a-a4994a2ef132" data-file-name="components/nav-bar.tsx"><span className="editable-text" data-unique-id="df5f0f9f-5693-442b-afac-a4d0f5a45491" data-file-name="components/nav-bar.tsx">Search</span></span>
-                </button>
                 <Link href="/grocery" className="flex items-center gap-2" data-unique-id="250ce290-d692-4b8c-a53f-8bc3bbd91b32" data-file-name="components/nav-bar.tsx">
-                  <ShoppingCart className="w-5 h-5" />
+                  <ShoppingBag className="w-5 h-5" />
                   <span data-unique-id="8493fdfc-3732-49ef-8ba8-97e231572db2" data-file-name="components/nav-bar.tsx"><span className="editable-text" data-unique-id="d1f0c4ca-e016-4735-9875-6ebbebf43f65" data-file-name="components/nav-bar.tsx">Grocery List</span></span>
                 </Link>
               </div>
-              <button className="mx-4 mt-2 mb-2 bg-primary text-primary-foreground rounded-full px-4 py-2 flex items-center justify-center gap-2" data-unique-id="54323f1e-9525-4932-ac17-c6b0e0e46a32" data-file-name="components/nav-bar.tsx">
-                <User className="w-4 h-4" />
-                <span data-unique-id="22c16a27-199b-4075-b4d5-e1b883fbbd83" data-file-name="components/nav-bar.tsx"><span className="editable-text" data-unique-id="802f8707-fcdf-4783-933f-2a07784f8a41" data-file-name="components/nav-bar.tsx">Account</span></span>
-              </button>
             </nav>
           </motion.div>}
       </div>

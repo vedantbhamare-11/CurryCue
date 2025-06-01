@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { HeroSection } from '@/components/hero-section';
 import { IngredientEntry } from '@/components/ingredient-entry';
 import { RecipeSection } from '@/components/recipe-section';
-// import { Footer } from '@/components/footer';
 export default function HomePage() {
   const [scrollY, setScrollY] = useState(0);
   useEffect(() => {
@@ -42,6 +41,5 @@ export default function HomePage() {
         </motion.div>
       </main>
       
-      {/* <Footer /> */}
     </div>;
 }
