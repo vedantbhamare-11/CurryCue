@@ -488,7 +488,7 @@ export function IngredientEntry() {
             onCapture={handleImageCapture}
             onClose={handleCameraClose}
             onDetectedIngredients={handleDetectedIngredients}
-            useML={false}
+            useML={true}
             mlProvider={selectedProvider}
           />
         )}

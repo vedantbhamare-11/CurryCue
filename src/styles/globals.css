@@ -14,8 +14,8 @@
 	}
 
 	:root {
-		--font-heading: var(--font-quicksand);
-		--font-body: var(--font-nunito);
+		--font-heading: var(--font-lunasima);
+		--font-body: var(--font-nunitosans);
 	}
 }
 
