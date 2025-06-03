@@ -1,10 +1,11 @@
+// src/app/api/detect-ingredients/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { detectIngredientsFromImage } from '@/lib/services/ingredient-detection';
 
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    
+
     if (!data.image) {
       return NextResponse.json(
         { error: 'No image provided' },
@@ -12,12 +13,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Process the image through ML detection
     const detectedIngredients = await detectIngredientsFromImage(data.image, data.provider || "azure-gpt-4o");
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       ingredients: detectedIngredients,
-      success: true 
+      success: true
     });
   } catch (error) {
     console.error('Error detecting ingredients:', error);
