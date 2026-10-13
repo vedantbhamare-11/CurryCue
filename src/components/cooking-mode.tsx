@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { VoiceCommandParser, VoiceCommandAction, isSpeechRecognitionSupported } from './voice-command-parser';
 import { CookingAssistant } from './cooking-assistant';
 import { CompletionCelebration } from './completion-celebration';
+import { toSpeech, pickPreferredVoice } from '@/lib/speech-text';
 interface CookingModeProps {
   recipe: Recipe;
   onClose: () => void;
@@ -33,15 +34,29 @@ export function CookingMode({
   const [showCelebration, setShowCelebration] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const speechSynthRef = useRef<SpeechSynthesis | null>(null);
+  // Best installed English (India) voice, if the device has one; otherwise the browser default is used
+  const preferredVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
   const timerIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Text-to-speech. Speech *recognition* lives in VoiceCommandParser (a second recognizer here
   // used to fight it for the mic and fired READ_STEP on any speech).
   useEffect(() => {
+    let removeVoicesListener = () => {};
     if (typeof window !== 'undefined') {
       speechSynthRef.current = window.speechSynthesis;
+
+      // Voices load asynchronously in most browsers, so listen for them as well as reading them now
+      const synth = window.speechSynthesis;
+      const loadVoices = () => {
+        preferredVoiceRef.current = pickPreferredVoice(synth.getVoices()) ?? null;
+      };
+      loadVoices();
+      synth.addEventListener?.('voiceschanged', loadVoices);
+      removeVoicesListener = () => synth.removeEventListener?.('voiceschanged', loadVoices);
     }
     return () => {
+      removeVoicesListener();
+
       // Clean up speech synthesis
       if (speechSynthRef.current) {
         speechSynthRef.current.cancel();
@@ -172,7 +187,12 @@ export function CookingMode({
   const speak = (text: string, force = false) => {
     if (speechSynthRef.current && (isSpeechEnabled || force)) {
       speechSynthRef.current.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
+      // Recipe text is written to be read ("1/2 tsp", "5-6 min"); rewrite it so it is spoken naturally
+      const utterance = new SpeechSynthesisUtterance(toSpeech(text));
+      if (preferredVoiceRef.current) {
+        utterance.voice = preferredVoiceRef.current;
+        utterance.lang = preferredVoiceRef.current.lang;
+      }
       utterance.rate = 0.9; // Slightly slower than default
       utterance.pitch = 1;
       speechSynthRef.current.speak(utterance);
