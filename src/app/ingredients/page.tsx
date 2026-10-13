@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { IngredientEntry } from '@/components/ingredient-entry';
+import { BackupRestore } from '@/components/backup-restore';
 // import { Footer } from '@/components/footer';
 export default function IngredientsPage() {
   return <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 dark:from-zinc-900 dark:to-amber-950" data-unique-id="636438ff-4caa-462c-8918-7004ebfdd89a" data-file-name="app/ingredients/page.tsx">
@@ -32,6 +33,10 @@ export default function IngredientsPage() {
       }} className="my-8" data-unique-id="2aa53a21-5ec9-4718-bd87-66fc3368636b" data-file-name="app/ingredients/page.tsx">
           <IngredientEntry />
         </motion.div>
+
+        <div className="my-8">
+          <BackupRestore />
+        </div>
       </main>
       
       {/* <Footer /> */}

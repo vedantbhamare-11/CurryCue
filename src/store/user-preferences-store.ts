@@ -8,7 +8,7 @@ interface UserPreferencesState {
   resetPreferences: () => void;
 }
 
-const defaultPreferences: UserPreferences = {
+export const defaultPreferences: UserPreferences = {
   dietaryRestrictions: [],
   allergies: [],
   cuisinePreferences: [],
