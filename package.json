@@ -6,6 +6,7 @@
     "scripts": {
         "build": "next build",
         "check": "next lint && tsc --noEmit",
+        "check:models": "node --env-file=.env.local scripts/check-models.mjs",
         "dev": "next dev",
         "start": "next start",
         "db:generate": "npx drizzle-kit generate && npx drizzle-kit migrate && git add . && git commit -m 'chore: update migration'"

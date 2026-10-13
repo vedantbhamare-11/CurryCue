@@ -2,11 +2,8 @@
 // the dynamic import in lib/api/util.ts (server branch) so the key never reaches the client.
 import type { TextGenerationResult } from '@/lib/api/util';
 import { AIProviderError, FALLBACK_STATUSES } from '@/lib/server/ai-error';
+import { GEMINI_BASE_URL, resolveGeminiModels } from '@/lib/server/ai-config';
 
-const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta';
-// Tried in order. The alias survives model retirements (2.5-flash already was retired for new
-// users) but gets overloaded ("high demand", sometimes hanging); the lite alias is the fallback (3.8-flash hit free-tier quota limits in testing).
-const DEFAULT_MODELS = ['gemini-flash-latest', 'gemini-flash-lite-latest'];
 const ATTEMPT_TIMEOUT_MS = 45_000; // full recipe prompts can legitimately take 30s+ on thinking models
 
 // Only data URLs are accepted: fetching arbitrary remote image URLs from the server would be an SSRF vector.
@@ -36,7 +33,7 @@ export async function generateWithGemini(
     throw new AIProviderError('GEMINI_API_KEY is not set. Add it to .env.local and restart the dev server.', 500, 'gemini');
   }
 
-  const models = [...new Set([process.env.GEMINI_MODEL, ...DEFAULT_MODELS].filter(Boolean))] as string[];
+  const models = resolveGeminiModels(process.env);
   const body = JSON.stringify({
     contents: [
       {
