@@ -62,6 +62,10 @@ export function CameraCapture({
           provider: mlProvider
         })
       });
+      if (response.status === 429) {
+        toast.error("You're scanning too fast. Please wait a moment and try again.");
+        return;
+      }
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }

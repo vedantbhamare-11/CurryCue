@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateWithAI } from '@/lib/server/ai';
 import { AIProviderError } from '@/lib/server/ai-error';
+import { rateLimit } from '@/lib/server/rate-limit';
 
 const MAX_PROMPT_CHARS = 20_000;
 const MAX_IMAGES = 4;
@@ -10,6 +11,10 @@ const MAX_IMAGE_CHARS = 4_000_000; // base64 string length, roughly 3MB of image
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
+  // Before parsing the body: rejected callers should cost us as little as possible
+  const limited = rateLimit(request, 'ai', { envName: 'AI_RATE_LIMIT_PER_MIN', fallback: 20 });
+  if (limited) return limited;
+
   try {
     const body = await request.json().catch(() => null);
     const prompt = body?.prompt;
