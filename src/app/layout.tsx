@@ -66,13 +66,9 @@ export default function RootLayout({
       suppressHydrationWarning
       lang="en"
       className={`${quicksand.variable} ${nunito.variable}`}
-      data-unique-id="907bed16-5e1a-44fd-990e-3ef9f55c4e57"
-      data-file-name="app/layout.tsx"
     >
       <body
         className="font-body bg-background text-foreground antialiased"
-        data-unique-id="8eb1ae6f-4cf4-4738-9176-6dcb89a472e7"
-        data-file-name="app/layout.tsx"
       >
         <ThemeProvider attribute="class" defaultTheme="light">
           <NavBar />
