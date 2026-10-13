@@ -3,6 +3,7 @@ import { Ingredient, Recipe, UserPreferences } from '@/types';
 import { ModelProvider } from '@/types';
 import { RateLimiter } from '@/lib/services/rate-limiter';
 import { stripStepLabel } from '@/lib/utils';
+import { namesMatch, nameWords } from '@/lib/ingredient-names';
 
 export interface RecipeGenerationOptions {
   ingredients: Ingredient[];
@@ -143,37 +144,6 @@ const PANTRY_STAPLES = [
   'Red Chili Powder', 'Chili Powder', 'Cumin', 'Mustard Seeds', 'Garam Masala',
   'Curry Leaves', 'Asafoetida', 'Hing', 'Soy Sauce', 'Dried Herbs', 'Oregano'
 ];
-
-function singularize(word: string): string {
-  if (word.endsWith('ies')) return `${word.slice(0, -3)}y`;
-  if (word.endsWith('oes')) return word.slice(0, -2);
-  if (word.endsWith('s') && !word.endsWith('ss')) return word.slice(0, -1);
-  return word;
-}
-
-function nameWords(name: string): string[] {
-  return name
-    .toLowerCase()
-    .replace(/\(.*?\)/g, ' ')
-    .replace(/[^a-z\s]/g, ' ')
-    .split(/\s+/)
-    .filter(Boolean)
-    .map(singularize);
-}
-
-function containsPhrase(haystack: string[], needle: string[]): boolean {
-  for (let i = 0; i + needle.length <= haystack.length; i++) {
-    if (needle.every((word, j) => haystack[i + j] === word)) return true;
-  }
-  return false;
-}
-
-function namesMatch(a: string, b: string): boolean {
-  const wordsA = nameWords(a);
-  const wordsB = nameWords(b);
-  if (wordsA.length === 0 || wordsB.length === 0) return false;
-  return containsPhrase(wordsA, wordsB) || containsPhrase(wordsB, wordsA);
-}
 
 /**
  * The LLM decides which ingredients are "used" vs "assumed", and routinely invents things the

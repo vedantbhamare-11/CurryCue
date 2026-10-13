@@ -6,11 +6,13 @@ CurryCue is your smart AI-powered kitchen assistant built using **Next.js** and 
 
 ## 🚀 Features
 
-### 🛒 Grocery & Ingredient Management
+### 🛒 Ingredients & Shopping List
 
-* **Ingredient Sync from Grocery Apps:**
-  * Seamlessly sync ingredients from grocery apps like Blinkit or Instamart.
-  * Automatically recognizes and categorizes items.
+* **Smart Shopping List:**
+  * Add what a recipe is missing in one tap; items already in your pantry are skipped.
+  * Duplicates merge and amounts add up (250 gm + 100 gm = 350 gm, 500 ml + 1 l = 1.5 l).
+  * Grouped by aisle, tick items off as you buy them, then move them into your pantry.
+  * Copy the list or send it on WhatsApp.
 * **Manual Ingredient Entry:**
   * Users can add ingredients manually (e.g., "Tomatoes – 1kg" or "Onion – 2 nos.").
 * **Ingredient Scanning:**
@@ -51,7 +53,7 @@ CurryCue is your smart AI-powered kitchen assistant built using **Next.js** and 
 ### 🔜 Coming Soon
 
 1. Full onboarding flow
-2. Sync grocery list directly to shopping app
+2. Order the shopping list directly from a grocery app
 3. Recipe triggers (e.g., "You can cook Pasta today!")
 4. Voice input for hands-free recipe walkthroughs
 

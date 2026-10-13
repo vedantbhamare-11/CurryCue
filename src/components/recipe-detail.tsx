@@ -6,6 +6,9 @@ import Image from 'next/image';
 import { Clock, Utensils, Users, Heart, Share, X, ChevronRight, Star, PlayCircle } from 'lucide-react';
 import { Recipe } from '@/types';
 import { useRecipeStore } from '@/store/recipe-store';
+import { useShoppingListStore } from '@/store/shopping-list-store';
+import { useIngredientStore } from '@/store/ingredient-store';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { CookingMode } from './cooking-mode';
@@ -22,10 +25,22 @@ export function RecipeDetail({
     favoriteRecipes,
     addRecentRecipe
   } = useRecipeStore();
+  const router = useRouter();
+  const addToShoppingList = useShoppingListStore(state => state.addItems);
+  const pantry = useIngredientStore(state => state.ingredients);
   const [activeTab, setActiveTab] = useState<'ingredients' | 'instructions'>('ingredients');
   const [currentStep, setCurrentStep] = useState(0);
   const [cookingModeActive, setCookingModeActive] = useState(false);
   const isFavorite = favoriteRecipes.some(r => r.id === recipe.id);
+  // Put what this recipe is missing on the shopping list (merging with what is already there)
+  const handleAddMissingToList = () => {
+    const result = addToShoppingList(recipe.missingIngredients ?? [], { pantry, recipeTitle: recipe.title });
+    const parts: string[] = [];
+    if (result.added.length > 0) parts.push(`Added ${result.added.length} ${result.added.length === 1 ? 'item' : 'items'} to your shopping list`);
+    if (result.merged.length > 0) parts.push(`${parts.length ? 'updated' : 'Updated'} ${result.merged.length} already on it`);
+    if (parts.length === 0) parts.push('Everything is already in your pantry');
+    toast.success(parts.join(', '), { action: { label: 'View list', onClick: () => router.push('/shopping-list') } });
+  };
   const handleAddToFavorites = () => {
     addFavoriteRecipe(recipe);
     addRecentRecipe(recipe);
@@ -157,7 +172,10 @@ export function RecipeDetail({
                 
                 {/* Ingredients the recipe needs that aren't in the pantry */}
                 {recipe.missingIngredients && recipe.missingIngredients.length > 0 && <div className="mb-4">
-                    <h4 className="font-medium text-sm text-amber-600 dark:text-amber-400 mb-2"><span className="editable-text">You'll Also Need:</span></h4>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <h4 className="font-medium text-sm text-amber-600 dark:text-amber-400">You'll Also Need:</h4>
+                      <button onClick={handleAddMissingToList} className="text-xs font-medium px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 transition-colors">Add to shopping list</button>
+                    </div>
                     <ul className="space-y-2">
                       {recipe.missingIngredients.map((ingredient, index) => <li key={index} className="flex items-center gap-2 text-sm sm:text-base">
                           <div className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></div>

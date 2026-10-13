@@ -201,7 +201,7 @@ export function HeroSection() {
                     data-unique-id="8834e9d3-5f42-4405-a3d2-fc7f49d9a05e"
                     data-file-name="components/hero-section.tsx"
                   >
-                    Sync ingredients from your grocery apps
+                    Shopping lists from your recipes
                   </span>
                 </span>
               </motion.div>

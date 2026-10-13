@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Menu, Search, ShoppingBag, User, ShoppingCart, Coffee, X, MoonStar, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useIngredientStore } from '@/store/ingredient-store';
+import { useShoppingListStore } from '@/store/shopping-list-store';
 export function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
-  const ingredientCount = useIngredientStore((state) => state.ingredients.length);
+  const toBuyCount = useShoppingListStore((state) => state.items.filter((item) => !item.checked).length);
   const {
     theme,
     setTheme
@@ -69,9 +69,9 @@ export function NavBar() {
             
             <div className="hidden md:flex items-center gap-2" data-unique-id="117f608e-2a76-44f3-a53d-026e9ea90b3d" data-file-name="components/nav-bar.tsx">
               
-              <Link href="/grocery" className="p-2 rounded-full hover:bg-muted transition-colors relative" data-unique-id="552154c4-b188-47e4-b24c-163c73cb51fd" data-file-name="components/nav-bar.tsx" aria-label={ingredientCount > 0 ? `Grocery list, ${ingredientCount} ingredients` : "Grocery list"}>
+              <Link href="/shopping-list" className="p-2 rounded-full hover:bg-muted transition-colors relative" data-unique-id="552154c4-b188-47e4-b24c-163c73cb51fd" data-file-name="components/nav-bar.tsx" aria-label={toBuyCount > 0 ? `Shopping list, ${toBuyCount} to buy` : "Shopping list"}>
                 <ShoppingBag className="w-5 h-5" />
-                {ingredientCount > 0 && <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full min-w-4 h-4 px-1 flex items-center justify-center">{ingredientCount > 9 ? '9+' : ingredientCount}</span>}
+                {toBuyCount > 0 && <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full min-w-4 h-4 px-1 flex items-center justify-center">{toBuyCount > 9 ? '9+' : toBuyCount}</span>}
               </Link>
               
             </div>
@@ -100,9 +100,9 @@ export function NavBar() {
                 Recipes
               </span></Link>
               <div className="px-4 py-3 flex items-center justify-between" data-unique-id="90b4a671-b38f-4471-a277-f39580e259a5" data-file-name="components/nav-bar.tsx">
-                <Link href="/grocery" className="flex items-center gap-2" data-unique-id="250ce290-d692-4b8c-a53f-8bc3bbd91b32" data-file-name="components/nav-bar.tsx">
+                <Link href="/shopping-list" onClick={() => setIsOpen(false)} className="flex items-center gap-2" data-unique-id="250ce290-d692-4b8c-a53f-8bc3bbd91b32" data-file-name="components/nav-bar.tsx">
                   <ShoppingBag className="w-5 h-5" />
-                  <span data-unique-id="8493fdfc-3732-49ef-8ba8-97e231572db2" data-file-name="components/nav-bar.tsx"><span className="editable-text" data-unique-id="d1f0c4ca-e016-4735-9875-6ebbebf43f65" data-file-name="components/nav-bar.tsx">Grocery List</span></span>
+                  <span data-unique-id="8493fdfc-3732-49ef-8ba8-97e231572db2" data-file-name="components/nav-bar.tsx"><span className="editable-text" data-unique-id="d1f0c4ca-e016-4735-9875-6ebbebf43f65" data-file-name="components/nav-bar.tsx">Shopping List</span></span>
                 </Link>
               </div>
             </nav>
