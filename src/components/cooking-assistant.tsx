@@ -7,12 +7,19 @@ import { generateText } from '@/lib/api/util';
 import { Recipe } from '@/types';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { ChatMarkdown } from './chat-markdown';
 interface Message {
   id: string;
   content: string;
   role: 'user' | 'assistant' | 'system';
+  // 'step' = the "Step N: ..." announcements; only 'chat' turns are sent back to the model as history
+  kind: 'intro' | 'step' | 'chat';
   timestamp: number;
 }
+
+// How many previous chat turns to include so follow-up questions have context
+const HISTORY_TURNS = 6;
+const MAX_HISTORY_CHARS = 600;
 interface CookingAssistantProps {
   recipe: Recipe;
   currentStep: number;
@@ -31,20 +38,26 @@ export function CookingAssistant({
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // Unique, monotonically increasing ids. Step messages used `step-${n}`, which repeated whenever
+  // the user revisited a step and produced duplicate React keys.
+  const nextId = useRef(0);
+  const makeId = (prefix: string) => `${prefix}-${nextId.current++}`;
 
   // Initialize with system message and first step
   useEffect(() => {
     const initialMessages: Message[] = [{
-      id: 'system-1',
+      id: makeId('intro'),
       content: `I'm your cooking assistant for "${recipe.title}". I'll guide you through each step. Ask me anything about the recipe!`,
       role: 'system',
+      kind: 'intro',
       timestamp: Date.now()
     }, {
-      id: `step-${currentStep}`,
+      id: makeId('step'),
       content: `Step ${currentStep + 1}: ${recipe.steps[currentStep]}`,
       role: 'assistant',
+      kind: 'step',
       timestamp: Date.now()
     }];
     setMessages(initialMessages);
@@ -54,29 +67,37 @@ export function CookingAssistant({
   useEffect(() => {
     if (messages.length > 0) {
       const stepMessage: Message = {
-        id: `step-${currentStep}`,
+        id: makeId('step'),
         content: `Step ${currentStep + 1}: ${recipe.steps[currentStep]}`,
         role: 'assistant',
+        kind: 'step',
         timestamp: Date.now()
       };
       setMessages(prev => [...prev, stepMessage]);
     }
   }, [currentStep]);
 
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll the chat list to the bottom. scrollIntoView() would scroll every ancestor too, so
+  // each new message or step change yanked the whole page around.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: 'smooth'
-    });
-  }, [messages]);
+    const list = messagesContainerRef.current;
+    list?.scrollTo({ top: list.scrollHeight, behavior: 'smooth' });
+  }, [messages, isLoading]);
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
     const userMessage: Message = {
-      id: `user-${Date.now()}`,
+      id: makeId('user'),
       content: inputValue,
       role: 'user',
+      kind: 'chat',
       timestamp: Date.now()
     };
+    // Earlier chat turns (not step announcements), so "and what about the second one?" works
+    const history = messages
+      .filter(message => message.kind === 'chat')
+      .slice(-HISTORY_TURNS)
+      .map(message => `${message.role === 'user' ? 'User' : 'Assistant'}: ${message.content.slice(0, MAX_HISTORY_CHARS)}`)
+      .join('\n');
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsLoading(true);
@@ -97,24 +118,26 @@ export function CookingAssistant({
         If they ask about ingredients, provide details from the recipe.
       `;
       const userQuery = inputValue;
-      const prompt = `${context}\n\nUser question: ${userQuery}\n\nYour response:`;
+      const prompt = `${context}\n\n${history ? `Conversation so far:\n${history}\n\n` : ''}User question: ${userQuery}\n\nYour response:`;
       const response = await generateText(prompt, "azure-gpt-4o");
       const assistantMessage: Message = {
-        id: `assistant-${Date.now()}`,
+        id: makeId('assistant'),
         content: response.text,
         role: 'assistant',
+        kind: 'chat',
         timestamp: Date.now()
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Error generating response:', error);
-      toast.error('Failed to get a response. Please try again.');
+      const message = error instanceof Error ? error.message : '';
+      toast.error(/rate limit/i.test(message) ? message : 'Failed to get a response. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -177,14 +200,14 @@ export function CookingAssistant({
         opacity: 0
       }} className="flex-1 overflow-hidden" data-unique-id="d20e5a53-1db0-4596-b563-23591c9590dd" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
             {/* Messages container */}
-            <div className="h-[300px] overflow-y-auto p-3 space-y-3" data-unique-id="3d67c27d-f0cd-41c2-abdc-a3cf83af0cb5" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
+            <div ref={messagesContainerRef} className="h-[300px] overflow-y-auto p-3 space-y-3" data-unique-id="3d67c27d-f0cd-41c2-abdc-a3cf83af0cb5" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
               {messages.map(message => <div key={message.id} className={cn("flex gap-2 max-w-[85%] animate-in fade-in-50", message.role === 'user' ? "ml-auto" : "mr-auto", message.role === 'system' && "w-full max-w-full")} data-unique-id="41669eb1-d634-46ad-93cd-562e3bac7570" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
                   {message.role !== 'user' && <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center" data-unique-id="2c4c03c5-7e29-495b-a4ee-5d3be518d88d" data-file-name="components/cooking-assistant.tsx">
                       <Bot className="w-3.5 h-3.5 text-primary" />
                     </div>}
                   
-                  <div className={cn("rounded-lg p-2.5 text-sm", message.role === 'user' ? "bg-primary text-primary-foreground" : message.role === 'system' ? "bg-muted/50 text-muted-foreground w-full" : "bg-muted")} data-unique-id="f4672e8d-25c6-4fdd-8b8d-a755bb9e833d" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
-                    {message.content}
+                  <div className={cn("rounded-lg p-2.5 text-sm min-w-0", message.role === 'user' ? "bg-primary text-primary-foreground" : message.role === 'system' ? "bg-muted/50 text-muted-foreground w-full" : "bg-muted")} data-unique-id="f4672e8d-25c6-4fdd-8b8d-a755bb9e833d" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
+                    {message.role === 'user' ? <span className="whitespace-pre-wrap break-words">{message.content}</span> : <ChatMarkdown text={message.content} />}
                   </div>
                   
                   {message.role === 'user' && <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center" data-unique-id="28ae4c1b-d159-4ec6-9b2b-f7fafea2bb39" data-file-name="components/cooking-assistant.tsx">
@@ -200,8 +223,6 @@ export function CookingAssistant({
                     <Loader2 className="w-4 h-4 animate-spin text-primary" />
                   </div>
                 </div>}
-              
-              <div ref={messagesEndRef} data-unique-id="605d7e1f-aef2-47dc-b761-4ba07dee1018" data-file-name="components/cooking-assistant.tsx" />
             </div>
             
             {/* Step navigation */}
@@ -216,8 +237,8 @@ export function CookingAssistant({
             
             {/* Input area */}
             <div className="p-3 border-t border-border flex gap-2" data-unique-id="da893e05-5ae6-4ba7-a7c4-7043f08c1e7e" data-file-name="components/cooking-assistant.tsx">
-              <input ref={inputRef} type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} onKeyDown={handleKeyDown} placeholder="Ask about this step..." className="flex-1 px-3 py-2 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20 text-sm"  data-unique-id="86a1873b-db54-4a2b-b6e6-e6c0f46c56d0" data-file-name="components/cooking-assistant.tsx" />
-              <button onClick={handleSendMessage} className={cn("p-2 rounded-lg transition-colors", !inputValue.trim() || isLoading ? "bg-muted" : "bg-primary text-primary-foreground hover:bg-primary/90")} data-unique-id="c357dd97-8572-40e6-af9a-994c9c3bd407" data-file-name="components/cooking-assistant.tsx">
+              <input ref={inputRef} type="text" aria-label="Ask the cooking assistant" value={inputValue} onChange={e => setInputValue(e.target.value)} onKeyDown={handleKeyDown} placeholder="Ask about this step..." className="flex-1 px-3 py-2 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20 text-sm"  data-unique-id="86a1873b-db54-4a2b-b6e6-e6c0f46c56d0" data-file-name="components/cooking-assistant.tsx" />
+              <button onClick={handleSendMessage} aria-label="Send message" className={cn("p-2 rounded-lg transition-colors", !inputValue.trim() || isLoading ? "bg-muted" : "bg-primary text-primary-foreground hover:bg-primary/90")} data-unique-id="c357dd97-8572-40e6-af9a-994c9c3bd407" data-file-name="components/cooking-assistant.tsx">
                 <Send className="w-4 h-4" />
               </button>
             </div>

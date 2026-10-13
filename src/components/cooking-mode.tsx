@@ -502,7 +502,10 @@ export function CookingMode({
             </motion.div>
             
             {/* Cooking Assistant */}
-            {showAssistant && <CookingAssistant recipe={recipe} currentStep={currentStep} onStepChange={setCurrentStep} isPaused={isPaused} onPauseToggle={togglePause} />}
+            {/* Stays mounted while hidden so closing the panel doesn't erase the conversation */}
+            <div className={showAssistant ? undefined : "hidden"}>
+              <CookingAssistant recipe={recipe} currentStep={currentStep} onStepChange={setCurrentStep} isPaused={isPaused} onPauseToggle={togglePause} />
+            </div>
           </div>
           
           {/* Voice command help */}
