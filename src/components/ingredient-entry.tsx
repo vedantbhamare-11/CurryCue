@@ -11,6 +11,7 @@ import { useIngredientStore } from "@/store/ingredient-store";
 import { toast } from "sonner";
 import { MLDetectionSettings } from "./ml-detection-settings";
 import { IngredientSearchBar } from "./ingredient-search-bar";
+import { PantryExpiry } from "./pantry-expiry";
 export function IngredientEntry() {
   const { ingredients, addIngredient, removeIngredient } = useIngredientStore();
   const [inputValue, setInputValue] = useState("");
@@ -420,6 +421,7 @@ export function IngredientEntry() {
                       {ingredient.quantity} {ingredient.unit}
                     </span>
                   )}
+                  <PantryExpiry ingredient={ingredient} />
                 </div>
                 <button
                   onClick={() => handleRemoveIngredient(ingredient.id)}

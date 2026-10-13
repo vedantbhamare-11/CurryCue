@@ -4,6 +4,8 @@ export type Ingredient = {
   quantity?: string;
   unit?: string;
   image?: string;
+  // Local calendar date ("YYYY-MM-DD") after which it should be used up; see lib/expiry.ts
+  expiresOn?: string;
 };
 
 export type UserPreferences = {
@@ -33,6 +35,8 @@ export type Recipe = {
   missingIngredients?: Ingredient[];
   usedIngredients?: Ingredient[];
   assumedIngredients?: Ingredient[];
+  // Names of soon-to-expire pantry items this recipe uses up
+  usesExpiring?: string[];
 };
 
 export type UserAccount = {

@@ -13,6 +13,11 @@ CurryCue is your smart AI-powered kitchen assistant built using **Next.js** and 
   * Duplicates merge and amounts add up (250 gm + 100 gm = 350 gm, 500 ml + 1 l = 1.5 l).
   * Grouped by aisle, tick items off as you buy them, then move them into your pantry.
   * Copy the list or send it on WhatsApp.
+* **Use-It-Up Tracker:**
+  * Add an expiry date to any pantry item (quick presets, plus a typical shelf life for common foods).
+  * Colour-coded badges show what is expired or about to expire.
+  * A "Use these up soon" banner offers **Cook with these**: recipes are built around what is about to go off,
+    and each recipe says which expiring items it uses up.
 * **Manual Ingredient Entry:**
   * Users can add ingredients manually (e.g., "Tomatoes – 1kg" or "Onion – 2 nos.").
 * **Ingredient Scanning:**

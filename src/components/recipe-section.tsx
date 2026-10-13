@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Clock, Utensils, ArrowRight, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, Utensils, ArrowRight, Loader2, CalendarClock } from 'lucide-react';
 import Image from 'next/image';
 import { Recipe } from '@/types';
 import { cn } from '@/lib/utils';
@@ -103,6 +103,10 @@ export function RecipeSection() {
               <div className="p-4" data-unique-id="0a7095d3-1511-4e12-bcb8-7e486be222bd" data-file-name="components/recipe-section.tsx">
                 <h3 className="font-bold text-lg mb-1 line-clamp-1" data-unique-id="5ab8ff67-7e18-4554-ad55-c8fdce287ae1" data-file-name="components/recipe-section.tsx" data-dynamic-text="true">{recipe.title}</h3>
                 <p className="text-sm text-muted-foreground mb-3 line-clamp-2" data-unique-id="05d907b8-5f3a-4b6c-86e2-4dd523868aae" data-file-name="components/recipe-section.tsx" data-dynamic-text="true">{recipe.description}</p>
+                {recipe.usesExpiring && recipe.usesExpiring.length > 0 && <p className="flex items-center gap-1.5 text-xs font-medium text-green-700 dark:text-green-400 mb-3 line-clamp-1">
+                    <CalendarClock className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span className="truncate">Uses up {recipe.usesExpiring.join(', ')}</span>
+                  </p>}
                 
                 <div className="flex justify-between items-center mb-4" data-unique-id="78ae83e3-0f2e-4586-9024-2f8962c683ac" data-file-name="components/recipe-section.tsx">
                   <div className="flex items-center gap-1 text-sm" data-unique-id="7e819ea0-3b69-4020-8019-b9a739539afb" data-file-name="components/recipe-section.tsx">

@@ -13,6 +13,11 @@ export interface RecipeGenerationOptions {
   difficulty?: 'easy' | 'medium' | 'hard';
   maxCookingTime?: number;
   servings?: number;
+  // Pantry items that are expired or about to expire. They are always kept in the ingredient selection
+  // and the model is asked to use them up
+  useSoon?: Ingredient[];
+  // true = build every recipe around the soon-to-expire items ("Cook with these"); false = a soft preference
+  strictUseSoon?: boolean;
 }
 
 // Rate limiter for API calls - 10 requests per minute
@@ -191,14 +196,18 @@ export async function generateRecipes(
       throw new Error("Rate limit exceeded. Please try again later.");
     }
 
-    const { ingredients, preferences, cuisineType, mealType, difficulty, maxCookingTime, servings } = options;
+    const { ingredients, preferences, cuisineType, mealType, difficulty, maxCookingTime, servings, useSoon = [], strictUseSoon = false } = options;
     
     if (!ingredients || ingredients.length === 0) {
       throw new Error("No ingredients provided for recipe generation");
     }
     
     // Smart ingredient selection logic
-    const selectedIngredients = selectIngredientsForRecipe(ingredients);
+    // Copy: for small pantries selectIngredientsForRecipe returns the caller's own (store) array
+    const selectedIngredients = [...selectIngredientsForRecipe(ingredients)];
+    for (const item of useSoon) {
+      if (!selectedIngredients.some(selected => selected.id === item.id)) selectedIngredients.unshift(item);
+    }
     
     // Format selected ingredients for the prompt
     const ingredientsList = selectedIngredients.map(ing => {
@@ -223,6 +232,13 @@ export async function generateRecipes(
       dietaryInfo += `\nCooking skill level: ${preferences.skillLevel || 'intermediate'}`;
     }
     
+    // Soon-to-expire items: a soft preference normally, a hard requirement for "Cook with these"
+    const useSoonText = useSoon.length === 0
+      ? ''
+      : strictUseSoon
+        ? `\nIMPORTANT: these ingredients expire soon. Build every recipe around them and use as many of them as possible: ${useSoon.map(item => item.name).join(', ')}`
+        : `\nThese ingredients expire soon, so prefer recipes that use them up: ${useSoon.map(item => item.name).join(', ')}`;
+
     // Additional specifications
     let additionalSpecs = '';
     if (cuisineType) additionalSpecs += `\nCuisine type: ${cuisineType}`;
@@ -249,7 +265,7 @@ export async function generateRecipes(
          dish needs goes under missingIngredients
       5. Suggest recipes that are commonly known and have established cooking methods
       
-      Available ingredients from user's inventory: ${ingredientsList}
+      Available ingredients from user's inventory: ${ingredientsList}${useSoonText}
       ${assumedIngredientsText}
       ${dietaryInfo}
       ${additionalSpecs}
@@ -381,9 +397,16 @@ export async function generateRecipes(
           tags: aiRecipe.tags || ['authentic'],
           usedIngredients: used,
           assumedIngredients: assumed,
-          missingIngredients: missing
+          missingIngredients: missing,
+          // used[] carries the pantry item's id (see classifyIngredients), so this is an exact match
+          usesExpiring: useSoon.filter(item => used.some(u => u.id === item.id)).map(item => item.name)
         };
       });
+
+      // Recipes that use up more of what is about to expire come first (stable for equal counts)
+      if (useSoon.length > 0) {
+        recipes.sort((a, b) => (b.usesExpiring?.length ?? 0) - (a.usesExpiring?.length ?? 0));
+      }
       
       return recipes;
     } catch (parseError) {

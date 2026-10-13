@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, ChefHat, Filter, Clock, Utensils, X } from 'lucide-react';
+import { Loader2, ChefHat, Filter, Clock, Utensils, X, CalendarClock } from 'lucide-react';
 import { useIngredientStore } from '@/store/ingredient-store';
 import { useUserPreferencesStore } from '@/store/user-preferences-store';
 import { useRecipeStore } from '@/store/recipe-store';
 import { generateRecipes } from '@/lib/services/recipe-generation';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { getUseSoon, describeExpiryShort } from '@/lib/expiry';
 
 // Eggs are left out on purpose: whether they count as vegetarian varies by household
 const MEAT_PATTERN = /\b(chicken|mutton|lamb|beef|pork|fish|prawns?|shrimp|crab|salmon|tuna|bacon|ham|sausages?|turkey|keema|meat)\b/i;
@@ -34,7 +35,12 @@ export function RecipeGenerator() {
   const [dietaryPreference, setDietaryPreference] = useState<'veg' | 'non-veg'>('veg');
   // "Veg" asks the model for vegetarian recipes only, which silently ignores any meat in the pantry
   const meatIngredient = ingredients.find((ingredient) => MEAT_PATTERN.test(ingredient.name));
-  const handleGenerateRecipes = async () => {
+  // Pantry items that are expired or expire within 3 days. Meat is left out while Veg is selected, so a
+  // soon-to-expire chicken is not forced into a vegetarian recipe (the hint above offers the switch)
+  const allUseSoon = getUseSoon(ingredients);
+  const useSoon = allUseSoon.filter(({ ingredient }) => dietaryPreference === 'non-veg' || !MEAT_PATTERN.test(ingredient.name));
+  const skippedForDiet = allUseSoon.length - useSoon.length;
+  const handleGenerateRecipes = async (options: { strictUseSoon?: boolean } = {}) => {
     if (ingredients.length === 0) {
       toast.error("Please add some ingredients first");
       return;
@@ -51,7 +57,9 @@ export function RecipeGenerator() {
         mealType: mealType || undefined,
         difficulty: difficulty || undefined,
         maxCookingTime: maxCookingTime || undefined,
-        servings: servings || undefined
+        servings: servings || undefined,
+        useSoon: useSoon.map(({ ingredient }) => ingredient),
+        strictUseSoon: options.strictUseSoon
       });
       setSuggestedRecipes(recipes);
       if (recipes.length > 0) {
@@ -102,6 +110,19 @@ export function RecipeGenerator() {
         <p className="text-muted-foreground" data-unique-id="b7bb7088-349d-4aa5-813e-228619b3d10d" data-file-name="components/recipe-generator.tsx"><span className="editable-text" data-unique-id="f8d054a2-4f02-449c-8d92-577427682d20" data-file-name="components/recipe-generator.tsx">
           Let our AI chef create personalized recipes based on your ingredients and preferences
         </span></p>
+
+        {useSoon.length > 0 && <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <p className="font-medium text-amber-800 dark:text-amber-200 flex items-center gap-2"><CalendarClock className="w-4 h-4" />Use these up soon</p>
+              <p className="text-sm text-amber-800/80 dark:text-amber-200/80 mt-1">
+                {useSoon.map(({ ingredient, days }) => `${ingredient.name} (${describeExpiryShort(days).toLowerCase()})`).join(', ')}
+              </p>
+              {skippedForDiet > 0 && <p className="text-xs text-amber-800/70 dark:text-amber-200/70 mt-1">{skippedForDiet} meat {skippedForDiet === 1 ? 'item is' : 'items are'} left out because Veg is selected.</p>}
+            </div>
+            <button onClick={() => handleGenerateRecipes({ strictUseSoon: true })} disabled={isLoading} className="flex-shrink-0 px-4 py-2 rounded-lg bg-amber-500 text-white font-medium hover:bg-amber-600 disabled:opacity-50 transition-colors">
+              Cook with these
+            </button>
+          </div>}
         
         
         <AnimatePresence>
@@ -217,7 +238,7 @@ export function RecipeGenerator() {
           scale: 1.05
         }} whileTap={{
           scale: 0.95
-        }} onClick={handleGenerateRecipes} disabled={isLoading || ingredients.length === 0} className={cn("flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors", (isLoading || ingredients.length === 0) && "opacity-50 cursor-not-allowed")} data-unique-id="0fcd2cc0-8df7-434a-bbb0-72c48af3bae8" data-file-name="components/recipe-generator.tsx" data-dynamic-text="true">
+        }} onClick={() => handleGenerateRecipes()} disabled={isLoading || ingredients.length === 0} className={cn("flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors", (isLoading || ingredients.length === 0) && "opacity-50 cursor-not-allowed")} data-unique-id="0fcd2cc0-8df7-434a-bbb0-72c48af3bae8" data-file-name="components/recipe-generator.tsx" data-dynamic-text="true">
             {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ChefHat className="w-5 h-5" />}
             <span data-unique-id="d9a7d744-786f-4a36-a168-c4d5a2cb35be" data-file-name="components/recipe-generator.tsx"><span className="editable-text" data-unique-id="dc56bc3d-0de5-4554-885b-7460a1ee700c" data-file-name="components/recipe-generator.tsx">Generate Recipes</span></span>
           </motion.button>

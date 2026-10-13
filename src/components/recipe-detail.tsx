@@ -147,6 +147,7 @@ export function RecipeDetail({
                 {/* Used Ingredients from Inventory */}
                 {recipe.usedIngredients && recipe.usedIngredients.length > 0 && <div className="mb-4" data-unique-id="2529314a-f589-4617-bf25-1d3f1392ded9" data-file-name="components/recipe-detail.tsx">
                     <h4 className="font-medium text-sm text-primary mb-2" data-unique-id="dee14a8f-3846-430c-8c02-54e09d420443" data-file-name="components/recipe-detail.tsx"><span className="editable-text" data-unique-id="59ba8c07-9aaa-4954-8270-533303e38fb1" data-file-name="components/recipe-detail.tsx">From Your Kitchen:</span></h4>
+                    {recipe.usesExpiring && recipe.usesExpiring.length > 0 && <p className="text-xs font-medium text-green-700 dark:text-green-400 mb-2">Uses up what's about to expire: {recipe.usesExpiring.join(', ')}</p>}
                     <ul className="space-y-2" data-unique-id="49c97204-3125-45c9-b3ed-21cd6f0c7dec" data-file-name="components/recipe-detail.tsx" data-dynamic-text="true">
                       {recipe.usedIngredients.map((ingredient, index) => <li key={index} className="flex items-center gap-2 text-sm sm:text-base" data-unique-id="443ee068-7a5b-45b9-9986-1054283d676c" data-file-name="components/recipe-detail.tsx">
                           <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" data-unique-id="49abac48-f8ad-4d6e-937e-7d6ec8ff0f33" data-file-name="components/recipe-detail.tsx"></div>
