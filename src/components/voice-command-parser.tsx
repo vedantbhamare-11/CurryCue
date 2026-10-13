@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-import { parseVoiceCommand, type VoiceCommandAction } from '@/lib/voice-commands';
+import { parseVoiceCommand, speechNetworkErrorMessage, type VoiceCommandAction } from '@/lib/voice-commands';
 
 export type { VoiceCommandAction } from '@/lib/voice-commands';
 
@@ -92,7 +92,7 @@ export function VoiceCommandParser({
           stopForGood('No microphone found.');
           break;
         case 'network':
-          stopForGood('Voice commands need an internet connection.');
+          stopForGood(speechNetworkErrorMessage(navigator as unknown as { brave?: unknown }));
           break;
         case 'no-speech':
         case 'aborted':

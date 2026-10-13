@@ -136,3 +136,13 @@ export function parseVoiceCommand(transcript: string, context: VoiceContext): Vo
 
   return IGNORED;
 }
+
+// The browser's speech recognition reports "network" when it can't reach its speech service.
+// That is usually NOT the user's internet: Brave ships without Google's speech service, so
+// recognition starts, permission is granted, and then it fails with "network". Say so.
+export function speechNetworkErrorMessage(nav?: { brave?: unknown }): string {
+  if (nav?.brave) {
+    return "Brave doesn't include the speech service that voice commands use. Please use Chrome or Edge for voice commands.";
+  }
+  return "Voice commands couldn't reach the browser's speech service. Check your connection, VPN or firewall, or try Chrome or Edge.";
+}
