@@ -296,46 +296,31 @@ export async function generateTextWithImagesStream(
  * @param model - The model to use
  * @returns A promise that resolves to the generated text
  */
-async function proxyGenerate(prompt: string, integrationId: string, model: string): Promise<TextGenerationResult> {
-  const requestBody = {
-    webId: CONFIG.webId,
-    integrationId,
-    prompt,
-    stream: false,
-    model
-  };
-  
-  try {
-    const response = await fetch('https://proxy.getcreatr.com/v1/proxy/llm', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody),
-    });
-    
-    if (!response.ok) {
-      throw new AIServiceError(
-        `Proxy error: ${response.status} ${response.statusText}`,
-        response.status,
-        model
-      );
-    }
-    
-    const data = await response.json();
-    console.log(data);
-    
-    return {
-      text: data.data.choices[0].message.content,
-      usage: {
-        promptTokens: data.data.usage.prompt_tokens,
-        completionTokens: data.data.usage.completion_tokens,
-        totalTokens: data.data.usage.total_tokens
-      },
-      finishReason: data.data.choices[0].finish_reason
-    };
-  } catch (error) {
-    if (error instanceof AIServiceError) throw error;
-    throw new Error(`Failed to call proxy: ${error instanceof Error ? error.message : String(error)}`);
+// All non-streaming text/vision calls go through Gemini. In the browser we hit our own
+// /api/ai route (which holds the key); on the server (e.g. inside /api/detect-ingredients)
+// we call Gemini directly, since a relative fetch() has no base URL there.
+async function callAI(prompt: string, imageUrls: string[] = []): Promise<TextGenerationResult> {
+  if (typeof window === 'undefined') {
+    const { generateWithGemini } = await import('@/lib/server/gemini');
+    return generateWithGemini(prompt, imageUrls);
   }
+
+  // Trailing slash matters: next.config has trailingSlash: true, so '/api/ai' would 308 first
+  const response = await fetch('/api/ai/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt, images: imageUrls }),
+  });
+
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new AIServiceError(data?.error ?? `AI request failed: ${response.status}`, response.status, 'gemini');
+  }
+  return data as TextGenerationResult;
+}
+
+async function proxyGenerate(prompt: string, _integrationId: string, _model: string): Promise<TextGenerationResult> {
+  return callAI(prompt);
 }
 
 /**
@@ -450,67 +435,8 @@ async function proxyGenerateStream(prompt: string, onChunk: (text: string) => vo
  * @param model - The model to use
  * @returns A promise that resolves to the generated text
  */
-async function proxyGenerateWithImages(prompt: string, imageUrls: string[], integrationId: string, model: string): Promise<TextGenerationResult> {
-  // Build content array with text and images for each message
-  const content: ContentItem[] = [
-    { type: 'text', text: prompt }
-  ];
-  
-  // Add each image URL to the content array
-  for (const url of imageUrls) {
-    content.push({
-      type: 'image_url',
-      image_url: {
-        url: url
-      }
-    });
-  }
-  
-  // Create the request payload exactly matching the expected format
-  const requestBody = {
-    model,
-    webId: CONFIG.webId,
-    integrationId,
-    messages: [
-      {
-        role: 'user',
-        content
-      }
-    ],
-    stream: false
-  };
-  
-  try {
-    const response = await fetch('https://proxy.getcreatr.com/v1/proxy/llm', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody),
-    });
-    
-    if (!response.ok) {
-      throw new AIServiceError(
-        `Vision proxy error: ${response.status} ${response.statusText}`,
-        response.status,
-        model
-      );
-    }
-    
-    const data = await response.json();
-    console.log(data);
-    
-    return {
-      text: data.data.choices[0].message.content,
-      usage: {
-        promptTokens: data.data.usage.prompt_tokens,
-        completionTokens: data.data.usage.completion_tokens,
-        totalTokens: data.data.usage.total_tokens
-      },
-      finishReason: data.data.choices[0].finish_reason
-    };
-  } catch (error) {
-    if (error instanceof AIServiceError) throw error;
-    throw new Error(`Failed to call vision proxy: ${error instanceof Error ? error.message : String(error)}`);
-  }
+async function proxyGenerateWithImages(prompt: string, imageUrls: string[], _integrationId: string, _model: string): Promise<TextGenerationResult> {
+  return callAI(prompt, imageUrls);
 }
 
 /**

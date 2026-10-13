@@ -2,6 +2,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { detectIngredientsFromImage } from '@/lib/services/ingredient-detection';
 
+// Gemini calls can take 20s+; Vercel's default function limit is much lower
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();

@@ -52,7 +52,7 @@ export function CameraCapture({
   const processImageWithML = async (imageSrc: string) => {
     setIsProcessing(true);
     try {
-      const response = await fetch('/api/detect-ingredients', {
+      const response = await fetch('/api/detect-ingredients/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

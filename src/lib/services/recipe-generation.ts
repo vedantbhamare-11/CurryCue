@@ -260,7 +260,7 @@ export async function generateRecipes(
     
     // Call the AI service with timeout
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error("API request timed out")), 30000); // 30 second timeout
+      setTimeout(() => reject(new Error("API request timed out")), 60000); // 60 second timeout (Gemini "thinking" can take 20s+ for 3 recipes)
     });
     
     const resultPromise = generateText(prompt, provider);
@@ -308,7 +308,9 @@ export async function generateRecipes(
         ];
         
         return {
-          id: aiRecipe.id || `recipe-${Date.now()}-${index}`,
+          // Always generate our own id: the LLM echoes the prompt's example ("1", "2", ...),
+          // which collides across generations and breaks favorites/recents/cooking lookups.
+          id: `recipe-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 8)}`,
           title: aiRecipe.title,
           description: aiRecipe.description,
           matchPercentage: aiRecipe.matchPercentage || 85,
@@ -414,7 +416,7 @@ export async function generateRecipeDetails(
     
     // Call the AI service with timeout
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error("API request timed out")), 30000); // 30 second timeout
+      setTimeout(() => reject(new Error("API request timed out")), 60000); // 60 second timeout (Gemini "thinking" can take 20s+ for 3 recipes)
     });
     
     const resultPromise = generateText(prompt, provider);
