@@ -1,5 +1,4 @@
 import { generateTextWithImages } from '@/lib/api/util';
-import { ModelProvider } from '@/types';
 
 export interface DetectedIngredient {
   name: string;
@@ -11,12 +10,10 @@ export interface DetectedIngredient {
 /**
  * Detects ingredients from an image using ML vision models
  * @param imageBase64 Base64 encoded image data
- * @param provider AI model provider to use
  * @returns Promise with array of detected ingredients
  */
 export async function detectIngredientsFromImage(
-  imageBase64: string,
-  provider: ModelProvider = "azure-gpt-4o"
+  imageBase64: string
 ): Promise<DetectedIngredient[]> {
   try {
     // Ensure image is properly formatted for the API
@@ -47,7 +44,7 @@ export async function detectIngredientsFromImage(
     `;
     
     // Process the image through the vision-enabled AI model
-    const result = await generateTextWithImages(prompt, [base64Data], provider);
+    const result = await generateTextWithImages(prompt, [base64Data]);
     
     // Parse the response to extract the JSON
     let jsonText = result.text.trim();
@@ -76,35 +73,5 @@ export async function detectIngredientsFromImage(
   } catch (error) {
     console.error("Error detecting ingredients:", error);
     throw new Error(`Ingredient detection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-}
-
-/**
- * Processes an image to detect multiple food items and their quantities
- * @param imageBase64 Base64 encoded image data
- * @returns Promise with processed ingredients
- */
-export async function processIngredientImage(
-  imageBase64: string,
-  provider: ModelProvider = "azure-gpt-4o"
-): Promise<{
-  ingredients: DetectedIngredient[];
-  processingTime: number;
-}> {
-  const startTime = Date.now();
-  
-  try {
-    // Detect ingredients using ML
-    const ingredients = await detectIngredientsFromImage(imageBase64, provider);
-    
-    const processingTime = Date.now() - startTime;
-    
-    return {
-      ingredients,
-      processingTime
-    };
-  } catch (error) {
-    console.error("Error processing ingredient image:", error);
-    throw error;
   }
 }

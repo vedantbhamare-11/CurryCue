@@ -1,6 +1,5 @@
 import { generateText, TextGenerationResult } from '@/lib/api/util';
 import { Ingredient, Recipe, UserPreferences } from '@/types';
-import { ModelProvider } from '@/types';
 import { RateLimiter } from '@/lib/services/rate-limiter';
 import { stripStepLabel } from '@/lib/utils';
 import { namesMatch, nameWords, staplesMatch } from '@/lib/ingredient-names';
@@ -183,12 +182,10 @@ export function classifyIngredients(llmIngredients: any[], pantry: Ingredient[])
 /**
  * Generate recipes based on ingredients and preferences using AI
  * @param options Recipe generation options including ingredients and preferences
- * @param provider AI model provider to use (default: azure-gpt-4o)
  * @returns Promise with array of generated recipes
  */
 export async function generateRecipes(
-  options: RecipeGenerationOptions,
-  provider: ModelProvider = "azure-gpt-4o"
+  options: RecipeGenerationOptions
 ): Promise<Recipe[]> {
   try {
     // Check rate limit before proceeding
@@ -324,7 +321,7 @@ export async function generateRecipes(
       setTimeout(() => reject(new Error("API request timed out")), 100000); // 100 second timeout (Gemini thinking models take 20-40s, plus one model fallback)
     });
     
-    const resultPromise = generateText(prompt, provider);
+    const resultPromise = generateText(prompt);
     const result = await Promise.race([resultPromise, timeoutPromise]) as TextGenerationResult;
     
     // Parse the response to extract the JSON
@@ -415,134 +412,6 @@ export async function generateRecipes(
     }
   } catch (error) {
     console.error("Error generating recipes:", error);
-    if (error instanceof Error) {
-      throw error; // Re-throw the error with its original message
-    } else {
-      throw new Error("Unknown error occurred during recipe generation");
-    }
-  }
-}
-
-/**
- * Generate detailed recipe based on title and ingredients
- * @param recipeTitle Title of the recipe to generate
- * @param ingredients List of ingredients available
- * @param provider AI model provider to use (default: azure-gpt-4o)
- * @returns Promise with generated recipe details or null if generation fails
- */
-export async function generateRecipeDetails(
-  recipeTitle: string,
-  ingredients: Ingredient[],
-  provider: ModelProvider = "azure-gpt-4o"
-): Promise<Recipe | null> {
-  try {
-    // Check rate limit before proceeding
-    if (!recipeGenerationLimiter.allowRequest()) {
-      throw new Error("Rate limit exceeded. Please try again later.");
-    }
-
-    if (!recipeTitle || recipeTitle.trim() === "") {
-      throw new Error("Recipe title is required");
-    }
-    
-    if (!ingredients || ingredients.length === 0) {
-      throw new Error("No ingredients provided for recipe generation");
-    }
-    
-    // Format ingredients for the prompt
-    const ingredientsList = ingredients.map(ing => {
-      if (ing.quantity && ing.unit) {
-        return `${ing.name} (${ing.quantity} ${ing.unit})`;
-      }
-      return ing.name;
-    }).join(", ");
-    
-    // Create the prompt for the AI
-    const prompt = `
-      Create a detailed recipe for "${recipeTitle}" using some or all of these ingredients: ${ingredientsList}.
-      
-      Provide:
-      1. A brief description
-      2. Cooking time in minutes
-      3. Difficulty level (easy, medium, or hard)
-      4. List of ingredients with quantities
-      5. Step-by-step cooking instructions
-      6. Cuisine type
-      7. Tags (e.g., "quick", "vegetarian", "comfort food")
-      
-      Format your response as a JSON object with the following structure:
-      {
-        "id": "1",
-        "title": "${recipeTitle}",
-        "description": "Brief description",
-        "matchPercentage": 95,
-        "cookTime": 30,
-        "difficulty": "easy",
-        "image": "",
-        "ingredients": [
-          {"id": "i1", "name": "Ingredient 1", "quantity": "1", "unit": "cup"},
-          {"id": "i2", "name": "Ingredient 2", "quantity": "2", "unit": "tablespoons"}
-        ],
-        "steps": [
-          "Step 1: Do this",
-          "Step 2: Do that"
-        ],
-        "cuisine": "Italian",
-        "tags": ["quick", "pasta", "vegetarian"]
-      }
-      
-      Calculate the match percentage based on how many of the user's ingredients are used in the recipe.
-      Leave the image field empty.
-      Return ONLY the JSON object, nothing else.
-    `;
-    
-    // Call the AI service with timeout
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error("API request timed out")), 100000); // 100 second timeout (Gemini thinking models take 20-40s, plus one model fallback)
-    });
-    
-    const resultPromise = generateText(prompt, provider);
-    const result = await Promise.race([resultPromise, timeoutPromise]) as TextGenerationResult;
-    
-    // Parse the response to extract the JSON
-    let jsonText = result.text.trim();
-    
-    // Handle potential text before or after the JSON
-    const startBracket = jsonText.indexOf('{');
-    const endBracket = jsonText.lastIndexOf('}');
-    
-    if (startBracket !== -1 && endBracket !== -1) {
-      jsonText = jsonText.substring(startBracket, endBracket + 1);
-    } else {
-      throw new Error("Invalid response format from AI service");
-    }
-    
-    try {
-      const recipe = JSON.parse(jsonText) as Recipe;
-      
-      if (!recipe || !recipe.title || !recipe.steps || recipe.steps.length === 0) {
-        throw new Error("Invalid recipe data returned from AI service");
-      }
-      
-      // Add placeholder image - randomly select from a collection of food images
-      const recipeImages = [
-        'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
-        'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-        'https://images.unsplash.com/photo-1512621776951-a57141f2eefd',
-        'https://images.unsplash.com/photo-1473093295043-cdd812d0e601',
-        'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd'
-      ];
-      
-      return {
-        ...recipe,
-        image: recipeImages[Math.floor(Math.random() * recipeImages.length)]
-      };
-    } catch (parseError) {
-      console.error("Failed to parse recipe JSON:", parseError);
-      throw new Error("Failed to parse AI response into valid recipe format");
-    }
-  } catch (error) {
-    console.error("Error generating recipe details:", error);
     if (error instanceof Error) {
       throw error; // Re-throw the error with its original message
     } else {

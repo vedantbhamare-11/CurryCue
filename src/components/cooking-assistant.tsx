@@ -119,7 +119,7 @@ export function CookingAssistant({
       `;
       const userQuery = inputValue;
       const prompt = `${context}\n\n${history ? `Conversation so far:\n${history}\n\n` : ''}User question: ${userQuery}\n\nYour response:`;
-      const response = await generateText(prompt, "azure-gpt-4o");
+      const response = await generateText(prompt);
       const assistantMessage: Message = {
         id: makeId('assistant'),
         content: response.text,

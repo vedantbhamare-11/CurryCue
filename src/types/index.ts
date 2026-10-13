@@ -87,11 +87,6 @@ export type CookingSession = {
   completed?: number;
 };
 
-export type ModelProvider = 
-  | "claude-bedrock" 
-  | "azure-gpt-4o" 
-  | "azure-gpt-4o-o3-mini";
-
 // API related types
 export interface ApiError {
   message: string;
