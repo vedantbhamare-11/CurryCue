@@ -1,16 +1,10 @@
-// @ts-ignore
-/** @type {import("next").NextConfig} */
-const config = {
+import type { NextConfig } from 'next';
+
+const config: NextConfig = {
   trailingSlash: true,
   images: {
+    // Recipe photos are plain remote URLs, so skip Next's image optimizer (which would need an allow-list of hosts)
     unoptimized: true,
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '*',
-        pathname: '**',
-      },
-    ],
   },
   eslint: {
     // `next lint` crashes with "Invalid Options" against this ESLint setup, and there are ~140 existing
@@ -21,36 +15,6 @@ const config = {
     // Type errors fail the build. They used to be ignored, which hid real problems.
     ignoreBuildErrors: false,
   },
-  productionBrowserSourceMaps: true,
-  webpack: (config: { stats: string; devtool: string; resolve: { fallback: any; }; }, { isServer }: any) => {
-    config.stats = "verbose";
-    config.devtool = 'source-map'
-    // Enhanced node polyfills for postgres and other modules
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        // File system - never needed in browser
-        fs: false,
-        net: false,
-        tls: false,
-        crypto: false,
-        stream: false,
-        'perf_hooks': false,
-
-        // Definitely not needed in browser
-        child_process: false,
-        dns: false,
-      };
-    }
-    return config;
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/_next/:path*.map',
-        destination: '/_next/:path*.map',
-      },
-    ];
-  },
 };
+
 export default config;

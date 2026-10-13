@@ -201,7 +201,7 @@ export function CookingAssistant({
       }} className="flex-1 overflow-hidden" data-unique-id="d20e5a53-1db0-4596-b563-23591c9590dd" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
             {/* Messages container */}
             <div ref={messagesContainerRef} className="h-[300px] overflow-y-auto p-3 space-y-3" data-unique-id="3d67c27d-f0cd-41c2-abdc-a3cf83af0cb5" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
-              {messages.map(message => <div key={message.id} className={cn("flex gap-2 max-w-[85%] animate-in fade-in-50", message.role === 'user' ? "ml-auto" : "mr-auto", message.role === 'system' && "w-full max-w-full")} data-unique-id="41669eb1-d634-46ad-93cd-562e3bac7570" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
+              {messages.map(message => <div key={message.id} className={cn("flex gap-2 max-w-[85%]", message.role === 'user' ? "ml-auto" : "mr-auto", message.role === 'system' && "w-full max-w-full")} data-unique-id="41669eb1-d634-46ad-93cd-562e3bac7570" data-file-name="components/cooking-assistant.tsx" data-dynamic-text="true">
                   {message.role !== 'user' && <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center" data-unique-id="2c4c03c5-7e29-495b-a4ee-5d3be518d88d" data-file-name="components/cooking-assistant.tsx">
                       <Bot className="w-3.5 h-3.5 text-primary" />
                     </div>}
