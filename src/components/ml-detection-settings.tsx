@@ -4,18 +4,12 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Settings, Sliders, Scan, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ModelProvider } from '@/types';
-import { AIProviderSelector } from './ai-provider-selector';
 interface MLDetectionSettingsProps {
-  currentProvider: ModelProvider;
-  onProviderChange: (provider: ModelProvider) => void;
   confidenceThreshold: number;
   onConfidenceChange: (value: number) => void;
   className?: string;
 }
 export function MLDetectionSettings({
-  currentProvider,
-  onProviderChange,
   confidenceThreshold,
   onConfidenceChange,
   className
@@ -42,10 +36,6 @@ export function MLDetectionSettings({
           </div>
 
           <div className="space-y-4" data-unique-id="e637c71f-ea81-4652-b7cf-9af7f705e0dd" data-file-name="components/ml-detection-settings.tsx">
-            <div data-unique-id="309b5a40-200f-4872-878d-c52ce7435f35" data-file-name="components/ml-detection-settings.tsx">
-              <label className="block text-sm font-medium mb-1" data-unique-id="adaafae9-6523-49c7-9073-ad8d9ec0f413" data-file-name="components/ml-detection-settings.tsx"><span className="editable-text" data-unique-id="8e6750e4-6e66-49d0-95e4-c5c1094fc051" data-file-name="components/ml-detection-settings.tsx">AI Provider</span></label>
-              <AIProviderSelector currentProvider={currentProvider} onProviderChange={onProviderChange} />
-            </div>
 
             <div data-unique-id="60a6b65f-9e99-4557-a06a-5cc10129a883" data-file-name="components/ml-detection-settings.tsx">
               <label className="block text-sm font-medium mb-1" data-unique-id="7259909d-f2d9-4b12-93d2-d8487ed2418f" data-file-name="components/ml-detection-settings.tsx" data-dynamic-text="true"><span className="editable-text" data-unique-id="48c25966-a200-4ce7-829f-06f5c8fe59c4" data-file-name="components/ml-detection-settings.tsx">

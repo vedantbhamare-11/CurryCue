@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid or too large image' }, { status: 413 });
     }
 
-    const detectedIngredients = await detectIngredientsFromImage(data.image, data.provider || "azure-gpt-4o");
+    const detectedIngredients = await detectIngredientsFromImage(data.image);
 
     return NextResponse.json({
       ingredients: detectedIngredients,

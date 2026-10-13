@@ -7,20 +7,17 @@ import { Camera, X, RefreshCw, Check, Loader2, Scan } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DetectedIngredient } from '@/lib/services/ingredient-detection';
 import { toast } from 'sonner';
-import { ModelProvider } from '@/types';
 interface CameraCaptureProps {
   onCapture: (imageSrc: string) => void;
   onClose: () => void;
   onDetectedIngredients?: (ingredients: DetectedIngredient[]) => void;
   useML?: boolean;
-  mlProvider?: ModelProvider;
 }
 export function CameraCapture({
   onCapture,
   onClose,
   onDetectedIngredients,
-  useML = false,
-  mlProvider = "azure-gpt-4o"
+  useML = false
 }: CameraCaptureProps) {
   const webcamRef = useRef<Webcam>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -58,8 +55,7 @@ export function CameraCapture({
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          image: imageSrc,
-          provider: mlProvider
+          image: imageSrc
         })
       });
       if (response.status === 429) {

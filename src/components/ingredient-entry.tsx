@@ -11,7 +11,6 @@ import { useIngredientStore } from "@/store/ingredient-store";
 import { toast } from "sonner";
 import { MLDetectionSettings } from "./ml-detection-settings";
 import { IngredientSearchBar } from "./ingredient-search-bar";
-import { ModelProvider } from "@/types";
 export function IngredientEntry() {
   const { ingredients, addIngredient, removeIngredient } = useIngredientStore();
   const [inputValue, setInputValue] = useState("");
@@ -20,8 +19,6 @@ export function IngredientEntry() {
   const [scanResults, setScanResults] = useState<DetectedIngredient[]>([]);
   const [showCamera, setShowCamera] = useState(false);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
-  const [selectedProvider, setSelectedProvider] =
-    useState<ModelProvider>("azure-gpt-4o");
   const [confidenceThreshold, setConfidenceThreshold] = useState<number>(70);
   const [mlEnabled, setMlEnabled] = useState<boolean>(true);
   const handleAddIngredient = () => {
@@ -178,8 +175,6 @@ export function IngredientEntry() {
             >
             
               <MLDetectionSettings
-                currentProvider={selectedProvider}
-                onProviderChange={setSelectedProvider}
                 confidenceThreshold={confidenceThreshold}
                 onConfidenceChange={setConfidenceThreshold}
               />
@@ -464,7 +459,6 @@ export function IngredientEntry() {
             onClose={handleCameraClose}
             onDetectedIngredients={handleDetectedIngredients}
             useML={true}
-            mlProvider={selectedProvider}
           />
         )}
       </AnimatePresence>

@@ -7,8 +7,6 @@ import { useIngredientStore } from '@/store/ingredient-store';
 import { useUserPreferencesStore } from '@/store/user-preferences-store';
 import { useRecipeStore } from '@/store/recipe-store';
 import { generateRecipes } from '@/lib/services/recipe-generation';
-import { AIProviderSelector } from './ai-provider-selector';
-import { ModelProvider } from '@/types';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -27,7 +25,6 @@ export function RecipeGenerator() {
     isLoading,
     setIsLoading
   } = useRecipeStore();
-  const [selectedProvider, setSelectedProvider] = useState<ModelProvider>("azure-gpt-4o");
   const [showFilters, setShowFilters] = useState(false);
   const [cuisineType, setCuisineType] = useState<string>('');
   const [mealType, setMealType] = useState<string>('');
@@ -55,7 +52,7 @@ export function RecipeGenerator() {
         difficulty: difficulty || undefined,
         maxCookingTime: maxCookingTime || undefined,
         servings: servings || undefined
-      }, selectedProvider);
+      });
       setSuggestedRecipes(recipes);
       if (recipes.length > 0) {
         toast.success(`Generated ${recipes.length} recipe suggestions!`);
@@ -97,7 +94,6 @@ export function RecipeGenerator() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3" data-unique-id="fbd0fe1b-f57b-4183-853b-f1dc9836af4f" data-file-name="components/recipe-generator.tsx">
           <h3 className="text-xl font-bold" data-unique-id="c678b60c-3ba6-4cbd-9605-12221fde1f8d" data-file-name="components/recipe-generator.tsx"><span className="editable-text" data-unique-id="949b3eb4-2654-45b8-b052-d808eb41fb8e" data-file-name="components/recipe-generator.tsx">Generate Recipes</span></h3>
           <div className="flex lg:flex-row flex-col items-center gap-3" data-unique-id="09cebf9c-b989-46b9-8430-224ef1bd5aff" data-file-name="components/recipe-generator.tsx">
-            <AIProviderSelector currentProvider={selectedProvider} onProviderChange={setSelectedProvider} />
           </div>
         </div>
         
