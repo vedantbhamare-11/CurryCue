@@ -13,10 +13,13 @@ const config = {
     ],
   },
   eslint: {
+    // `next lint` crashes with "Invalid Options" against this ESLint setup, and there are ~140 existing
+    // lint errors, so linting stays out of the build for now. Run `npm run lint` directly instead.
     ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    // Type errors fail the build. They used to be ignored, which hid real problems.
+    ignoreBuildErrors: false,
   },
   productionBrowserSourceMaps: true,
   webpack: (config: { stats: string; devtool: string; resolve: { fallback: any; }; }, { isServer }: any) => {
