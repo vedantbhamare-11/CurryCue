@@ -60,12 +60,12 @@ export default function CookingCommandsPage() {
               
               <div className="space-y-3" data-unique-id="ac26c944-bf2e-42b0-a564-f7257560513c" data-file-name="app/cooking-commands/page.tsx">
                 <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="0529f428-61dd-4884-9726-98c943d1b8fc" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="c681ec39-30cc-47cb-9d8f-175758b789d5" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="12f7f2ec-7294-479f-a18c-959d610d1a3c" data-file-name="app/cooking-commands/page.tsx">"Next step" / "Go forward"</span></div>
+                  <div className="font-medium mb-1" data-unique-id="c681ec39-30cc-47cb-9d8f-175758b789d5" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="12f7f2ec-7294-479f-a18c-959d610d1a3c" data-file-name="app/cooking-commands/page.tsx">"Next step" / "Next" / "Go forward"</span></div>
                   <p className="text-sm text-muted-foreground" data-unique-id="f7c98cfc-c9f3-4e56-bea7-027d5f73e477" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="bb4bb1d1-51bc-4f15-8d6b-ee75120800d0" data-file-name="app/cooking-commands/page.tsx">Move to the next step in the recipe</span></p>
                 </div>
                 
                 <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="c0ec8030-1d2c-4ab7-bed3-7108ddea27f8" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="df43f160-47f0-42da-bdbe-f135ab0188f3" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="49edd0c4-1ba5-43a5-a601-303616256bd3" data-file-name="app/cooking-commands/page.tsx">"Previous step" / "Go back"</span></div>
+                  <div className="font-medium mb-1" data-unique-id="df43f160-47f0-42da-bdbe-f135ab0188f3" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="49edd0c4-1ba5-43a5-a601-303616256bd3" data-file-name="app/cooking-commands/page.tsx">"Previous step" / "Previous" / "Go back"</span></div>
                   <p className="text-sm text-muted-foreground" data-unique-id="745434a1-aa85-48ea-8236-0c5cb3c4ac9f" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="45b063b1-ff3f-4cb8-bf4b-291f97ce8b88" data-file-name="app/cooking-commands/page.tsx">Return to the previous step</span></p>
                 </div>
                 
@@ -142,7 +142,7 @@ export default function CookingCommandsPage() {
                 </div>
                 
                 <div className="bg-card rounded-lg p-3 border border-border" data-unique-id="cb691f88-1f61-439e-b623-cc6e0b5051cd" data-file-name="app/cooking-commands/page.tsx">
-                  <div className="font-medium mb-1" data-unique-id="a4795ad3-2712-4cb6-974c-e922eb43d279" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="698a65d2-57fa-4940-a7b5-a5e53e6e5ec3" data-file-name="app/cooking-commands/page.tsx">"Exit" / "Close" / "Quit"</span></div>
+                  <div className="font-medium mb-1" data-unique-id="a4795ad3-2712-4cb6-974c-e922eb43d279" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="698a65d2-57fa-4940-a7b5-a5e53e6e5ec3" data-file-name="app/cooking-commands/page.tsx">"Exit cooking" / "Close cooking" / "Quit cooking"</span></div>
                   <p className="text-sm text-muted-foreground" data-unique-id="ca41657c-e35f-45a0-946f-a8be1ff6c980" data-file-name="app/cooking-commands/page.tsx"><span className="editable-text" data-unique-id="defc70d6-326d-4cfd-a996-a9b4b76ba0eb" data-file-name="app/cooking-commands/page.tsx">Exit the cooking mode</span></p>
                 </div>
               </div>

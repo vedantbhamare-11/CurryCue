@@ -1,247 +1,152 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-export type VoiceCommandAction = {
-  type: 'NEXT_STEP';
-} | {
-  type: 'PREVIOUS_STEP';
-} | {
-  type: 'GO_TO_STEP';
-  stepNumber: number;
-} | {
-  type: 'READ_STEP';
-} | {
-  type: 'NEXT_INGREDIENT';
-} | {
-  type: 'PREVIOUS_INGREDIENT';
-} | {
-  type: 'LIST_INGREDIENTS';
-} | {
-  type: 'READ_INGREDIENT';
-  ingredientIndex: number;
-} | {
-  type: 'START_TIMER';
-  minutes: number;
-} | {
-  type: 'STOP_TIMER';
-} | {
-  type: 'TOGGLE_FULLSCREEN';
-} | {
-  type: 'EXIT';
-};
+import { parseVoiceCommand, type VoiceCommandAction } from '@/lib/voice-commands';
+
+export type { VoiceCommandAction } from '@/lib/voice-commands';
+
+export function isSpeechRecognitionSupported(): boolean {
+  return typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
+}
+
 interface VoiceCommandParserProps {
   isListening: boolean;
   onCommand: (action: VoiceCommandAction) => void;
   totalSteps: number;
   totalIngredients: number;
-  currentStep: number;
-  currentIngredient?: number;
+  // Called when listening had to stop by itself (mic blocked, no network, too many restarts)
+  // so the parent can flip its "listening" UI back off
+  onListeningStopped?: () => void;
   children?: React.ReactNode;
 }
+
+// Chrome ends a recognition session after a stretch of silence; we restart it. If it keeps ending
+// immediately (broken mic/service) give up instead of looping forever.
+const RESTART_DELAY_MS = 300;
+const MAX_RESTARTS_IN_WINDOW = 8;
+const RESTART_WINDOW_MS = 10_000;
+
 export function VoiceCommandParser({
   isListening,
   onCommand,
   totalSteps,
   totalIngredients,
-  currentStep,
-  currentIngredient,
+  onListeningStopped,
   children
 }: VoiceCommandParserProps) {
-  const speechRecognitionRef = useRef<SpeechRecognition | null>(null);
-  const [lastCommand, setLastCommand] = useState<string>('');
-  const [confidence, setConfidence] = useState<number>(0);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const wantListeningRef = useRef(false);
+  const restartTimesRef = useRef<number[]>([]);
+  const restartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Initialize speech recognition
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-        const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-        speechRecognitionRef.current = new SpeechRecognitionAPI();
-        if (speechRecognitionRef.current) {
-          speechRecognitionRef.current.continuous = true;
-          speechRecognitionRef.current.interimResults = false;
-          speechRecognitionRef.current.lang = 'en-US';
-          speechRecognitionRef.current.onresult = event => {
-            const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-            const currentConfidence = event.results[event.results.length - 1][0].confidence;
-            setLastCommand(transcript);
-            setConfidence(currentConfidence);
-            parseCommand(transcript);
-          };
-          speechRecognitionRef.current.onerror = event => {
-            console.error('Speech recognition error:', event.error);
-          };
-          speechRecognitionRef.current.onend = () => {
-            // Restart if we're still supposed to be listening
-            if (isListening && speechRecognitionRef.current) {
-              try {
-                speechRecognitionRef.current.start();
-              } catch (e) {
-                console.log('Recognition already started');
-              }
-            }
-          };
-        }
-      } else {
-        console.warn('Speech recognition not supported in this browser');
-      }
+  // The recognizer's handlers are created once, so they must read the LATEST props through a ref.
+  // Capturing props directly froze them at their first-render values: "next step" always acted on
+  // step 0, and the restart check always saw isListening === false.
+  const latest = useRef({ onCommand, totalSteps, totalIngredients, onListeningStopped });
+  latest.current = { onCommand, totalSteps, totalIngredients, onListeningStopped };
+
+  const stopForGood = (message?: string) => {
+    wantListeningRef.current = false;
+    if (message) toast.error(message);
+    latest.current.onListeningStopped?.();
+  };
+
+  const startRecognition = () => {
+    try {
+      recognitionRef.current?.start();
+    } catch {
+      // InvalidStateError: already started. Nothing to do.
     }
-    return () => {
-      if (speechRecognitionRef.current) {
-        try {
-          speechRecognitionRef.current.abort();
-        } catch (e) {
-          console.log('Recognition already stopped');
-        }
+  };
+
+  // Create the recognizer once
+  useEffect(() => {
+    if (!isSpeechRecognitionSupported()) return;
+
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognitionAPI() as unknown as SpeechRecognition;
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = (event) => {
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (!result.isFinal) continue;
+
+        const { onCommand, totalSteps, totalIngredients } = latest.current;
+        const parsed = parseVoiceCommand(result[0].transcript, { totalSteps, totalIngredients });
+        if (parsed.kind === 'action') onCommand(parsed.action);
+        else if (parsed.kind === 'error') toast.error(parsed.message);
       }
     };
+
+    recognition.onerror = (event) => {
+      switch (event.error) {
+        case 'not-allowed':
+        case 'service-not-allowed':
+          stopForGood('Microphone access is blocked. Allow it in your browser settings to use voice commands.');
+          break;
+        case 'audio-capture':
+          stopForGood('No microphone found.');
+          break;
+        case 'network':
+          stopForGood('Voice commands need an internet connection.');
+          break;
+        case 'no-speech':
+        case 'aborted':
+          break; // normal: silence, or we stopped it ourselves
+        default:
+          console.error('Speech recognition error:', event.error);
+      }
+    };
+
+    recognition.onend = () => {
+      if (!wantListeningRef.current) return;
+
+      const now = Date.now();
+      restartTimesRef.current = [...restartTimesRef.current.filter((t) => now - t < RESTART_WINDOW_MS), now];
+      if (restartTimesRef.current.length > MAX_RESTARTS_IN_WINDOW) {
+        stopForGood("Voice commands keep stopping. Please try again.");
+        return;
+      }
+      restartTimerRef.current = setTimeout(() => {
+        if (wantListeningRef.current) startRecognition();
+      }, RESTART_DELAY_MS);
+    };
+
+    recognitionRef.current = recognition;
+
+    return () => {
+      wantListeningRef.current = false;
+      if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
+      recognition.onend = null;
+      try {
+        recognition.abort();
+      } catch {
+        // already stopped
+      }
+      recognitionRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Start or stop listening based on isListening prop
+  // Start/stop when the parent toggles listening
   useEffect(() => {
+    wantListeningRef.current = isListening;
     if (isListening) {
-      startListening();
+      restartTimesRef.current = [];
+      startRecognition();
     } else {
-      stopListening();
+      if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
+      try {
+        recognitionRef.current?.stop();
+      } catch {
+        // not running
+      }
     }
   }, [isListening]);
-  const startListening = () => {
-    if (speechRecognitionRef.current) {
-      try {
-        speechRecognitionRef.current.start();
-      } catch (error) {
-        console.error('Error starting speech recognition:', error);
-      }
-    }
-  };
-  const stopListening = () => {
-    if (speechRecognitionRef.current) {
-      try {
-        speechRecognitionRef.current.stop();
-      } catch (error) {
-        console.error('Error stopping speech recognition:', error);
-      }
-    }
-  };
-  const parseCommand = (command: string) => {
-    // Navigation commands
-    if (command.includes('next step') || command.includes('go forward')) {
-      onCommand({
-        type: 'NEXT_STEP'
-      });
-      return;
-    }
-    if (command.includes('previous step') || command.includes('go back') || command.includes('last step')) {
-      onCommand({
-        type: 'PREVIOUS_STEP'
-      });
-      return;
-    }
 
-    // Go to specific step
-    const stepMatch = command.match(/(?:go to|show|jump to) step (\d+)/i);
-    if (stepMatch && stepMatch[1]) {
-      const stepNumber = parseInt(stepMatch[1]);
-      if (stepNumber > 0 && stepNumber <= totalSteps) {
-        onCommand({
-          type: 'GO_TO_STEP',
-          stepNumber: stepNumber - 1
-        }); // Convert to 0-based index
-        return;
-      } else {
-        toast.error(`Step ${stepNumber} is out of range. There are ${totalSteps} steps.`);
-        return;
-      }
-    }
-
-    // Read current step
-    if (command.includes('read step') || command.includes('repeat step') || command.includes('what does it say')) {
-      onCommand({
-        type: 'READ_STEP'
-      });
-      return;
-    }
-
-    // Ingredient navigation
-    if (command.includes('next ingredient') || command.includes('following ingredient')) {
-      onCommand({
-        type: 'NEXT_INGREDIENT'
-      });
-      return;
-    }
-    if (command.includes('previous ingredient') || command.includes('last ingredient')) {
-      onCommand({
-        type: 'PREVIOUS_INGREDIENT'
-      });
-      return;
-    }
-
-    // List all ingredients
-    if (command.includes('list ingredients') || command.includes('what ingredients') || command.includes('show ingredients')) {
-      onCommand({
-        type: 'LIST_INGREDIENTS'
-      });
-      return;
-    }
-
-    // Read specific ingredient
-    const ingredientMatch = command.match(/(?:read|what is|tell me about) ingredient (\d+)/i);
-    if (ingredientMatch && ingredientMatch[1]) {
-      const ingredientIndex = parseInt(ingredientMatch[1]);
-      if (ingredientIndex > 0 && ingredientIndex <= totalIngredients) {
-        onCommand({
-          type: 'READ_INGREDIENT',
-          ingredientIndex: ingredientIndex - 1
-        }); // Convert to 0-based index
-        return;
-      } else {
-        toast.error(`Ingredient ${ingredientIndex} is out of range. There are ${totalIngredients} ingredients.`);
-        return;
-      }
-    }
-
-    // Timer commands
-    const timerMatch = command.match(/(?:set|start) timer (?:for )?(\d+)(?: minutes?)?/i);
-    if (timerMatch && timerMatch[1]) {
-      const minutes = parseInt(timerMatch[1]);
-      onCommand({
-        type: 'START_TIMER',
-        minutes
-      });
-      return;
-    }
-    if (command.includes('stop timer') || command.includes('cancel timer') || command.includes('end timer')) {
-      onCommand({
-        type: 'STOP_TIMER'
-      });
-      return;
-    }
-
-    // Display commands
-    if (command.includes('fullscreen') || command.includes('full screen')) {
-      onCommand({
-        type: 'TOGGLE_FULLSCREEN'
-      });
-      return;
-    }
-
-    // Exit command
-    if (command.includes('exit') || command.includes('close') || command.includes('quit')) {
-      onCommand({
-        type: 'EXIT'
-      });
-      return;
-    }
-  };
-  return <>
-      {children}
-      {/* Optionally render debug info */}
-      {/* 
-       <div className="fixed bottom-4 left-4 bg-card/80 backdrop-blur-sm p-2 rounded-lg text-xs">
-        <div>Last command: {lastCommand}</div>
-        <div>Confidence: {Math.round(confidence * 100)}%</div>
-       </div>
-       */}
-    </>;
+  return <>{children}</>;
 }

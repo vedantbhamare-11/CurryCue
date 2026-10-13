@@ -6,7 +6,7 @@ import { Mic, MicOff, VolumeX, Volume2, ChevronLeft, ChevronRight, X, Clock, Max
 import { Recipe } from '@/types';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { VoiceCommandParser, VoiceCommandAction } from './voice-command-parser';
+import { VoiceCommandParser, VoiceCommandAction, isSpeechRecognitionSupported } from './voice-command-parser';
 import { CookingAssistant } from './cooking-assistant';
 import { CompletionCelebration } from './completion-celebration';
 interface CookingModeProps {
@@ -31,52 +31,18 @@ export function CookingMode({
   const [showCelebration, setShowCelebration] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const speechSynthRef = useRef<SpeechSynthesis | null>(null);
-  const speechRecognitionRef = useRef<SpeechRecognition | null>(null); // eslint-disable-line no-undef
   const timerIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Initialize Web Speech API
+  // Text-to-speech. Speech *recognition* lives in VoiceCommandParser (a second recognizer here
+  // used to fight it for the mic and fired READ_STEP on any speech).
   useEffect(() => {
     if (typeof window !== 'undefined') {
       speechSynthRef.current = window.speechSynthesis;
-
-      // Initialize speech recognition if available
-      if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-        const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-        speechRecognitionRef.current = new SpeechRecognitionAPI() as unknown as SpeechRecognition; // eslint-disable-line no-undef
-        if (speechRecognitionRef.current) {
-          speechRecognitionRef.current.continuous = true;
-          speechRecognitionRef.current.interimResults = false;
-          speechRecognitionRef.current.lang = 'en-US';
-          speechRecognitionRef.current.onresult = event => {
-            const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-            handleVoiceCommandAction({
-              type: 'READ_STEP'
-            });
-          };
-          speechRecognitionRef.current.onerror = event => {
-            console.error('Speech recognition error:', event.error);
-            setIsListening(false);
-          };
-          speechRecognitionRef.current.onend = () => {
-            // Restart if we're still supposed to be listening
-            if (isListening && speechRecognitionRef.current) {
-              speechRecognitionRef.current.start();
-            }
-          };
-        }
-      } else {
-        console.warn('Speech recognition not supported in this browser');
-      }
     }
     return () => {
       // Clean up speech synthesis
       if (speechSynthRef.current) {
         speechSynthRef.current.cancel();
-      }
-
-      // Clean up speech recognition
-      if (speechRecognitionRef.current) {
-        speechRecognitionRef.current.abort();
       }
 
       // Clean up timer
@@ -169,48 +135,40 @@ export function CookingMode({
     }
   };
 
-  // Start speech recognition
+  // Start voice commands (the recognizer itself lives in VoiceCommandParser, driven by isListening)
   const startListening = () => {
-    if (speechRecognitionRef.current) {
-      try {
-        speechRecognitionRef.current.start();
-        setIsListening(true);
-        toast.success("Voice commands activated");
-        speak("Voice commands activated. Say 'next' to go to the next step, 'previous' to go back, or 'read' to hear the current step.");
-      } catch (error) {
-        console.error('Error starting speech recognition:', error);
-        toast.error("Couldn't start voice recognition");
-      }
-    } else {
-      toast.error("Speech recognition not supported in this browser");
+    if (!isSpeechRecognitionSupported()) {
+      toast.error("Voice commands aren't supported in this browser. Try Chrome or Edge.");
+      return;
     }
+    setIsListening(true);
+    toast.success("Voice commands activated");
+    speak("Voice commands activated. Say 'next step', 'previous step' or 'read step'.", true);
   };
 
-  // Stop speech recognition
+  // Stop voice commands
   const stopListening = () => {
-    if (speechRecognitionRef.current) {
-      speechRecognitionRef.current.stop();
-      setIsListening(false);
-      toast.success("Voice commands deactivated");
-    }
+    setIsListening(false);
+    toast.success("Voice commands deactivated");
   };
 
   // Toggle text-to-speech
   const toggleSpeech = () => {
-    setIsSpeechEnabled(!isSpeechEnabled);
-    if (!isSpeechEnabled) {
-      speak("Text to speech enabled. I will read the instructions for you.");
-      speak(recipe.steps[currentStep]);
-    } else {
-      if (speechSynthRef.current) {
-        speechSynthRef.current.cancel();
-      }
+    const enabled = !isSpeechEnabled;
+    setIsSpeechEnabled(enabled);
+    if (enabled) {
+      // One utterance: speak() cancels whatever is playing, and isSpeechEnabled is still the old
+      // value in this render, so the confirmation has to bypass the gate with `force`.
+      speak(`Read aloud is on. ${recipe.steps[currentStep]}`, true);
+    } else if (speechSynthRef.current) {
+      speechSynthRef.current.cancel();
     }
   };
 
-  // Speak text using speech synthesis
-  const speak = (text: string) => {
-    if (speechSynthRef.current && isSpeechEnabled) {
+  // Speak text using speech synthesis. `force` is for things the user explicitly asked for
+  // ("read step", turning read-aloud on) so they work even while auto read-aloud is off.
+  const speak = (text: string, force = false) => {
+    if (speechSynthRef.current && (isSpeechEnabled || force)) {
       speechSynthRef.current.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 0.9; // Slightly slower than default
@@ -256,23 +214,23 @@ export function CookingMode({
       toast.info("You're at the first ingredient");
     }
   };
-  const listAllIngredients = () => {
+  const listAllIngredients = (forceSpeak = false) => {
     setShowIngredients(true);
-    if (isSpeechEnabled) {
+    if (isSpeechEnabled || forceSpeak) {
       const ingredientsList = recipe.ingredients.map((ingredient, index) => {
         const text = ingredient.quantity && ingredient.unit ? `${ingredient.name}, ${ingredient.quantity} ${ingredient.unit}` : ingredient.name;
         return `Ingredient ${index + 1}: ${text}`;
       }).join(". ");
-      speak(`Here are all the ingredients: ${ingredientsList}`);
+      speak(`Here are all the ingredients: ${ingredientsList}`, true);
     }
   };
-  const readIngredient = (index: number) => {
+  const readIngredient = (index: number, forceSpeak = false) => {
     if (index >= 0 && index < recipe.ingredients.length) {
       setCurrentIngredient(index);
-      if (isSpeechEnabled) {
+      if (isSpeechEnabled || forceSpeak) {
         const ingredient = recipe.ingredients[index];
         const text = ingredient.quantity && ingredient.unit ? `${ingredient.name}, ${ingredient.quantity} ${ingredient.unit}` : ingredient.name;
-        speak(`Ingredient ${index + 1}: ${text}`);
+        speak(`Ingredient ${index + 1}: ${text}`, true);
       }
       if (!showIngredients) {
         setShowIngredients(true);
@@ -296,7 +254,7 @@ export function CookingMode({
         }
         break;
       case 'READ_STEP':
-        speak(recipe.steps[currentStep]);
+        speak(recipe.steps[currentStep], true);
         break;
       case 'NEXT_INGREDIENT':
         handleNextIngredient();
@@ -305,10 +263,10 @@ export function CookingMode({
         handlePreviousIngredient();
         break;
       case 'LIST_INGREDIENTS':
-        listAllIngredients();
+        listAllIngredients(true);
         break;
       case 'READ_INGREDIENT':
-        readIngredient(action.ingredientIndex);
+        readIngredient(action.ingredientIndex, true);
         break;
       case 'START_TIMER':
         startTimer(action.minutes * 60);
@@ -402,7 +360,7 @@ export function CookingMode({
   const toggleAssistant = () => {
     setShowAssistant(!showAssistant);
   };
-  return <VoiceCommandParser isListening={isListening} onCommand={handleVoiceCommandAction} totalSteps={recipe.steps.length} totalIngredients={recipe.ingredients.length} currentStep={currentStep} currentIngredient={currentIngredient}>
+  return <VoiceCommandParser isListening={isListening} onCommand={handleVoiceCommandAction} totalSteps={recipe.steps.length} totalIngredients={recipe.ingredients.length} onListeningStopped={() => setIsListening(false)}>
       <div ref={containerRef} className={cn(" bg-gradient-to-b from-background to-muted/30 text-foreground flex flex-col", " w-84  h-full lg:w-full lg:h-full min-h-screen overflow-y-auto relative", isFullscreen && "fixed inset-0 z-[100] max-h-screen")} data-unique-id="f34cdaa8-e4dd-4563-b9e2-efe62d774ce3" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
         {/* Header */}
         <div className="bg-card/80 mt-4 backdrop-blur-md border-b border-border p-2 lg:p-4 flex justify-between items-center" data-unique-id="fa202a2b-fe88-4c7e-828f-1a26a8e5d6e9" data-file-name="components/cooking-mode.tsx">
@@ -418,13 +376,13 @@ export function CookingMode({
               <MessageSquare className="lg:w-5 lg:h-5 w-4 h-4" />
             </button>
             
-            {/* <button onClick={toggleSpeech} className={cn("p-2 rounded-full transition-colors", isSpeechEnabled ? "bg-primary text-primary-foreground" : "hover:bg-muted")} aria-label={isSpeechEnabled ? "Disable text-to-speech" : "Enable text-to-speech"} data-unique-id="ada9920e-e483-48da-9876-c34d6d03fef2" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+            <button onClick={toggleSpeech} className={cn("p-2 rounded-full transition-colors", isSpeechEnabled ? "bg-primary text-primary-foreground" : "hover:bg-muted")} aria-label={isSpeechEnabled ? "Disable text-to-speech" : "Enable text-to-speech"} data-unique-id="ada9920e-e483-48da-9876-c34d6d03fef2" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
               {isSpeechEnabled ? <Volume2 className="lg:w-5 lg:h-5 w-4 h-4" /> : <VolumeX className="lg:w-5 lg:h-5 w-4 h-4" />}
-            </button> */}
+            </button>
             
-            {/* <button onClick={toggleSpeechRecognition} className={cn("p-2 rounded-full transition-colors", isListening ? "bg-primary text-primary-foreground" : "hover:bg-muted")} aria-label={isListening ? "Disable voice commands" : "Enable voice commands"} data-unique-id="cdd3c9dc-7ba3-47bb-8bed-7b56688ea580" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+            <button onClick={toggleSpeechRecognition} className={cn("p-2 rounded-full transition-colors", isListening ? "bg-primary text-primary-foreground" : "hover:bg-muted")} aria-label={isListening ? "Disable voice commands" : "Enable voice commands"} data-unique-id="cdd3c9dc-7ba3-47bb-8bed-7b56688ea580" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
               {isListening ? <Mic className="lg:w-5 lg:h-5 w-4 h-4" /> : <MicOff className="lg:w-5 lg:h-5 w-4 h-4" />}
-            </button> */}
+            </button>
             
             <button onClick={toggleFullscreen} className="p-2 rounded-full hover:bg-muted transition-colors" aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"} data-unique-id="6f7da888-01d0-47af-8206-d3c444e329d8" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
               {isFullscreen ? <Minimize className="lg:w-5 lg:h-5 w-4 h-4" /> : <Maximize className="lg:w-5 lg:h-5 w-4 h-4" />}
@@ -573,7 +531,7 @@ export function CookingMode({
                     <span className="text-muted-foreground text-xs" data-unique-id="859e2e58-7e06-4240-ad37-a08144cb544c" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="9efa46d5-4924-4fb4-baca-f036e8fcd17a" data-file-name="components/cooking-mode.tsx">Toggle fullscreen</span></span>
                   </div>
                   <div className="flex items-center gap-2" data-unique-id="84df1076-c815-4cea-808b-489c5e770c8d" data-file-name="components/cooking-mode.tsx">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="4a32dd94-5c11-4530-bf10-6b78346d0dfe" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="b60fc604-90ac-426a-8b21-7ad6329d1b03" data-file-name="components/cooking-mode.tsx">"Exit"</span></span>
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs" data-unique-id="4a32dd94-5c11-4530-bf10-6b78346d0dfe" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="b60fc604-90ac-426a-8b21-7ad6329d1b03" data-file-name="components/cooking-mode.tsx">"Exit cooking"</span></span>
                     <span className="text-muted-foreground text-xs" data-unique-id="e10f02fa-41e9-4b9e-a3ed-7be0488e8b5d" data-file-name="components/cooking-mode.tsx"><span className="editable-text" data-unique-id="6d39de90-9660-4790-ab71-2551a77ad2ea" data-file-name="components/cooking-mode.tsx">Close cooking mode</span></span>
                   </div>
                 </div>
