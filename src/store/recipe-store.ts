@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Recipe } from '@/types';
+import { stripStepLabel } from '@/lib/utils';
 
 interface RecipeState {
   suggestedRecipes: Recipe[];
@@ -55,11 +56,20 @@ export const useRecipeStore = create<RecipeState>()(
         recentRecipes,
       }),
       // Also ignore a stale isLoading already saved in users' localStorage by the old version
-      merge: (persisted, current) => ({
-        ...current,
-        ...(persisted as Partial<RecipeState>),
-        isLoading: false,
-      }),
+      merge: (persisted, current) => {
+        const saved = persisted as Partial<RecipeState>;
+        // Recipes saved before the prompt fix have "Step 1:" baked into their step text
+        const cleanSteps = (recipes?: Recipe[]) =>
+          recipes?.map((recipe) => ({ ...recipe, steps: (recipe.steps ?? []).map(stripStepLabel).filter(Boolean) }));
+        return {
+          ...current,
+          ...saved,
+          suggestedRecipes: cleanSteps(saved.suggestedRecipes) ?? current.suggestedRecipes,
+          favoriteRecipes: cleanSteps(saved.favoriteRecipes) ?? current.favoriteRecipes,
+          recentRecipes: cleanSteps(saved.recentRecipes) ?? current.recentRecipes,
+          isLoading: false,
+        };
+      },
     }
   )
 );

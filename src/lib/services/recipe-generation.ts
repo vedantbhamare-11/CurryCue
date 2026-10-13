@@ -2,6 +2,7 @@ import { generateText, TextGenerationResult } from '@/lib/api/util';
 import { Ingredient, Recipe, UserPreferences } from '@/types';
 import { ModelProvider } from '@/types';
 import { RateLimiter } from '@/lib/services/rate-limiter';
+import { stripStepLabel } from '@/lib/utils';
 
 export interface RecipeGenerationOptions {
   ingredients: Ingredient[];
@@ -310,11 +311,11 @@ export async function generateRecipes(
           ],
           "missingIngredients": [],
           "steps": [
-            "Step 1: Wash and soak rice and dal for 15 minutes",
-            "Step 2: Heat oil in a pot, add turmeric",
-            "Step 3: Add rice and dal, stir for 2 minutes",
-            "Step 4: Add water (2:1 ratio), salt to taste",
-            "Step 5: Cook on medium heat for 20 minutes until soft"
+            "Wash and soak rice and dal for 15 minutes",
+            "Heat oil in a pot, add turmeric",
+            "Add rice and dal, stir for 2 minutes",
+            "Add water (2:1 ratio), salt to taste",
+            "Cook on medium heat for 20 minutes until soft"
           ],
           "cuisine": "${cuisineType || 'Indian'}",
           "tags": ["authentic", "traditional", "healthy"]
@@ -324,7 +325,7 @@ export async function generateRecipes(
       IMPORTANT:
       - Calculate match percentage based on how many user ingredients are used
       - Keep recipes simple and authentic
-      - Provide clear, minimal steps
+      - Provide clear, minimal steps; write each step as plain text without a "Step N:" or numbered prefix (the app numbers them)
       - Include estimated cooking time
       - Separate user ingredients from assumed pantry ingredients
       - Only suggest recipes you are confident are authentic to the cuisine
@@ -405,7 +406,7 @@ export async function generateRecipes(
           difficulty: aiRecipe.difficulty || 'medium',
           image: recipeImages[index % recipeImages.length],
           ingredients: allIngredients,
-          steps: aiRecipe.steps || [],
+          steps: (Array.isArray(aiRecipe.steps) ? aiRecipe.steps : []).map(stripStepLabel).filter(Boolean),
           cuisine: aiRecipe.cuisine || cuisineType || 'General',
           tags: aiRecipe.tags || ['authentic'],
           usedIngredients: used,

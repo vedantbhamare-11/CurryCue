@@ -36,3 +36,14 @@ export function base64ToDataUrl(base64: string, mimeType: string = 'image/jpeg')
   // Create a data URL from the base64 string
   return `data:${mimeType};base64,${base64}`;
 }
+
+/**
+ * The UI numbers steps itself, so drop any "Step 1:", "1.", "2)" label the LLM put in the text.
+ * Models add these even when told not to, so don't rely on the prompt alone.
+ */
+export function stripStepLabel(step: unknown): string {
+  return String(step ?? '')
+    .trim()
+    .replace(/^(?:step\s*\d+\s*[:.)\-–—]\s*|\d+\s*[.):]\s+)/i, '')
+    .trim();
+}
