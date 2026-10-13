@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Menu, Search, ShoppingBag, User, ShoppingCart, Coffee, X, MoonStar, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { useIngredientStore } from '@/store/ingredient-store';
 export function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
+  const ingredientCount = useIngredientStore((state) => state.ingredients.length);
   const {
     theme,
     setTheme
@@ -67,9 +69,9 @@ export function NavBar() {
             
             <div className="hidden md:flex items-center gap-2" data-unique-id="117f608e-2a76-44f3-a53d-026e9ea90b3d" data-file-name="components/nav-bar.tsx">
               
-              <Link href="/grocery" className="p-2 rounded-full hover:bg-muted transition-colors relative" data-unique-id="552154c4-b188-47e4-b24c-163c73cb51fd" data-file-name="components/nav-bar.tsx">
+              <Link href="/grocery" className="p-2 rounded-full hover:bg-muted transition-colors relative" data-unique-id="552154c4-b188-47e4-b24c-163c73cb51fd" data-file-name="components/nav-bar.tsx" aria-label={ingredientCount > 0 ? `Grocery list, ${ingredientCount} ingredients` : "Grocery list"}>
                 <ShoppingBag className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center" data-unique-id="4cc73373-e649-48a4-bf38-ab6893d01269" data-file-name="components/nav-bar.tsx"><span className="editable-text" data-unique-id="4c4835c9-d867-449c-a07b-2a9382c5119f" data-file-name="components/nav-bar.tsx">3</span></span>
+                {ingredientCount > 0 && <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full min-w-4 h-4 px-1 flex items-center justify-center">{ingredientCount > 9 ? '9+' : ingredientCount}</span>}
               </Link>
               
             </div>

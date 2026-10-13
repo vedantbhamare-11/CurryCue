@@ -51,6 +51,12 @@ export function IngredientSearchBar() {
   }, [query, ingredientOptions]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // No autocomplete match: Enter should still add what was typed, not silently do nothing
+    if (e.key === 'Enter' && !showSuggestions && query.trim()) {
+      e.preventDefault();
+      handleAddCustomIngredient();
+      return;
+    }
     if (!showSuggestions) return;
     switch (e.key) {
       case 'ArrowDown':

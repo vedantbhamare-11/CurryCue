@@ -8,15 +8,13 @@ import { useUserPreferencesStore } from '@/store/user-preferences-store';
 import { useRecipeStore } from '@/store/recipe-store';
 import { generateRecipes } from '@/lib/services/recipe-generation';
 import { AIProviderSelector } from './ai-provider-selector';
-import { ApiUsageInfo } from './api-usage-info';
 import { ModelProvider } from '@/types';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+
+// Eggs are left out on purpose: whether they count as vegetarian varies by household
+const MEAT_PATTERN = /\b(chicken|mutton|lamb|beef|pork|fish|prawns?|shrimp|crab|salmon|tuna|bacon|ham|sausages?|turkey|keema|meat)\b/i;
 export function RecipeGenerator() {
-  // Format provider name for display
-  const formatProviderName = (provider: string): string => {
-    return provider.replace('azure-', '').replace('-bedrock', '').split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  };
   const {
     ingredients
   } = useIngredientStore();
@@ -37,6 +35,8 @@ export function RecipeGenerator() {
   const [maxCookingTime, setMaxCookingTime] = useState<number>(60);
   const [servings, setServings] = useState<number>(2);
   const [dietaryPreference, setDietaryPreference] = useState<'veg' | 'non-veg'>('veg');
+  // "Veg" asks the model for vegetarian recipes only, which silently ignores any meat in the pantry
+  const meatIngredient = ingredients.find((ingredient) => MEAT_PATTERN.test(ingredient.name));
   const handleGenerateRecipes = async () => {
     if (ingredients.length === 0) {
       toast.error("Please add some ingredients first");
@@ -97,7 +97,6 @@ export function RecipeGenerator() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3" data-unique-id="fbd0fe1b-f57b-4183-853b-f1dc9836af4f" data-file-name="components/recipe-generator.tsx">
           <h3 className="text-xl font-bold" data-unique-id="c678b60c-3ba6-4cbd-9605-12221fde1f8d" data-file-name="components/recipe-generator.tsx"><span className="editable-text" data-unique-id="949b3eb4-2654-45b8-b052-d808eb41fb8e" data-file-name="components/recipe-generator.tsx">Generate Recipes</span></h3>
           <div className="flex lg:flex-row flex-col items-center gap-3" data-unique-id="09cebf9c-b989-46b9-8430-224ef1bd5aff" data-file-name="components/recipe-generator.tsx">
-            <ApiUsageInfo provider={formatProviderName(selectedProvider)} />
             <AIProviderSelector currentProvider={selectedProvider} onProviderChange={setSelectedProvider} />
           </div>
         </div>
@@ -199,6 +198,11 @@ export function RecipeGenerator() {
             </span></button>
           </div>
         </div>
+        {dietaryPreference === 'veg' && meatIngredient && <p className="col-span-full text-sm text-amber-600 dark:text-amber-400">
+            Your pantry has {meatIngredient.name.toLowerCase()}, but Veg only suggests vegetarian recipes.{' '}
+            <button type="button" onClick={() => setDietaryPreference('non-veg')} className="underline font-medium">Switch to Non-Veg</button>
+          </p>}
+
                 </div>
               </div>
             </motion.div>
