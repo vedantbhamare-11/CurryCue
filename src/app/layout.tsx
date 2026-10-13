@@ -2,7 +2,6 @@ import "@/styles/globals.css";
 import React from "react";
 import { Quicksand, Nunito } from "next/font/google";
 import { type Metadata } from "next";
-import { DevtoolsProvider } from "creatr-devtools";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { NavBar } from "@/components/nav-bar";
@@ -101,13 +100,11 @@ export default function RootLayout({
         data-file-name="app/layout.tsx"
       >
         <ThemeProvider attribute="class" defaultTheme="light">
-          <DevtoolsProvider>
-            <NavBar />
-            {children}
-            <Analytics />
-            <SpeedInsights />
-            <Toaster position="top-center" richColors />
-          </DevtoolsProvider>
+          <NavBar />
+          {children}
+          <Analytics />
+          <SpeedInsights />
+          <Toaster position="top-center" richColors />
         </ThemeProvider>
       </body>
     </html>
