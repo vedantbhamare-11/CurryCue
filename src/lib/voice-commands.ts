@@ -37,11 +37,20 @@ const ONES: Record<string, number> = {
 const TENS: Record<string, number> = { thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 };
 
 // Chrome usually returns digits already, but "step three" does happen. "twenty five" -> 25.
+// Speech recognition hears "read ingredient two" as "read ingredient to". Only trusted right after
+// "step"/"ingredient(s)", where a number is the only thing that can follow.
+const NUMBER_HOMOPHONES: Record<string, string> = { to: '2', too: '2', won: '1', for: '4', ate: '8' };
+
 function wordsToDigits(tokens: string[]): string[] {
   const out: string[] = [];
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
     const next = tokens[i + 1];
+    const previous = tokens[i - 1];
+    if (NUMBER_HOMOPHONES[token] && (previous === 'step' || previous === 'ingredient' || previous === 'ingredients')) {
+      out.push(NUMBER_HOMOPHONES[token]);
+      continue;
+    }
     const tensValue = token === 'twenty' ? 20 : TENS[token];
     if (tensValue !== undefined && next !== undefined && ONES[next] !== undefined && ONES[next] < 10) {
       out.push(String(tensValue + ONES[next]));
@@ -89,8 +98,8 @@ export function parseVoiceCommand(transcript: string, context: VoiceContext): Vo
     return action({ type: 'STOP_TIMER' });
   }
   const timerMatch =
-    text.match(/^(?:set|start) (?:a |the )?timer (?:for )?(\d+)(?: minutes?| mins?)?$/) ||
-    text.match(/^(?:set|start) (?:a )?(\d+) ?(?:minute|min) timer$/);
+    text.match(/^(?:(?:set|start) )?(?:a |the )?timer (?:for )?(\d+)(?: minutes?| mins?)?$/) ||
+    text.match(/^(?:(?:set|start) )?(?:a |the )?(\d+) ?(?:minutes?|mins?) timer$/);
   if (timerMatch) {
     const minutes = parseInt(timerMatch[1], 10);
     if (minutes < 1 || minutes > MAX_TIMER_MINUTES) {
@@ -100,7 +109,7 @@ export function parseVoiceCommand(transcript: string, context: VoiceContext): Vo
   }
 
   // Ingredients (checked before steps so "next ingredient" never reads as "next")
-  const readIngredient = text.match(/^(?:read|what is|tell me about|show) ingredient (\d+)$/);
+  const readIngredient = text.match(/^(?:read|what is|tell me about|show) ingredients? (\d+)$/);
   if (readIngredient) {
     const number = parseInt(readIngredient[1], 10);
     if (number < 1 || number > context.totalIngredients) {
@@ -108,9 +117,9 @@ export function parseVoiceCommand(transcript: string, context: VoiceContext): Vo
     }
     return action({ type: 'READ_INGREDIENT', ingredientIndex: number - 1 });
   }
-  if (/^(?:next|following) ingredient$/.test(text)) return action({ type: 'NEXT_INGREDIENT' });
-  if (/^(?:previous|last) ingredient$/.test(text)) return action({ type: 'PREVIOUS_INGREDIENT' });
-  if (/^(?:list|show|read|what are)(?: me)?(?: all)?(?: the)? ingredients$|^what ingredients$/.test(text)) {
+  if (/^(?:next|following) ingredients?$/.test(text)) return action({ type: 'NEXT_INGREDIENT' });
+  if (/^(?:previous|last) ingredients?$/.test(text)) return action({ type: 'PREVIOUS_INGREDIENT' });
+  if (/^(?:list|show|read|what are)(?: me)?(?: all)?(?: the)? ingredients?(?: list)?$|^what ingredients$|^ingredients? list$/.test(text)) {
     return action({ type: 'LIST_INGREDIENTS' });
   }
 

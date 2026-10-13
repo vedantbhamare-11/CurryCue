@@ -15,6 +15,8 @@ interface VoiceCommandParserProps {
   onCommand: (action: VoiceCommandAction) => void;
   totalSteps: number;
   totalIngredients: number;
+  // Reports every final transcript and how it was interpreted, so the UI can show what was heard
+  onHeard?: (transcript: string, kind: 'action' | 'error' | 'ignored') => void;
   // Called when listening had to stop by itself (mic blocked, no network, too many restarts)
   // so the parent can flip its "listening" UI back off
   onListeningStopped?: () => void;
@@ -33,6 +35,7 @@ export function VoiceCommandParser({
   totalSteps,
   totalIngredients,
   onListeningStopped,
+  onHeard,
   children
 }: VoiceCommandParserProps) {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -43,8 +46,8 @@ export function VoiceCommandParser({
   // The recognizer's handlers are created once, so they must read the LATEST props through a ref.
   // Capturing props directly froze them at their first-render values: "next step" always acted on
   // step 0, and the restart check always saw isListening === false.
-  const latest = useRef({ onCommand, totalSteps, totalIngredients, onListeningStopped });
-  latest.current = { onCommand, totalSteps, totalIngredients, onListeningStopped };
+  const latest = useRef({ onCommand, totalSteps, totalIngredients, onListeningStopped, onHeard });
+  latest.current = { onCommand, totalSteps, totalIngredients, onListeningStopped, onHeard };
 
   const stopForGood = (message?: string) => {
     wantListeningRef.current = false;
@@ -75,8 +78,10 @@ export function VoiceCommandParser({
         const result = event.results[i];
         if (!result.isFinal) continue;
 
-        const { onCommand, totalSteps, totalIngredients } = latest.current;
-        const parsed = parseVoiceCommand(result[0].transcript, { totalSteps, totalIngredients });
+        const { onCommand, totalSteps, totalIngredients, onHeard } = latest.current;
+        const transcript = result[0].transcript;
+        const parsed = parseVoiceCommand(transcript, { totalSteps, totalIngredients });
+        onHeard?.(transcript.trim(), parsed.kind);
         if (parsed.kind === 'action') onCommand(parsed.action);
         else if (parsed.kind === 'error') toast.error(parsed.message);
       }

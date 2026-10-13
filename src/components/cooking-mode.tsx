@@ -20,6 +20,8 @@ export function CookingMode({
   const [currentStep, setCurrentStep] = useState(0);
   const [currentIngredient, setCurrentIngredient] = useState(0);
   const [showIngredients, setShowIngredients] = useState(false);
+  // Last thing the recognizer heard, so users (and we) can see what was understood
+  const [lastHeard, setLastHeard] = useState<{ text: string; kind: 'action' | 'error' | 'ignored' } | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isSpeechEnabled, setIsSpeechEnabled] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -73,7 +75,7 @@ export function CookingMode({
               clearInterval(timerIntervalRef.current);
             }
             setTimerRunning(false);
-            speak("Timer complete!");
+            speak("Timer complete!", true);
             toast.success("Timer complete!");
             return 0;
           }
@@ -181,36 +183,28 @@ export function CookingMode({
   const handleNextIngredient = () => {
     if (currentIngredient < recipe.ingredients.length - 1) {
       setCurrentIngredient(currentIngredient + 1);
-      if (isSpeechEnabled) {
-        const ingredient = recipe.ingredients[currentIngredient + 1];
-        const text = ingredient.quantity && ingredient.unit ? `${ingredient.name}, ${ingredient.quantity} ${ingredient.unit}` : ingredient.name;
-        speak(`Ingredient ${currentIngredient + 2}: ${text}`);
-      }
+      const ingredient = recipe.ingredients[currentIngredient + 1];
+      const text = ingredient.quantity && ingredient.unit ? `${ingredient.name}, ${ingredient.quantity} ${ingredient.unit}` : ingredient.name;
+      speak(`Ingredient ${currentIngredient + 2}: ${text}`, true);
       if (!showIngredients) {
         setShowIngredients(true);
       }
     } else {
-      if (isSpeechEnabled) {
-        speak("That was the last ingredient.");
-      }
+      speak("That was the last ingredient.", true);
       toast.info("That was the last ingredient");
     }
   };
   const handlePreviousIngredient = () => {
     if (currentIngredient > 0) {
       setCurrentIngredient(currentIngredient - 1);
-      if (isSpeechEnabled) {
-        const ingredient = recipe.ingredients[currentIngredient - 1];
-        const text = ingredient.quantity && ingredient.unit ? `${ingredient.name}, ${ingredient.quantity} ${ingredient.unit}` : ingredient.name;
-        speak(`Ingredient ${currentIngredient}: ${text}`);
-      }
+      const ingredient = recipe.ingredients[currentIngredient - 1];
+      const text = ingredient.quantity && ingredient.unit ? `${ingredient.name}, ${ingredient.quantity} ${ingredient.unit}` : ingredient.name;
+      speak(`Ingredient ${currentIngredient}: ${text}`, true);
       if (!showIngredients) {
         setShowIngredients(true);
       }
     } else {
-      if (isSpeechEnabled) {
-        speak("You're at the first ingredient.");
-      }
+      speak("You're at the first ingredient.", true);
       toast.info("You're at the first ingredient");
     }
   };
@@ -269,10 +263,10 @@ export function CookingMode({
         readIngredient(action.ingredientIndex, true);
         break;
       case 'START_TIMER':
-        startTimer(action.minutes * 60);
+        startTimer(action.minutes * 60, true);
         break;
       case 'STOP_TIMER':
-        stopTimer();
+        stopTimer(true);
         break;
       case 'TOGGLE_FULLSCREEN':
         toggleFullscreen();
@@ -318,24 +312,26 @@ export function CookingMode({
   };
 
   // Start a timer
-  const startTimer = (seconds: number) => {
+  const startTimer = (seconds: number, announce = false) => {
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
     }
     setTimer(seconds);
     setTimerRemaining(seconds);
     setTimerRunning(true);
-    speak(`Timer set for ${Math.floor(seconds / 60)} minutes and ${seconds % 60} seconds.`);
+    const minutes = Math.floor(seconds / 60);
+    const rest = seconds % 60;
+    speak(`Timer set for ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}${rest ? ` and ${rest} seconds` : ''}.`, announce);
     toast.success(`Timer set for ${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`);
   };
 
   // Stop the timer
-  const stopTimer = () => {
+  const stopTimer = (announce = false) => {
     setTimerRunning(false);
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
     }
-    speak("Timer stopped.");
+    speak("Timer stopped.", announce);
     toast.info("Timer stopped");
   };
 
@@ -360,7 +356,7 @@ export function CookingMode({
   const toggleAssistant = () => {
     setShowAssistant(!showAssistant);
   };
-  return <VoiceCommandParser isListening={isListening} onCommand={handleVoiceCommandAction} totalSteps={recipe.steps.length} totalIngredients={recipe.ingredients.length} onListeningStopped={() => setIsListening(false)}>
+  return <VoiceCommandParser isListening={isListening} onCommand={handleVoiceCommandAction} totalSteps={recipe.steps.length} totalIngredients={recipe.ingredients.length} onListeningStopped={() => setIsListening(false)} onHeard={(text, kind) => setLastHeard({ text, kind })}>
       <div ref={containerRef} className={cn(" bg-gradient-to-b from-background to-muted/30 text-foreground flex flex-col", " w-84  h-full lg:w-full lg:h-full min-h-screen overflow-y-auto relative", isFullscreen && "fixed inset-0 z-[100] max-h-screen")} data-unique-id="f34cdaa8-e4dd-4563-b9e2-efe62d774ce3" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
         {/* Header */}
         <div className="bg-card/80 mt-4 backdrop-blur-md border-b border-border p-2 lg:p-4 flex justify-between items-center" data-unique-id="fa202a2b-fe88-4c7e-828f-1a26a8e5d6e9" data-file-name="components/cooking-mode.tsx">
@@ -393,17 +389,55 @@ export function CookingMode({
         {/* Main content */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center" data-unique-id="60c08edf-ccb4-4417-93de-e3b607d4eafa" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
           {/* Top controls */}
-          <div className="w-full max-w-3xl mb-4 flex justify-between" data-unique-id="a84f52bf-0397-462f-94ec-188d7380e992" data-file-name="components/cooking-mode.tsx">
+          <div className="w-full max-w-3xl mb-4 flex flex-wrap items-center justify-between gap-2">
             <button onClick={togglePause} className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors", isPaused ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80")} data-unique-id="9e908e60-5a69-43ce-9803-65442c59119e" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
               {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
               <span className="text-sm" data-unique-id="a02045dd-a74a-4ebc-873c-12968f2f35df" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">{isPaused ? "Resume" : "Pause"}</span>
             </button>
-            
-            
+
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Always-visible countdown (the one inside the step card is hidden on small screens) */}
+              {timerRunning && <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-lg" aria-label="Timer countdown">
+                  <Clock className="w-4 h-4 text-primary" />
+                  <span className="font-mono font-medium">{formatTime(timerRemaining)}</span>
+                  <button onClick={() => stopTimer()} className="ml-1 p-1 rounded-full hover:bg-muted/80" aria-label="Cancel timer">
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>}
+
+              <button onClick={() => setShowIngredients(!showIngredients)} className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors", showIngredients ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80")} aria-label={showIngredients ? "Hide ingredients" : "Show ingredients"}>
+                <List className="w-4 h-4" />
+                <span className="text-sm">Ingredients</span>
+              </button>
+            </div>
           </div>
-          
-        
-          
+
+          {/* What the microphone just heard, so a command that did nothing is explainable */}
+          {isListening && <div className="w-full max-w-3xl mb-4 flex items-center gap-2 text-sm rounded-lg bg-muted/50 px-3 py-2" aria-live="polite">
+              <Mic className="w-4 h-4 text-primary flex-shrink-0" />
+              {lastHeard ? <span className="truncate">
+                  <span className="text-muted-foreground">Heard </span>
+                  <span className="font-medium">&ldquo;{lastHeard.text}&rdquo;</span>
+                  <span className={cn("ml-2", lastHeard.kind === 'action' ? "text-green-600" : "text-muted-foreground")}>
+                    {lastHeard.kind === 'action' ? "understood" : lastHeard.kind === 'error' ? "invalid" : "not a command"}
+                  </span>
+                </span> : <span className="text-muted-foreground">Listening… try &ldquo;next step&rdquo; or &ldquo;list ingredients&rdquo;</span>}
+            </div>}
+
+          {/* Ingredients (button, or the voice commands "list ingredients" / "next ingredient") */}
+          {showIngredients && <div className="w-full max-w-3xl mb-6 bg-card border border-border rounded-2xl p-4 md:p-6 shadow-sm">
+              <h4 className="font-medium mb-3 flex items-center gap-2">
+                <List className="w-4 h-4 text-primary" />
+                Ingredients ({recipe.ingredients.length})
+              </h4>
+              <ul className="space-y-1">
+                {recipe.ingredients.map((ingredient, index) => <li key={`${ingredient.id}-${index}`} className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sm md:text-base", index === currentIngredient ? "bg-primary/10 font-medium" : "")}>
+                    <span className="w-6 text-muted-foreground tabular-nums">{index + 1}</span>
+                    <span>{ingredient.quantity && ingredient.unit ? `${ingredient.quantity} ${ingredient.unit} ${ingredient.name}` : ingredient.quantity ? `${ingredient.quantity} ${ingredient.name}` : ingredient.name}</span>
+                  </li>)}
+              </ul>
+            </div>}
+
           {/* Progress indicator */}
           <div className="w-full hidden lg:block max-w-3xl mb-6" data-unique-id="a91e4199-e3a9-439e-b7af-e9e8620ab3d4" data-file-name="components/cooking-mode.tsx">
             <div className="flex justify-between items-center mb-2" data-unique-id="9c4a4981-825a-470c-bf83-018bd3cca5f7" data-file-name="components/cooking-mode.tsx">
@@ -460,7 +494,7 @@ export function CookingMode({
                   {timerRunning && <div className="flex items-center gap-2 ml-2 bg-primary/10 px-3 py-1.5 rounded-lg" data-unique-id="a23cfc26-141d-460c-ac9f-77de7c7dc9dd" data-file-name="components/cooking-mode.tsx">
                       <Clock className="w-4 h-4 text-primary" />
                       <span className="font-mono font-medium" data-unique-id="16fcf9d7-2c0e-4a7b-8b99-87eaba925ffe" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">{formatTime(timerRemaining)}</span>
-                      <button onClick={stopTimer} className="ml-1 p-1 rounded-full hover:bg-muted/80" aria-label="Stop timer" data-unique-id="074497ef-b4c6-4977-b762-900041ea31ef" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
+                      <button onClick={() => stopTimer()} className="ml-1 p-1 rounded-full hover:bg-muted/80" aria-label="Stop timer" data-unique-id="074497ef-b4c6-4977-b762-900041ea31ef" data-file-name="components/cooking-mode.tsx" data-dynamic-text="true">
                         {timerRunning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
                       </button>
                     </div>}
