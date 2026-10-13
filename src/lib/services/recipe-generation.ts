@@ -3,7 +3,7 @@ import { Ingredient, Recipe, UserPreferences } from '@/types';
 import { ModelProvider } from '@/types';
 import { RateLimiter } from '@/lib/services/rate-limiter';
 import { stripStepLabel } from '@/lib/utils';
-import { namesMatch, nameWords } from '@/lib/ingredient-names';
+import { namesMatch, nameWords, staplesMatch } from '@/lib/ingredient-names';
 
 export interface RecipeGenerationOptions {
   ingredients: Ingredient[];
@@ -155,7 +155,7 @@ const PANTRY_STAPLES = [
  * user doesn't have. Re-classify every ingredient it returned against the real pantry:
  * pantry match -> used, known staple -> assumed, anything else -> missing.
  */
-function classifyIngredients(llmIngredients: any[], pantry: Ingredient[]) {
+export function classifyIngredients(llmIngredients: any[], pantry: Ingredient[]) {
   const used: Ingredient[] = [];
   const assumed: Ingredient[] = [];
   const missing: Ingredient[] = [];
@@ -170,7 +170,7 @@ function classifyIngredients(llmIngredients: any[], pantry: Ingredient[]) {
     const pantryItem = pantry.find(p => namesMatch(p.name, item.name));
     if (pantryItem) {
       used.push({ ...item, id: pantryItem.id, name: pantryItem.name });
-    } else if (PANTRY_STAPLES.some(staple => namesMatch(staple, item.name))) {
+    } else if (PANTRY_STAPLES.some(staple => staplesMatch(staple, item.name))) {
       assumed.push(item);
     } else {
       missing.push(item);

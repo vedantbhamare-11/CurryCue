@@ -55,7 +55,9 @@ export function parseQuantityText(text: string): { quantity?: string; unit?: str
   if (!trimmed) return {};
   const match = trimmed.match(/^(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)\s*([a-zA-Z.]*)$/);
   if (!match) return { quantity: trimmed };
-  return { quantity: match[1].trim(), unit: match[2].replace(/\.$/, '') || undefined };
+  const unit = match[2].replace(/\.$/, '');
+  // Omit the key when there is no unit, so stored items don't carry a pointless `unit: undefined`
+  return unit ? { quantity: match[1].trim(), unit } : { quantity: match[1].trim() };
 }
 
 type UnitFamily = { family: 'mass' | 'volume' | 'other'; base: string; factor: number };

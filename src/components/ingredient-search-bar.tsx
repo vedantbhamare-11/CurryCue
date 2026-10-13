@@ -6,6 +6,7 @@ import { Search, Plus } from 'lucide-react';
 import { useIngredientStore } from '@/store/ingredient-store';
 import { useIngredientOptionsStore } from '@/store/ingredient-options-store';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface IngredientSuggestion {
   name: string;
@@ -50,6 +51,11 @@ export function IngredientSearchBar() {
     setSelectedIndex(-1);
   }, [query, ingredientOptions]);
 
+  // Adding something you already have adds to its amount instead of duplicating it; say so
+  const notifyIfMerged = (result: { merged: boolean; mergedInto?: string }) => {
+    if (result.merged) toast.info(`You already have ${result.mergedInto}, so the amount was added to it`);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // No autocomplete match: Enter should still add what was typed, not silently do nothing
     if (e.key === 'Enter' && !showSuggestions && query.trim()) {
@@ -89,7 +95,7 @@ export function IngredientSearchBar() {
       quantity: suggestion.quantity,
       unit: suggestion.unit,
     };
-    addIngredient(newIngredient);
+    notifyIfMerged(addIngredient(newIngredient));
     setQuery('');
     setShowSuggestions(false);
     setSelectedIndex(-1);
@@ -101,7 +107,7 @@ export function IngredientSearchBar() {
       id: `custom-${Date.now()}-${Math.random()}`,
       name: query.trim(),
     };
-    addIngredient(newIngredient);
+    notifyIfMerged(addIngredient(newIngredient));
     setQuery('');
     setShowSuggestions(false);
     setSelectedIndex(-1);

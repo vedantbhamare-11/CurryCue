@@ -77,17 +77,16 @@ export function IngredientEntry() {
       );
       return;
     }
-    newIngredients.forEach((ingredient) => {
-      addIngredient(ingredient);
-    });
+    const mergedCount = newIngredients.filter((ingredient) => addIngredient(ingredient).merged).length;
     setScanResults([]);
     setIsScanningComplete(false);
+    const mergeNote = mergedCount > 0 ? ` (${mergedCount} added to amounts you already had)` : "";
     if (newIngredients.length < scanResults.length) {
       toast.success(
-        `Added ${newIngredients.length} ingredients that met the confidence threshold!`
+        `Added ${newIngredients.length} ingredients that met the confidence threshold!${mergeNote}`
       );
     } else {
-      toast.success(`Added ${newIngredients.length} ingredients to your list!`);
+      toast.success(`Added ${newIngredients.length} ingredients to your list!${mergeNote}`);
     }
   };
   return (

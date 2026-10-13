@@ -1,10 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Ingredient } from '@/types';
+import { addToPantry } from '@/lib/pantry';
 
 interface IngredientState {
   ingredients: Ingredient[];
-  addIngredient: (ingredient: Ingredient) => void;
+  // Merges into an existing matching ingredient instead of adding a duplicate; says whether it did
+  addIngredient: (ingredient: Ingredient) => { merged: boolean; mergedInto?: string };
   removeIngredient: (id: string) => void;
   updateIngredient: (id: string, updates: Partial<Ingredient>) => void;
   clearIngredients: () => void;
@@ -21,10 +23,13 @@ const LEGACY_SAMPLE_ITEMS: Record<string, string> = {
 
 export const useIngredientStore = create<IngredientState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ingredients: [],
-      addIngredient: (ingredient) => 
-        set((state) => ({ ingredients: [...state.ingredients, ingredient] })),
+      addIngredient: (ingredient) => {
+        const result = addToPantry(get().ingredients, ingredient);
+        set({ ingredients: result.items });
+        return { merged: result.merged, mergedInto: result.mergedInto };
+      },
       removeIngredient: (id) => 
         set((state) => ({ ingredients: state.ingredients.filter((i) => i.id !== id) })),
       updateIngredient: (id, updates) => 
