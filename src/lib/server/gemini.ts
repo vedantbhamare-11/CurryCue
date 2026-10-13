@@ -1,30 +1,19 @@
 // Server-only: reads GEMINI_API_KEY. Import this only from route handlers or via
 // the dynamic import in lib/api/util.ts (server branch) so the key never reaches the client.
 import type { TextGenerationResult } from '@/lib/api/util';
+import { AIProviderError, FALLBACK_STATUSES } from '@/lib/server/ai-error';
 
 const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta';
 // Tried in order. The alias survives model retirements (2.5-flash already was retired for new
 // users) but gets overloaded ("high demand", sometimes hanging); the lite alias is the fallback (3.8-flash hit free-tier quota limits in testing).
 const DEFAULT_MODELS = ['gemini-flash-latest', 'gemini-flash-lite-latest'];
 const ATTEMPT_TIMEOUT_MS = 45_000; // full recipe prompts can legitimately take 30s+ on thinking models
-// Overloaded / rate limited / server error / model retired or unknown: worth trying the next model
-const FALLBACK_STATUSES = new Set([404, 429, 500, 502, 503, 504]);
-
-export class GeminiError extends Error {
-  statusCode: number;
-
-  constructor(message: string, statusCode: number) {
-    super(message);
-    this.name = 'GeminiError';
-    this.statusCode = statusCode;
-  }
-}
 
 // Only data URLs are accepted: fetching arbitrary remote image URLs from the server would be an SSRF vector.
 function toInlineData(dataUrl: string) {
   const match = /^data:([\w.+-]+\/[\w.+-]+);base64,([\s\S]+)$/.exec(dataUrl);
   if (!match) {
-    throw new GeminiError('Images must be base64 data URLs', 400);
+    throw new AIProviderError('Images must be base64 data URLs', 400, 'gemini');
   }
   return { mime_type: match[1], data: match[2] };
 }
@@ -34,13 +23,17 @@ const FINISH_REASONS: Record<string, TextGenerationResult['finishReason']> = {
   MAX_TOKENS: 'length',
 };
 
+export function hasGeminiKey(): boolean {
+  return Boolean(process.env.GEMINI_API_KEY);
+}
+
 export async function generateWithGemini(
   prompt: string,
   imageUrls: string[] = []
 ): Promise<TextGenerationResult> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new GeminiError('GEMINI_API_KEY is not set. Add it to .env.local and restart the dev server.', 500);
+    throw new AIProviderError('GEMINI_API_KEY is not set. Add it to .env.local and restart the dev server.', 500, 'gemini');
   }
 
   const models = [...new Set([process.env.GEMINI_MODEL, ...DEFAULT_MODELS].filter(Boolean))] as string[];
@@ -54,7 +47,7 @@ export async function generateWithGemini(
   });
 
   let data: any = null;
-  let lastError = new GeminiError('No Gemini model available', 502);
+  let lastError = new AIProviderError('No Gemini model available', 502, 'gemini');
 
   for (const model of models) {
     try {
@@ -76,18 +69,20 @@ export async function generateWithGemini(
         break;
       }
 
-      lastError = new GeminiError(
+      lastError = new AIProviderError(
         `Gemini error (${model}): ${json?.error?.message ?? `${response.status} ${response.statusText}`}`,
-        response.status
+        response.status,
+        'gemini'
       );
       if (!FALLBACK_STATUSES.has(response.status)) throw lastError;
     } catch (error) {
-      if (error instanceof GeminiError && !FALLBACK_STATUSES.has(error.statusCode)) throw error;
-      if (!(error instanceof GeminiError)) {
+      if (error instanceof AIProviderError && !FALLBACK_STATUSES.has(error.statusCode)) throw error;
+      if (!(error instanceof AIProviderError)) {
         // fetch aborted (timeout) or network failure: fall through to the next model
-        lastError = new GeminiError(
+        lastError = new AIProviderError(
           `Gemini request failed (${model}): ${error instanceof Error ? error.message : String(error)}`,
-          504
+          504,
+          'gemini'
         );
       }
     }
@@ -102,9 +97,10 @@ export async function generateWithGemini(
 
   if (!text) {
     // Empty text usually means the prompt/response was blocked by safety filters
-    throw new GeminiError(
+    throw new AIProviderError(
       `Gemini returned no text (finishReason: ${candidate?.finishReason ?? data?.promptFeedback?.blockReason ?? 'unknown'})`,
-      502
+      502,
+      'gemini'
     );
   }
 

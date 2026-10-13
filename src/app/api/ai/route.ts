@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateWithGemini, GeminiError } from '@/lib/server/gemini';
+import { generateWithAI } from '@/lib/server/ai';
+import { AIProviderError } from '@/lib/server/ai-error';
 
 const MAX_PROMPT_CHARS = 20_000;
 const MAX_IMAGES = 4;
 const MAX_IMAGE_CHARS = 4_000_000; // base64 string length, roughly 3MB of image
 
-// Gemini calls can take 20s+; Vercel's default function limit is much lower
+// Provider calls (esp. Gemini fallback) can take 20s+; Vercel's default function limit is much lower
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
@@ -28,10 +29,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid images' }, { status: 400 });
     }
 
-    return NextResponse.json(await generateWithGemini(prompt, images));
+    return NextResponse.json(await generateWithAI(prompt, images));
   } catch (error) {
     console.error('Error in /api/ai:', error);
-    const status = error instanceof GeminiError ? error.statusCode : 500;
+    const status = error instanceof AIProviderError ? error.statusCode : 500;
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Unknown error' },
       { status }

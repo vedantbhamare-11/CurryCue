@@ -296,13 +296,14 @@ export async function generateTextWithImagesStream(
  * @param model - The model to use
  * @returns A promise that resolves to the generated text
  */
-// All non-streaming text/vision calls go through Gemini. In the browser we hit our own
-// /api/ai route (which holds the key); on the server (e.g. inside /api/detect-ingredients)
-// we call Gemini directly, since a relative fetch() has no base URL there.
+// All non-streaming text/vision calls go through the server-side AI dispatcher (Groq, falling
+// back to Gemini). In the browser we hit our own /api/ai route (which holds the keys); on the
+// server (e.g. inside /api/detect-ingredients) we call the dispatcher directly, since a relative
+// fetch() has no base URL there.
 async function callAI(prompt: string, imageUrls: string[] = []): Promise<TextGenerationResult> {
   if (typeof window === 'undefined') {
-    const { generateWithGemini } = await import('@/lib/server/gemini');
-    return generateWithGemini(prompt, imageUrls);
+    const { generateWithAI } = await import('@/lib/server/ai');
+    return generateWithAI(prompt, imageUrls);
   }
 
   // Trailing slash matters: next.config has trailingSlash: true, so '/api/ai' would 308 first
@@ -314,7 +315,7 @@ async function callAI(prompt: string, imageUrls: string[] = []): Promise<TextGen
 
   const data = await response.json().catch(() => null);
   if (!response.ok) {
-    throw new AIServiceError(data?.error ?? `AI request failed: ${response.status}`, response.status, 'gemini');
+    throw new AIServiceError(data?.error ?? `AI request failed: ${response.status}`, response.status, 'ai');
   }
   return data as TextGenerationResult;
 }
