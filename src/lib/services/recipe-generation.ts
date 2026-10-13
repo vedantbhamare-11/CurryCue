@@ -134,6 +134,77 @@ function getAssumedIngredientsForCuisine(cuisineType: string): string[] {
 }
 
 /**
+ * Staples we never ask the user to own. Matched by whole-word phrase, so "Oil" covers
+ * "Olive Oil" and "Cumin" covers "Cumin Seeds", but "Black Pepper" does not cover "Bell Pepper".
+ */
+const PANTRY_STAPLES = [
+  'Water', 'Salt', 'Oil', 'Ghee', 'Sugar', 'Black Pepper', 'White Pepper', 'Turmeric',
+  'Red Chili Powder', 'Chili Powder', 'Cumin', 'Mustard Seeds', 'Garam Masala',
+  'Curry Leaves', 'Asafoetida', 'Hing', 'Soy Sauce', 'Dried Herbs', 'Oregano'
+];
+
+function singularize(word: string): string {
+  if (word.endsWith('ies')) return `${word.slice(0, -3)}y`;
+  if (word.endsWith('oes')) return word.slice(0, -2);
+  if (word.endsWith('s') && !word.endsWith('ss')) return word.slice(0, -1);
+  return word;
+}
+
+function nameWords(name: string): string[] {
+  return name
+    .toLowerCase()
+    .replace(/\(.*?\)/g, ' ')
+    .replace(/[^a-z\s]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(singularize);
+}
+
+function containsPhrase(haystack: string[], needle: string[]): boolean {
+  for (let i = 0; i + needle.length <= haystack.length; i++) {
+    if (needle.every((word, j) => haystack[i + j] === word)) return true;
+  }
+  return false;
+}
+
+function namesMatch(a: string, b: string): boolean {
+  const wordsA = nameWords(a);
+  const wordsB = nameWords(b);
+  if (wordsA.length === 0 || wordsB.length === 0) return false;
+  return containsPhrase(wordsA, wordsB) || containsPhrase(wordsB, wordsA);
+}
+
+/**
+ * The LLM decides which ingredients are "used" vs "assumed", and routinely invents things the
+ * user doesn't have. Re-classify every ingredient it returned against the real pantry:
+ * pantry match -> used, known staple -> assumed, anything else -> missing.
+ */
+function classifyIngredients(llmIngredients: any[], pantry: Ingredient[]) {
+  const used: Ingredient[] = [];
+  const assumed: Ingredient[] = [];
+  const missing: Ingredient[] = [];
+  const seen = new Set<string>();
+
+  for (const item of llmIngredients) {
+    if (!item || typeof item.name !== 'string') continue;
+    const key = nameWords(item.name).join(' ');
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+
+    const pantryItem = pantry.find(p => namesMatch(p.name, item.name));
+    if (pantryItem) {
+      used.push({ ...item, id: pantryItem.id, name: pantryItem.name });
+    } else if (PANTRY_STAPLES.some(staple => namesMatch(staple, item.name))) {
+      assumed.push(item);
+    } else {
+      missing.push(item);
+    }
+  }
+
+  return { used, assumed, missing };
+}
+
+/**
  * Generate recipes based on ingredients and preferences using AI
  * @param options Recipe generation options including ingredients and preferences
  * @param provider AI model provider to use (default: azure-gpt-4o)
@@ -202,7 +273,9 @@ export async function generateRecipes(
       1. ONLY suggest authentic, traditional, and well-known recipes from the specified cuisine
       2. DO NOT create fusion or invented recipes
       3. If cuisine is specified, suggest only dishes from that cuisine tradition
-      4. Use ONLY the provided ingredients plus assumed pantry basics
+      4. Use ONLY the provided ingredients plus assumed pantry basics. Never list an ingredient under
+         usedIngredients unless it appears in the available ingredients list above; anything else the
+         dish needs goes under missingIngredients
       5. Suggest recipes that are commonly known and have established cooking methods
       
       Available ingredients from user's inventory: ${ingredientsList}
@@ -235,6 +308,7 @@ export async function generateRecipes(
             {"name": "Turmeric", "quantity": "1/2", "unit": "tsp"},
             {"name": "Oil", "quantity": "1", "unit": "tbsp"}
           ],
+          "missingIngredients": [],
           "steps": [
             "Step 1: Wash and soak rice and dal for 15 minutes",
             "Step 2: Heat oil in a pot, add turmeric",
@@ -260,7 +334,7 @@ export async function generateRecipes(
     
     // Call the AI service with timeout
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error("API request timed out")), 60000); // 60 second timeout (Gemini "thinking" can take 20s+ for 3 recipes)
+      setTimeout(() => reject(new Error("API request timed out")), 100000); // 100 second timeout (Gemini thinking models take 20-40s, plus one model fallback)
     });
     
     const resultPromise = generateText(prompt, provider);
@@ -297,23 +371,36 @@ export async function generateRecipes(
       
       // Transform AI response to match Recipe interface
       const recipes: Recipe[] = aiRecipes.map((aiRecipe, index) => {
-        // Combine used ingredients and assumed ingredients
+        const { used, assumed, missing } = classifyIngredients(
+          [
+            ...(aiRecipe.usedIngredients || []),
+            ...(aiRecipe.assumedIngredients || []),
+            ...(aiRecipe.missingIngredients || [])
+          ],
+          ingredients
+        );
+
+        // Match % = share of the dish's non-staple ingredients the user actually has
+        const needed = used.length + missing.length;
+        const matchPercentage = needed === 0 ? 0 : Math.round((used.length / needed) * 100);
+
         const allIngredients = [
-          ...(aiRecipe.usedIngredients || []),
-          ...(aiRecipe.assumedIngredients || []).map((assumed: any) => ({
-            ...assumed,
-            id: `assumed-${Date.now()}-${Math.random()}`,
+          ...used,
+          ...assumed.map((item, i) => ({
+            ...item,
+            id: `assumed-${Date.now()}-${index}-${i}`,
             isAssumed: true
-          }))
+          })),
+          ...missing.map((item, i) => ({ ...item, id: item.id || `missing-${Date.now()}-${index}-${i}` }))
         ];
-        
+
         return {
           // Always generate our own id: the LLM echoes the prompt's example ("1", "2", ...),
           // which collides across generations and breaks favorites/recents/cooking lookups.
           id: `recipe-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 8)}`,
           title: aiRecipe.title,
           description: aiRecipe.description,
-          matchPercentage: aiRecipe.matchPercentage || 85,
+          matchPercentage,
           cookTime: aiRecipe.cookTime || 30,
           difficulty: aiRecipe.difficulty || 'medium',
           image: recipeImages[index % recipeImages.length],
@@ -321,8 +408,9 @@ export async function generateRecipes(
           steps: aiRecipe.steps || [],
           cuisine: aiRecipe.cuisine || cuisineType || 'General',
           tags: aiRecipe.tags || ['authentic'],
-          usedIngredients: aiRecipe.usedIngredients || [],
-          assumedIngredients: aiRecipe.assumedIngredients || []
+          usedIngredients: used,
+          assumedIngredients: assumed,
+          missingIngredients: missing
         };
       });
       
@@ -416,7 +504,7 @@ export async function generateRecipeDetails(
     
     // Call the AI service with timeout
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error("API request timed out")), 60000); // 60 second timeout (Gemini "thinking" can take 20s+ for 3 recipes)
+      setTimeout(() => reject(new Error("API request timed out")), 100000); // 100 second timeout (Gemini thinking models take 20-40s, plus one model fallback)
     });
     
     const resultPromise = generateText(prompt, provider);

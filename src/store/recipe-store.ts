@@ -47,6 +47,19 @@ export const useRecipeStore = create<RecipeState>()(
     }),
     {
       name: 'recipe-storage',
+      // isLoading is transient: persisting it left the UI stuck on "Generating..." forever
+      // whenever a request was interrupted (tab closed mid-generation, crash, etc.)
+      partialize: ({ suggestedRecipes, favoriteRecipes, recentRecipes }) => ({
+        suggestedRecipes,
+        favoriteRecipes,
+        recentRecipes,
+      }),
+      // Also ignore a stale isLoading already saved in users' localStorage by the old version
+      merge: (persisted, current) => ({
+        ...current,
+        ...(persisted as Partial<RecipeState>),
+        isLoading: false,
+      }),
     }
   )
 );

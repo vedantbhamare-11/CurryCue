@@ -3,7 +3,12 @@
 import type { TextGenerationResult } from '@/lib/api/util';
 
 const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta';
-const DEFAULT_MODEL = 'gemini-flash-latest'; // alias: pinned names get retired for new users (2.5-flash already was)
+// Tried in order. The alias survives model retirements (2.5-flash already was retired for new
+// users) but gets overloaded ("high demand", sometimes hanging); the lite alias is the fallback (3.8-flash hit free-tier quota limits in testing).
+const DEFAULT_MODELS = ['gemini-flash-latest', 'gemini-flash-lite-latest'];
+const ATTEMPT_TIMEOUT_MS = 45_000; // full recipe prompts can legitimately take 30s+ on thinking models
+// Overloaded / rate limited / server error / model retired or unknown: worth trying the next model
+const FALLBACK_STATUSES = new Set([404, 429, 500, 502, 503, 504]);
 
 export class GeminiError extends Error {
   statusCode: number;
@@ -38,31 +43,57 @@ export async function generateWithGemini(
     throw new GeminiError('GEMINI_API_KEY is not set. Add it to .env.local and restart the dev server.', 500);
   }
 
-  const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
-
-  const response = await fetch(`${GEMINI_BASE_URL}/models/${model}:generateContent`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      // Header instead of ?key= so the key never ends up in URLs or logs
-      'x-goog-api-key': apiKey,
-    },
-    body: JSON.stringify({
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: prompt }, ...imageUrls.map((url) => ({ inline_data: toInlineData(url) }))],
-        },
-      ],
-    }),
+  const models = [...new Set([process.env.GEMINI_MODEL, ...DEFAULT_MODELS].filter(Boolean))] as string[];
+  const body = JSON.stringify({
+    contents: [
+      {
+        role: 'user',
+        parts: [{ text: prompt }, ...imageUrls.map((url) => ({ inline_data: toInlineData(url) }))],
+      },
+    ],
   });
 
-  const data = await response.json().catch(() => null);
+  let data: any = null;
+  let lastError = new GeminiError('No Gemini model available', 502);
 
-  if (!response.ok) {
-    const message = data?.error?.message ?? `${response.status} ${response.statusText}`;
-    throw new GeminiError(`Gemini error: ${message}`, response.status);
+  for (const model of models) {
+    try {
+      const response = await fetch(`${GEMINI_BASE_URL}/models/${model}:generateContent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Header instead of ?key= so the key never ends up in URLs or logs
+          'x-goog-api-key': apiKey,
+        },
+        body,
+        signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
+      });
+
+      const json = await response.json().catch(() => null);
+
+      if (response.ok) {
+        data = json;
+        break;
+      }
+
+      lastError = new GeminiError(
+        `Gemini error (${model}): ${json?.error?.message ?? `${response.status} ${response.statusText}`}`,
+        response.status
+      );
+      if (!FALLBACK_STATUSES.has(response.status)) throw lastError;
+    } catch (error) {
+      if (error instanceof GeminiError && !FALLBACK_STATUSES.has(error.statusCode)) throw error;
+      if (!(error instanceof GeminiError)) {
+        // fetch aborted (timeout) or network failure: fall through to the next model
+        lastError = new GeminiError(
+          `Gemini request failed (${model}): ${error instanceof Error ? error.message : String(error)}`,
+          504
+        );
+      }
+    }
   }
+
+  if (!data) throw lastError;
 
   const candidate = data?.candidates?.[0];
   const text = (candidate?.content?.parts ?? [])

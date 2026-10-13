@@ -155,6 +155,19 @@ export function RecipeDetail({
                     </ul>
                   </div>}
                 
+                {/* Ingredients the recipe needs that aren't in the pantry */}
+                {recipe.missingIngredients && recipe.missingIngredients.length > 0 && <div className="mb-4">
+                    <h4 className="font-medium text-sm text-amber-600 dark:text-amber-400 mb-2"><span className="editable-text">You'll Also Need:</span></h4>
+                    <ul className="space-y-2">
+                      {recipe.missingIngredients.map((ingredient, index) => <li key={index} className="flex items-center gap-2 text-sm sm:text-base">
+                          <div className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></div>
+                          <span>
+                            {ingredient.quantity && ingredient.unit ? `${ingredient.quantity} ${ingredient.unit} ${ingredient.name}` : ingredient.name}
+                          </span>
+                        </li>)}
+                    </ul>
+                  </div>}
+                
                 {/* Fallback to all ingredients if new format not available */}
                 {(!recipe.usedIngredients || recipe.usedIngredients.length === 0) && (!recipe.assumedIngredients || recipe.assumedIngredients.length === 0) && <ul className="space-y-2" data-unique-id="bd35b497-d44d-424e-a531-e1acd86b50de" data-file-name="components/recipe-detail.tsx" data-dynamic-text="true">
                     {recipe.ingredients.map((ingredient, index) => <li key={index} className="flex items-center gap-2 text-sm sm:text-base" data-unique-id="34a61423-64fa-402c-8719-44ad09a52f7a" data-file-name="components/recipe-detail.tsx">
