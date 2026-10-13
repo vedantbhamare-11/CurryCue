@@ -104,32 +104,7 @@ export function IngredientEntry() {
         className="mb-8"
         data-unique-id="44ac2c7d-6ab7-4852-9b72-45091138a7d0"
         data-file-name="components/ingredient-entry.tsx"
-      >
-        <h2
-          className="text-2xl font-bold mb-2"
-          data-unique-id="48b10bf7-f1cd-4d89-8822-b79f909f5cee"
-          data-file-name="components/ingredient-entry.tsx"
-        >
-          <div
-            style={{
-              height: 0,
-              width: 0,
-            }}
-          ></div>
-        </h2>
-        <p
-          className="text-muted-foreground"
-          data-unique-id="930de64d-c661-4802-bd9d-289e2da33726"
-          data-file-name="components/ingredient-entry.tsx"
-        >
-          <div
-            style={{
-              height: 0,
-              width: 0,
-            }}
-          ></div>
-        </p>
-      </div>
+      ></div>
 
       {/* Diagonal design element */}
       <div
