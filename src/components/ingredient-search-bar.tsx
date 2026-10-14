@@ -4,20 +4,12 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus } from 'lucide-react';
 import { useIngredientStore } from '@/store/ingredient-store';
-import { useIngredientOptionsStore } from '@/store/ingredient-options-store';
+import { searchCatalogue, type IngredientSuggestion } from '@/lib/ingredient-catalogue';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
-interface IngredientSuggestion {
-  name: string;
-  quantity: string;
-  unit: string;
-  displayText: string;
-}
-
 export function IngredientSearchBar() {
   const { addIngredient } = useIngredientStore();
-  const { ingredientOptions } = useIngredientOptionsStore();
 
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<IngredientSuggestion[]>([]);
@@ -34,22 +26,12 @@ export function IngredientSearchBar() {
       return;
     }
 
-    const filtered = ingredientOptions
-      .filter((item) => item.name.toLowerCase().includes(query.toLowerCase()))
-      .flatMap((item) =>
-        item.suggestions.map((suggestion) => ({
-          name: item.name,
-          quantity: suggestion.quantity,
-          unit: suggestion.unit,
-          displayText: suggestion.displayText,
-        }))
-      )
-      .slice(0, 8);
+    const filtered = searchCatalogue(query);
 
     setSuggestions(filtered);
     setShowSuggestions(filtered.length > 0);
     setSelectedIndex(-1);
-  }, [query, ingredientOptions]);
+  }, [query]);
 
   // Adding something you already have adds to its amount instead of duplicating it; say so
   const notifyIfMerged = (result: { merged: boolean; mergedInto?: string }) => {
