@@ -53,7 +53,7 @@ Everything you add (pantry, shopping list, saved recipes, preferences) is stored
 
 ## Getting started
 
-Requires Node 20.9 or newer.
+Requires Node 22 (pinned in `package.json` so Vercel does not jump to a new major on its own); Next 16 needs at least 20.9.
 
 ```bash
 npm install
