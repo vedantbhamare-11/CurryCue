@@ -39,66 +39,6 @@ export type Recipe = {
   usesExpiring?: string[];
 };
 
-export type UserAccount = {
-  id: string;
-  email: string;
-  phone: string;
-  name?: string;
-  profilePhoto?: string;
-  createdAt: string;
-};
-
-export type UserProfile = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  profilePhoto?: string;
-  preferences: UserPreferences;
-  account: UserAccount;
-};
-
-export type OnboardingData = {
-  step: number;
-  account: {
-    email: string;
-    phone: string;
-    password: string;
-  };
-  dietaryPreferences: string[];
-  cuisinePreferences: string[];
-  allergies: string[];
-  otherAllergies: string;
-};
-
-export type ChatMessage = {
-  id: string;
-  content: string;
-  role: 'user' | 'assistant' | 'system';
-  timestamp: number;
-};
-
-export type CookingSession = {
-  id: string;
-  recipeId: string;
-  currentStep: number;
-  messages: ChatMessage[];
-  started: number;
-  completed?: number;
-};
-
-// API related types
-export interface ApiError {
-  message: string;
-  statusCode: number;
-  errorCode?: string;
-}
-
-export interface ApiResponse<T> {
-  data?: T;
-  error?: ApiError;
-}
-
 // Web Speech API types
 interface SpeechRecognitionEvent extends Event {
   results: SpeechRecognitionResultList;
