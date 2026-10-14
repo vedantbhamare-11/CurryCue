@@ -72,10 +72,10 @@ export default function RecipesPage() {
               {activeTab === 'favorites' ? <Heart className="w-8 h-8 text-muted-foreground" /> : <Clock className="w-8 h-8 text-muted-foreground" />}
             </div>
             <h3 className="text-xl font-medium mb-2">
-              {activeTab === 'favorites' ? "No favorite recipes yet" : "No recently viewed recipes"}
+              {searchQuery ? "No recipes match your search" : activeTab === 'favorites' ? "No favorite recipes yet" : "No recently viewed recipes"}
             </h3>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              {activeTab === 'favorites' ? "Add recipes to your favorites to see them here" : "Browse recipes to see your recently viewed ones here"}
+              {searchQuery ? `Nothing in ${activeTab === 'favorites' ? 'your favorites' : 'your recently viewed recipes'} matches "${searchQuery}"` : activeTab === 'favorites' ? "Add recipes to your favorites to see them here" : "Browse recipes to see your recently viewed ones here"}
             </p>
           </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredRecipes.map(recipe => <motion.div key={recipe.id} initial={{
