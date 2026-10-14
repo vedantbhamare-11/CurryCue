@@ -352,15 +352,6 @@ export async function generateRecipes(
         throw new Error("No valid recipes returned from AI service");
       }
       
-      // Add placeholder images to recipes
-      const recipeImages = [
-        'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
-        'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-        'https://images.unsplash.com/photo-1512621776951-a57141f2eefd',
-        'https://images.unsplash.com/photo-1473093295043-cdd812d0e601',
-        'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd'
-      ];
-      
       // Transform AI response to match Recipe interface
       const recipes: Recipe[] = aiRecipes.map((aiRecipe, index) => {
         const { used, assumed, missing } = classifyIngredients(
@@ -395,7 +386,8 @@ export async function generateRecipes(
           matchPercentage,
           cookTime: aiRecipe.cookTime || 30,
           difficulty: aiRecipe.difficulty || 'medium',
-          image: recipeImages[index % recipeImages.length],
+          // No photo: the AI only writes text, and unrelated stock photos misled more than they helped
+          image: '',
           ingredients: allIngredients,
           steps: (Array.isArray(aiRecipe.steps) ? aiRecipe.steps : []).map(stripStepLabel).filter(Boolean),
           cuisine: aiRecipe.cuisine || cuisineType || 'General',

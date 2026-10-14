@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, Utensils, Heart, Search } from 'lucide-react';
-import Image from 'next/image';
+import { RecipeImage } from '@/components/recipe-image';
 import { Recipe } from '@/types';
 import { cn } from '@/lib/utils';
 import { useRecipeStore } from '@/store/recipe-store';
@@ -88,7 +88,7 @@ export default function RecipesPage() {
           y: -5
         }} className="recipe-card bg-card rounded-xl overflow-hidden shadow-sm dark:shadow-primary/5 border border-border">
                 <div className="relative h-48">
-                  <Image src={recipe.image} alt={recipe.title} fill className="object-cover" />
+                  <RecipeImage src={recipe.image} title={recipe.title} />
                   <div className="absolute top-2 right-2 bg-card/90 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-medium">
                     {recipe.matchPercentage}% match
                   </div>

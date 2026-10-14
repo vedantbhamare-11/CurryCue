@@ -128,8 +128,9 @@ export function CompletionCelebration({
             delay: 0.6
           }} className="mb-6">
                 <div className="relative w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-primary/20 shadow-lg">
-                  <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=300&fit=crop&crop=center" alt="Delicious cooked dish" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-900/60 dark:to-orange-800/60">
+                    <ChefHat className="w-14 h-14 text-white/80 dark:text-white/50" aria-hidden="true" />
+                  </div>
                 </div>
               </motion.div>
 

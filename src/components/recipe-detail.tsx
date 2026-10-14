@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
+import { RecipeImage } from '@/components/recipe-image';
 import { Clock, Utensils, Users, Heart, Share, X, ChevronRight, PlayCircle } from 'lucide-react';
 import { Recipe } from '@/types';
 import { useRecipeStore } from '@/store/recipe-store';
@@ -80,7 +80,7 @@ export function RecipeDetail({
   return <>
       {cookingModeActive ? <CookingMode recipe={recipe} onClose={closeCookingMode} /> : <div className="bg-card rounded-2xl overflow-hidden shadow-lg border border-border w-[95%] max-w-4xl max-h-[90vh] flex flex-col">
           <div className="relative h-48 sm:h-56 md:h-80">
-            <Image src={recipe.image} alt={recipe.title} fill className="object-cover" sizes="(max-width: 768px) 95vw, (max-width: 1200px) 80vw, 1200px" />
+            <RecipeImage src={recipe.image} title={recipe.title} sizes="(max-width: 768px) 95vw, (max-width: 1200px) 80vw, 1200px" />
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent"></div>
             
             <button onClick={onClose} className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-card/80 backdrop-blur-sm rounded-full p-2 hover:bg-card transition-colors z-10" aria-label="Close recipe">

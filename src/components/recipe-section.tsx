@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Clock, Utensils, ArrowRight, Loader2, CalendarClock } from 'lucide-react';
-import Image from 'next/image';
+import { RecipeImage } from '@/components/recipe-image';
 import { Recipe } from '@/types';
 import { useRecipeStore } from '@/store/recipe-store';
 import { RecipeDetail } from './recipe-detail';
@@ -94,7 +94,7 @@ export function RecipeSection() {
         y: -5
       }} className="recipe-card flex-shrink-0 w-[300px] bg-card rounded-xl overflow-hidden shadow-sm dark:shadow-primary/5 border border-border snap-start">
               <div className="relative h-40">
-                <Image src={recipe.image} alt={recipe.title} fill className="object-cover" />
+                <RecipeImage src={recipe.image} title={recipe.title} />
                 <div className="absolute top-2 right-2 bg-card/90 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-medium">
                   {recipe.matchPercentage}% match
                 </div>
