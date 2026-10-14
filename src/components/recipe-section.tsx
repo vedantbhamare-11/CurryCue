@@ -18,7 +18,9 @@ export function RecipeSection() {
   const {
     ingredients
   } = useIngredientStore();
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  // Keep the opened recipe's id and look it up live, so its photo appears when it arrives; the copy covers a regenerate while open
+  const [opened, setOpened] = useState<Recipe | null>(null);
+  const selectedRecipe = opened ? suggestedRecipes.find(recipe => recipe.id === opened.id) ?? opened : null;
   useDishPhotos(suggestedRecipes);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollLeft = () => {
@@ -38,15 +40,15 @@ export function RecipeSection() {
     }
   };
   const handleSelectRecipe = (recipe: Recipe) => {
-    setSelectedRecipe(recipe);
+    setOpened(recipe);
   };
   const closeRecipeDetails = () => {
-    setSelectedRecipe(null);
+    setOpened(null);
   };
   return <section className="relative space-y-8">
       <RecipeGenerator />
       
-      <div className="flex justify-between items-center">
+      {(isLoading || suggestedRecipes.length > 0 || ingredients.length > 0) && <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Recipe Suggestions</h2>
           <p className="text-muted-foreground">Based on your ingredients</p>
@@ -68,7 +70,7 @@ export function RecipeSection() {
               <ChevronRight className="w-5 h-5" />
             </motion.button>
           </div>}
-      </div>
+      </div>}
       
       {/* Loading state */}
       {isLoading && <div className="flex flex-col items-center justify-center py-12">

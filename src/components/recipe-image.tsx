@@ -5,9 +5,9 @@ import { hasRealPhoto } from '@/lib/dish-photo';
 // Warm gradients, picked by title so a row of cards is not one flat colour but a dish never changes colour
 const GRADIENTS = [
   'from-amber-200 to-orange-300 dark:from-amber-900/60 dark:to-orange-800/60',
-  'from-orange-200 to-rose-300 dark:from-orange-900/60 dark:to-rose-900/60',
+  'from-orange-200 to-rose-300 dark:from-orange-900/50 dark:to-amber-900/50',
   'from-yellow-200 to-amber-400 dark:from-yellow-900/60 dark:to-amber-800/60',
-  'from-red-200 to-orange-300 dark:from-red-900/60 dark:to-orange-800/60',
+  'from-red-200 to-orange-300 dark:from-orange-900/50 dark:to-yellow-900/50',
   'from-lime-200 to-amber-300 dark:from-lime-900/50 dark:to-amber-800/60',
 ];
 

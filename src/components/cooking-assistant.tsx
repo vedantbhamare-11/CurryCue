@@ -73,7 +73,8 @@ export function CookingAssistant({
         kind: 'step',
         timestamp: Date.now()
       };
-      setMessages(prev => [...prev, stepMessage]);
+      // Replace the previous step announcement: replaying every step turned the chat into a second copy of the recipe
+      setMessages(prev => [...prev.filter(message => message.kind !== 'step'), stepMessage]);
     }
   }, [currentStep]);
 

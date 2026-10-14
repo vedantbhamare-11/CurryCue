@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useModalBehavior } from '@/hooks/use-modal-behavior';
 import { motion } from 'framer-motion';
 import { RecipeImage } from '@/components/recipe-image';
 import { hasRealPhoto } from '@/lib/dish-photo';
@@ -32,6 +33,8 @@ export function RecipeDetail({
   const [activeTab, setActiveTab] = useState<'ingredients' | 'instructions'>('ingredients');
   const [currentStep, setCurrentStep] = useState(0);
   const [cookingModeActive, setCookingModeActive] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useModalBehavior(dialogRef, onClose, !cookingModeActive);
   const isFavorite = favoriteRecipes.some(r => r.id === recipe.id);
   // Put what this recipe is missing on the shopping list (merging with what is already there)
   const handleAddMissingToList = () => {
@@ -79,7 +82,7 @@ export function RecipeDetail({
     setCookingModeActive(false);
   };
   return <>
-      {cookingModeActive ? <CookingMode recipe={recipe} onClose={closeCookingMode} /> : <div className="bg-card rounded-2xl overflow-hidden shadow-lg border border-border w-[95%] max-w-4xl max-h-[90vh] flex flex-col">
+      {cookingModeActive ? <CookingMode recipe={recipe} onClose={closeCookingMode} /> : <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={recipe.title} tabIndex={-1} className="bg-card rounded-2xl overflow-hidden shadow-lg border border-border w-[95%] max-w-4xl max-h-[90vh] flex flex-col outline-none">
           <div className="relative h-48 sm:h-56 md:h-80">
             <RecipeImage src={recipe.image} title={recipe.title} iconTop sizes="(max-width: 768px) 95vw, (max-width: 1200px) 80vw, 1200px" />
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent"></div>

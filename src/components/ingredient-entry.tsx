@@ -283,7 +283,7 @@ export function IngredientEntry() {
 
         {/* Ingredients list */}
         <div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-start"
         >
           <AnimatePresence>
             {ingredients.map((ingredient) => (
@@ -305,7 +305,7 @@ export function IngredientEntry() {
               >
                 <div>
                   <p
-                    className="font-medium"
+                    className="font-medium capitalize"
                   >
                     {ingredient.name}
                   </p>

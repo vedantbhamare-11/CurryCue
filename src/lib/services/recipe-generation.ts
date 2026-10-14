@@ -274,7 +274,8 @@ export async function generateRecipes(
       
       1. ONLY suggest authentic, traditional, and well-known recipes from the specified cuisine
       2. DO NOT create fusion or invented recipes
-      3. If cuisine is specified, suggest only dishes from that cuisine tradition
+      3. If cuisine is specified, suggest only dishes from that cuisine tradition. If it is not, each dish
+         must still be a traditional dish of one single, real cuisine (never a mix of two)
       4. Use ONLY the provided ingredients plus assumed pantry basics. Never list an ingredient under
          usedIngredients unless it appears in the available ingredients list above; anything else the
          dish needs goes under missingIngredients

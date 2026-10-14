@@ -140,7 +140,7 @@ export function IngredientAutocomplete({
             role="listbox"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, transition: { duration: 0.08 } }}
             className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
           >
             {suggestions.map((suggestion, index) => (

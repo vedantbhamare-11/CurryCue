@@ -124,7 +124,7 @@ export function CompletionCelebration({
           }} transition={{
             delay: 0.8
           }} onClick={onClose} className="mt-6 w-full bg-primary text-primary-foreground rounded-lg py-3 font-medium hover:bg-primary/90 transition-colors">
-                Continue Cooking! 👨‍🍳
+                Done
               </motion.button>
             </div>
           </motion.div>

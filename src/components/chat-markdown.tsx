@@ -93,5 +93,5 @@ export function ChatMarkdown({ text }: { text: string }) {
   flushParagraph();
   flushList();
 
-  return <div className="space-y-2 break-words">{blocks}</div>;
+  return <div className="space-y-2 break-words text-sm [&_p]:text-sm">{blocks}</div>;
 }

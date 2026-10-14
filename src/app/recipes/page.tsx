@@ -15,16 +15,18 @@ export default function RecipesPage() {
     favoriteRecipes,
     recentRecipes
   } = useRecipeStore();
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
-  useDishPhotos(favoriteRecipes);
+    useDishPhotos(favoriteRecipes);
   useDishPhotos(recentRecipes);
+  // Keep the opened recipe's id and look it up live, so its photo appears when it arrives
+  const [opened, setOpened] = useState<Recipe | null>(null);
+  const selectedRecipe = opened ? [...favoriteRecipes, ...recentRecipes].find(recipe => recipe.id === opened.id) ?? opened : null;
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'favorites' | 'recent'>('favorites');
   const handleSelectRecipe = (recipe: Recipe) => {
-    setSelectedRecipe(recipe);
+    setOpened(recipe);
   };
   const closeRecipeDetails = () => {
-    setSelectedRecipe(null);
+    setOpened(null);
   };
   const filteredRecipes = (activeTab === 'favorites' ? favoriteRecipes : recentRecipes).filter(recipe => {
     // Search filter

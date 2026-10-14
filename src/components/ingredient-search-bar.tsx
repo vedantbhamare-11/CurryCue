@@ -40,7 +40,7 @@ export function IngredientSearchBar() {
       onChange={setQuery}
       onSelect={handleSelectSuggestion}
       onAddTyped={handleAddCustomIngredient}
-      placeholder="Search ingredients (e.g., tomato, onion)..."
+      placeholder="Search or add an ingredient..."
       inputClassName="w-full pl-10 pr-12 py-3 rounded-lg bg-input-background border border-border outline-none focus:ring-2 focus:ring-primary/20 text-base"
     >
       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />

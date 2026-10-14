@@ -60,7 +60,7 @@ export function NavBar() {
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             
-            <div className="hidden md:flex items-center gap-2">
+            <div className="flex items-center gap-2">
               
               <Link href="/shopping-list" className="p-2 rounded-full hover:bg-muted transition-colors relative" aria-label={toBuyCount > 0 ? `Shopping list, ${toBuyCount} to buy` : "Shopping list"}>
                 <ShoppingBag className="w-5 h-5" />
