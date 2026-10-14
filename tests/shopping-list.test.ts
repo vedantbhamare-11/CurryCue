@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  parseAmount, parseQuantityText, mergeAmounts, categorize, groupByCategory, addItems, formatForSharing, planPantryMove,
+  parseAmount, parseQuantityText, mergeAmounts, categorize, groupByCategory, addItems, formatForSharing, planPantryMove, normalizeShoppingItems,
   type ShoppingItem,
 } from '@/lib/shopping-list';
 
@@ -147,4 +147,21 @@ test('other names count as the same item: pantry Palak skips Spinach, and Pyaz j
   const second = addItems(first.items, [{ name: 'Pyaz', quantity: '1', unit: 'nos' }], { recipeTitle: 'B' });
   assert.equal(second.items.length, 1);
   assert.deepEqual([second.items[0].quantity, second.items[0].unit], ['3', 'nos']);
+});
+
+test('normalizeShoppingItems repairs missing fields and drops unusable entries', () => {
+  const repaired = normalizeShoppingItems([
+    { id: 's1', name: 'Milk', checked: true },
+    { name: 'Rice', recipes: ['Soup', 3] },
+    { id: 's3', name: '   ' },
+    null,
+    'nonsense',
+  ]);
+  assert.deepEqual(repaired, [
+    { id: 's1', name: 'Milk', quantity: undefined, unit: undefined, checked: true, addedAt: 0, recipes: [] },
+    { id: 'restored-1', name: 'Rice', quantity: undefined, unit: undefined, checked: false, addedAt: 0, recipes: ['Soup'] },
+  ]);
+  assert.deepEqual(normalizeShoppingItems(repaired), repaired);
+  assert.deepEqual(normalizeShoppingItems(undefined), []);
+  assert.deepEqual(normalizeShoppingItems({ not: 'an array' }), []);
 });

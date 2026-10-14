@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { addItems, type AddResult, type IncomingItem, type PantryItemLike, type ShoppingItem } from '@/lib/shopping-list';
+import { addItems, normalizeShoppingItems, type AddResult, type IncomingItem, type PantryItemLike, type ShoppingItem } from '@/lib/shopping-list';
 
 interface ShoppingListState {
   items: ShoppingItem[];
@@ -27,6 +27,13 @@ export const useShoppingListStore = create<ShoppingListState>()(
       clearChecked: () => set((state) => ({ items: state.items.filter((item) => !item.checked) })),
       clearAll: () => set({ items: [] }),
     }),
-    { name: 'shopping-list-storage' }
+    {
+      name: 'shopping-list-storage',
+      // Whatever is in localStorage may be old or hand-edited: repair it rather than crash the page
+      merge: (persisted, current) => ({
+        ...current,
+        items: normalizeShoppingItems((persisted as { items?: unknown } | undefined)?.items),
+      }),
+    }
   )
 );

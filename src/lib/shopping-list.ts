@@ -165,6 +165,28 @@ export function groupByCategory<T extends { name: string }>(items: T[]): { categ
 // ---------- adding items ----------
 
 // alreadyListed: this recipe's amount for the item is already on the list, so nothing was added again
+// Repairs a saved list that is missing fields (hand-edited, or from an older version) so the page cannot crash on it:
+// entries without a usable name are dropped, the rest get safe defaults. Idempotent.
+export function normalizeShoppingItems(saved: unknown): ShoppingItem[] {
+  if (!Array.isArray(saved)) return [];
+  const items: ShoppingItem[] = [];
+  saved.forEach((raw, index) => {
+    if (!raw || typeof raw !== 'object') return;
+    const item = raw as Partial<ShoppingItem>;
+    if (typeof item.name !== 'string' || !item.name.trim()) return;
+    items.push({
+      id: typeof item.id === 'string' && item.id ? item.id : `restored-${index}`,
+      name: item.name,
+      quantity: typeof item.quantity === 'string' ? item.quantity : undefined,
+      unit: typeof item.unit === 'string' ? item.unit : undefined,
+      checked: item.checked === true,
+      addedAt: typeof item.addedAt === 'number' ? item.addedAt : 0,
+      recipes: Array.isArray(item.recipes) ? item.recipes.filter((title): title is string => typeof title === 'string') : [],
+    });
+  });
+  return items;
+}
+
 export type AddResult = { items: ShoppingItem[]; added: string[]; merged: string[]; skippedInPantry: string[]; alreadyListed: string[] };
 
 const titleCase = (name: string) => name.trim().replace(/^./, (c) => c.toUpperCase());
