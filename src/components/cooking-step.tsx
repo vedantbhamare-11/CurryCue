@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { Clock } from 'lucide-react';
 import { CookingTimer } from './cooking-timer';
-import { cn } from '@/lib/utils';
 interface CookingStepProps {
   stepNumber: number;
   totalSteps: number;

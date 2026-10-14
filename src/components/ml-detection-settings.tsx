@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Sliders, Scan, Info } from 'lucide-react';
+import { Settings, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 interface MLDetectionSettingsProps {
   confidenceThreshold: number;

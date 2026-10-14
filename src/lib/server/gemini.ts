@@ -43,7 +43,12 @@ export async function generateWithGemini(
     ],
   });
 
-  let data: any = null;
+  type GeminiResponse = {
+    candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[];
+    promptFeedback?: { blockReason?: string };
+    usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number; totalTokenCount?: number };
+  };
+  let data: GeminiResponse | null = null;
   let lastError = new AIProviderError('No Gemini model available', 502, 'gemini');
 
   for (const model of models) {
@@ -108,6 +113,6 @@ export async function generateWithGemini(
       completionTokens: data.usageMetadata?.candidatesTokenCount ?? 0,
       totalTokens: data.usageMetadata?.totalTokenCount ?? 0,
     },
-    finishReason: FINISH_REASONS[candidate?.finishReason] ?? 'content_filter',
+    finishReason: FINISH_REASONS[candidate?.finishReason ?? ''] ?? 'content_filter',
   };
 }

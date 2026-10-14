@@ -27,7 +27,11 @@ export async function generateWithOpenAICompatible(
     ? [{ type: 'text', text: prompt }, ...imageUrls.map((url) => ({ type: 'image_url', image_url: { url } }))]
     : prompt;
 
-  let data: any = null;
+  type ChatResponse = {
+    choices?: { message?: { content?: string }; finish_reason?: string }[];
+    usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
+  };
+  let data: ChatResponse | null = null;
   let lastError = new AIProviderError(`No ${provider.name} model available`, 502, provider.name);
 
   for (const model of models) {
@@ -89,6 +93,6 @@ export async function generateWithOpenAICompatible(
       completionTokens: data.usage?.completion_tokens ?? 0,
       totalTokens: data.usage?.total_tokens ?? 0,
     },
-    finishReason: choice.finish_reason === 'stop' ? 'stop' : choice.finish_reason === 'length' ? 'length' : 'content_filter',
+    finishReason: choice?.finish_reason === 'stop' ? 'stop' : choice?.finish_reason === 'length' ? 'length' : 'content_filter',
   };
 }

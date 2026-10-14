@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Clock, Utensils, Users, Heart, Share, X, ChevronRight, Star, PlayCircle } from 'lucide-react';
+import { Clock, Utensils, Users, Heart, Share, X, ChevronRight, PlayCircle } from 'lucide-react';
 import { Recipe } from '@/types';
 import { useRecipeStore } from '@/store/recipe-store';
 import { useShoppingListStore } from '@/store/shopping-list-store';
@@ -147,7 +147,7 @@ export function RecipeDetail({
                 {/* Used Ingredients from Inventory */}
                 {recipe.usedIngredients && recipe.usedIngredients.length > 0 && <div className="mb-4">
                     <h4 className="font-medium text-sm text-primary mb-2">From Your Kitchen:</h4>
-                    {recipe.usesExpiring && recipe.usesExpiring.length > 0 && <p className="text-xs font-medium text-green-700 dark:text-green-400 mb-2">Uses up what's about to expire: {recipe.usesExpiring.join(', ')}</p>}
+                    {recipe.usesExpiring && recipe.usesExpiring.length > 0 && <p className="text-xs font-medium text-green-700 dark:text-green-400 mb-2">Uses up what&apos;s about to expire: {recipe.usesExpiring.join(', ')}</p>}
                     <ul className="space-y-2">
                       {recipe.usedIngredients.map((ingredient, index) => <li key={index} className="flex items-center gap-2 text-sm sm:text-base">
                           <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0"></div>
@@ -174,7 +174,7 @@ export function RecipeDetail({
                 {/* Ingredients the recipe needs that aren't in the pantry */}
                 {recipe.missingIngredients && recipe.missingIngredients.length > 0 && <div className="mb-4">
                     <div className="flex items-center justify-between gap-2 mb-2">
-                      <h4 className="font-medium text-sm text-amber-600 dark:text-amber-400">You'll Also Need:</h4>
+                      <h4 className="font-medium text-sm text-amber-600 dark:text-amber-400">You&apos;ll Also Need:</h4>
                       <button onClick={handleAddMissingToList} className="text-xs font-medium px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 transition-colors">Add to shopping list</button>
                     </div>
                     <ul className="space-y-2">

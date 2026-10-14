@@ -1,11 +1,10 @@
 "use client";
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Clock, Utensils, ArrowRight, Loader2, CalendarClock } from 'lucide-react';
 import Image from 'next/image';
 import { Recipe } from '@/types';
-import { cn } from '@/lib/utils';
 import { useRecipeStore } from '@/store/recipe-store';
 import { RecipeDetail } from './recipe-detail';
 import { RecipeGenerator } from './recipe-generator';
@@ -83,7 +82,7 @@ export function RecipeSection() {
           </div>
           <h3 className="text-xl font-medium mb-2">No recipes yet</h3>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            Click the "Generate Recipes" button above to create personalized recipe suggestions based on your ingredients
+            Click the &quot;Generate Recipes&quot; button above to create personalized recipe suggestions based on your ingredients
           </p>
         </div>}
       

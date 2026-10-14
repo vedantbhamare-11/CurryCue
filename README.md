@@ -88,7 +88,7 @@ npm run build         # Build for production
 npm run start         # Start the production server
 npm run check         # Type check (tsc --noEmit)
 npm test              # Run the unit tests
-npm run lint          # ESLint (has a known backlog, not yet part of the build)
+npm run lint          # ESLint (no errors; a few intentional warnings)
 npm run check:models  # Verify the configured AI models exist (-- --probe to test them)
 ```
 

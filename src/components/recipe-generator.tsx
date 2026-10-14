@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, ChefHat, Filter, Clock, Utensils, X, CalendarClock } from 'lucide-react';
+import { Loader2, ChefHat, CalendarClock } from 'lucide-react';
 import { useIngredientStore } from '@/store/ingredient-store';
 import { useUserPreferencesStore } from '@/store/user-preferences-store';
 import { useRecipeStore } from '@/store/recipe-store';
@@ -21,12 +21,10 @@ export function RecipeGenerator() {
     preferences
   } = useUserPreferencesStore();
   const {
-    suggestedRecipes,
     setSuggestedRecipes,
     isLoading,
     setIsLoading
   } = useRecipeStore();
-  const [showFilters, setShowFilters] = useState(false);
   const [cuisineType, setCuisineType] = useState<string>('');
   const [mealType, setMealType] = useState<string>('');
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard' | ''>('');
@@ -85,9 +83,6 @@ export function RecipeGenerator() {
     } finally {
       setIsLoading(false);
     }
-  };
-  const toggleFilters = () => {
-    setShowFilters(!showFilters);
   };
   const resetFilters = () => {
     setCuisineType('');
@@ -172,7 +167,7 @@ export function RecipeGenerator() {
                   
                   <div className="space-y-2">
                     <label className="block text-sm font-medium">Difficulty</label>
-                    <select value={difficulty} onChange={e => setDifficulty(e.target.value as any)} className="w-full px-3 py-2 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20">
+                    <select value={difficulty} onChange={e => setDifficulty(e.target.value as typeof difficulty)} className="w-full px-3 py-2 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20">
                       <option value="">Any Difficulty</option>
                       <option value="easy">Easy</option>
                       <option value="medium">Medium</option>

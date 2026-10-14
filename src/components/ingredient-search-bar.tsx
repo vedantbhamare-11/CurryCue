@@ -187,7 +187,7 @@ export function IngredientSearchBar() {
                 )}
               >
                 <span className="text-muted-foreground">
-                  Add "{query}" as custom ingredient
+                  Add &quot;{query}&quot; as custom ingredient
                 </span>
                 <Plus className="w-4 h-4 text-muted-foreground" />
               </button>

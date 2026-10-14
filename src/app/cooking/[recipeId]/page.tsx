@@ -43,7 +43,7 @@ export default function CookingModePage() {
         <div className="bg-card border border-border rounded-lg p-8 max-w-md text-center">
           <h1 className="text-2xl font-bold mb-4">Recipe Not Found</h1>
           <p className="text-muted-foreground mb-6">
-            We couldn't find the recipe you're looking for. It may have been deleted or is no longer available.
+            We couldn&apos;t find the recipe you&apos;re looking for. It may have been deleted or is no longer available.
           </p>
           <button onClick={() => router.push('/recipes')} className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors">
             Browse Recipes

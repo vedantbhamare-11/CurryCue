@@ -3,21 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Menu, Search, ShoppingBag, User, ShoppingCart, Coffee, X, MoonStar, Sun } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { Menu, ShoppingBag, X } from 'lucide-react';
 import { useShoppingListStore } from '@/store/shopping-list-store';
 export function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
   const toBuyCount = useShoppingListStore((state) => state.items.filter((item) => !item.checked).length);
-  const {
-    theme,
-    setTheme
-  } = useTheme();
   const toggleMenu = () => {
     setIsOpen(!isOpen);
-  };
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
   };
   return <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 py-4">

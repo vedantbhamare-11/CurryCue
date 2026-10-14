@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Star, Award, ChefHat } from 'lucide-react';
-import { cn } from '@/lib/utils';
 interface CompletionCelebrationProps {
   isOpen: boolean;
   onClose: () => void;
@@ -113,7 +112,7 @@ export function CompletionCelebration({
           }}>
                 <h2 className="text-3xl font-bold text-primary mb-2">🎉 Congratulations!</h2>
                 <p className="text-lg mb-4">
-                  You've completed <span className="font-semibold text-primary">{recipeName}</span>
+                  You&apos;ve completed <span className="font-semibold text-primary">{recipeName}</span>
                 </p>
                 <p className="text-muted-foreground mb-6">It looks absolutely delicious!</p>
               </motion.div>

@@ -1,8 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
-import { ChefHat, Utensils, Clock, RefreshCw } from "lucide-react";
+import { ChefHat, Clock, RefreshCw } from "lucide-react";
 export function HeroSection() {
   return (
     <section
@@ -46,7 +45,7 @@ export function HeroSection() {
               >
                 
                   {" "}
-                  Let's CurryCue!
+                  Let&apos;s CurryCue!
                 
               </span>
             </h1>

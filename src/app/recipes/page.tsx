@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Utensils, Heart, Search, Filter, X } from 'lucide-react';
+import { Clock, Utensils, Heart, Search } from 'lucide-react';
 import Image from 'next/image';
 import { Recipe } from '@/types';
 import { cn } from '@/lib/utils';
@@ -17,23 +17,11 @@ export default function RecipesPage() {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'favorites' | 'recent'>('favorites');
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [difficultyFilter, setDifficultyFilter] = useState<string>('');
-  const [cuisineFilter, setCuisineFilter] = useState<string>('');
-  const [timeFilter, setTimeFilter] = useState<number | null>(null);
   const handleSelectRecipe = (recipe: Recipe) => {
     setSelectedRecipe(recipe);
   };
   const closeRecipeDetails = () => {
     setSelectedRecipe(null);
-  };
-  const toggleFilter = () => {
-    setFilterOpen(!filterOpen);
-  };
-  const resetFilters = () => {
-    setDifficultyFilter('');
-    setCuisineFilter('');
-    setTimeFilter(null);
   };
   const filteredRecipes = (activeTab === 'favorites' ? favoriteRecipes : recentRecipes).filter(recipe => {
     // Search filter
@@ -41,20 +29,6 @@ export default function RecipesPage() {
       return false;
     }
 
-    // Difficulty filter
-    if (difficultyFilter && recipe.difficulty !== difficultyFilter) {
-      return false;
-    }
-
-    // Cuisine filter
-    if (cuisineFilter && recipe.cuisine !== cuisineFilter) {
-      return false;
-    }
-
-    // Time filter
-    if (timeFilter && recipe.cookTime > timeFilter) {
-      return false;
-    }
     return true;
   });
   return <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 dark:from-zinc-900 dark:to-amber-950">

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2, Scan } from "lucide-react";
-import { Ingredient } from "@/types";
 import { cn } from "@/lib/utils";
 import { CameraCapture } from "./camera-capture";
 import { DetectedIngredient } from "@/lib/services/ingredient-detection";
@@ -14,23 +13,13 @@ import { IngredientSearchBar } from "./ingredient-search-bar";
 import { PantryExpiry } from "./pantry-expiry";
 export function IngredientEntry() {
   const { ingredients, addIngredient, removeIngredient } = useIngredientStore();
-  const [inputValue, setInputValue] = useState("");
   const [isScanning, setIsScanning] = useState(false);
   const [isScanningComplete, setIsScanningComplete] = useState(false);
   const [scanResults, setScanResults] = useState<DetectedIngredient[]>([]);
   const [showCamera, setShowCamera] = useState(false);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
   const [confidenceThreshold, setConfidenceThreshold] = useState<number>(70);
-  const [mlEnabled, setMlEnabled] = useState<boolean>(true);
-  const handleAddIngredient = () => {
-    if (!inputValue.trim()) return;
-    const newIngredient: Ingredient = {
-      id: Date.now().toString(),
-      name: inputValue.trim(),
-    };
-    addIngredient(newIngredient);
-    setInputValue("");
-  };
+  const [mlEnabled] = useState<boolean>(true);
   const handleRemoveIngredient = (id: string) => {
     removeIngredient(id);
   };
@@ -40,7 +29,7 @@ export function IngredientEntry() {
   const handleCameraClose = () => {
     setShowCamera(false);
   };
-  const handleImageCapture = async (imageSrc: string) => {
+  const handleImageCapture = async () => {
     setShowCamera(false);
     // We don't need to set scanning state here anymore as the camera component handles it
   };

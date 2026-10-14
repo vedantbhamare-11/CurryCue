@@ -143,6 +143,13 @@ function getAssumedIngredientsForCuisine(cuisineType: string): string[] {
  * Staples we never ask the user to own. Matched by whole-word phrase, so "Oil" covers
  * "Olive Oil" and "Cumin" covers "Cumin Seeds", but "Black Pepper" does not cover "Bell Pepper".
  */
+// The shape of a recipe in the model's JSON reply; every field is optional because the model can omit any
+type AIRecipe = Partial<Pick<Recipe, 'title' | 'description' | 'cookTime' | 'difficulty' | 'cuisine' | 'tags' | 'steps'>> & {
+  usedIngredients?: unknown[];
+  assumedIngredients?: unknown[];
+  missingIngredients?: unknown[];
+};
+
 const PANTRY_STAPLES = [
   'Water', 'Salt', 'Oil', 'Ghee', 'Sugar', 'Black Pepper', 'White Pepper', 'Turmeric',
   'Red Chili Powder', 'Chili Powder', 'Cumin', 'Mustard Seeds', 'Garam Masala',
@@ -154,14 +161,15 @@ const PANTRY_STAPLES = [
  * user doesn't have. Re-classify every ingredient it returned against the real pantry:
  * pantry match -> used, known staple -> assumed, anything else -> missing.
  */
-export function classifyIngredients(llmIngredients: any[], pantry: Ingredient[]) {
+export function classifyIngredients(llmIngredients: unknown[], pantry: Ingredient[]) {
   const used: Ingredient[] = [];
   const assumed: Ingredient[] = [];
   const missing: Ingredient[] = [];
   const seen = new Set<string>();
 
-  for (const item of llmIngredients) {
-    if (!item || typeof item.name !== 'string') continue;
+  for (const raw of llmIngredients) {
+    if (!raw || typeof (raw as { name?: unknown }).name !== 'string') continue;
+    const item = raw as Ingredient;
     const key = nameWords(item.name).join(' ');
     if (!key || seen.has(key)) continue;
     seen.add(key);
@@ -338,7 +346,7 @@ export async function generateRecipes(
     }
     
     try {
-      const aiRecipes = JSON.parse(jsonText) as any[];
+      const aiRecipes = JSON.parse(jsonText) as AIRecipe[];
       
       if (!Array.isArray(aiRecipes) || aiRecipes.length === 0) {
         throw new Error("No valid recipes returned from AI service");
@@ -382,8 +390,8 @@ export async function generateRecipes(
           // Always generate our own id: the LLM echoes the prompt's example ("1", "2", ...),
           // which collides across generations and breaks favorites/recents/cooking lookups.
           id: `recipe-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 8)}`,
-          title: aiRecipe.title,
-          description: aiRecipe.description,
+          title: aiRecipe.title ?? 'Untitled recipe',
+          description: aiRecipe.description ?? '',
           matchPercentage,
           cookTime: aiRecipe.cookTime || 30,
           difficulty: aiRecipe.difficulty || 'medium',

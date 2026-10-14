@@ -60,22 +60,22 @@ export default function CookingCommandsPage() {
               
               <div className="space-y-3">
                 <div className="bg-card rounded-lg p-3 border border-border">
-                  <div className="font-medium mb-1">"Next step" / "Next" / "Go forward"</div>
+                  <div className="font-medium mb-1">&quot;Next step&quot; / &quot;Next&quot; / &quot;Go forward&quot;</div>
                   <p className="text-sm text-muted-foreground">Move to the next step in the recipe</p>
                 </div>
                 
                 <div className="bg-card rounded-lg p-3 border border-border">
-                  <div className="font-medium mb-1">"Previous step" / "Previous" / "Go back"</div>
+                  <div className="font-medium mb-1">&quot;Previous step&quot; / &quot;Previous&quot; / &quot;Go back&quot;</div>
                   <p className="text-sm text-muted-foreground">Return to the previous step</p>
                 </div>
                 
                 <div className="bg-card rounded-lg p-3 border border-border">
-                  <div className="font-medium mb-1">"Go to step [number]" / "Jump to step [number]"</div>
+                  <div className="font-medium mb-1">&quot;Go to step [number]&quot; / &quot;Jump to step [number]&quot;</div>
                   <p className="text-sm text-muted-foreground">Navigate directly to a specific step</p>
                 </div>
                 
                 <div className="bg-card rounded-lg p-3 border border-border">
-                  <div className="font-medium mb-1">"Read step" / "Repeat step" / "What does it say"</div>
+                  <div className="font-medium mb-1">&quot;Read step&quot; / &quot;Repeat step&quot; / &quot;What does it say&quot;</div>
                   <p className="text-sm text-muted-foreground">Have the current step read aloud</p>
                 </div>
               </div>
@@ -89,22 +89,22 @@ export default function CookingCommandsPage() {
               
               <div className="space-y-3">
                 <div className="bg-card rounded-lg p-3 border border-border">
-                  <div className="font-medium mb-1">"Next ingredient" / "Following ingredient"</div>
+                  <div className="font-medium mb-1">&quot;Next ingredient&quot; / &quot;Following ingredient&quot;</div>
                   <p className="text-sm text-muted-foreground">Move to the next ingredient in the list</p>
                 </div>
                 
                 <div className="bg-card rounded-lg p-3 border border-border">
-                  <div className="font-medium mb-1">"Previous ingredient" / "Last ingredient"</div>
+                  <div className="font-medium mb-1">&quot;Previous ingredient&quot; / &quot;Last ingredient&quot;</div>
                   <p className="text-sm text-muted-foreground">Go back to the previous ingredient</p>
                 </div>
                 
                 <div className="bg-card rounded-lg p-3 border border-border">
-                  <div className="font-medium mb-1">"List ingredients" / "Show ingredients" / "What ingredients"</div>
+                  <div className="font-medium mb-1">&quot;List ingredients&quot; / &quot;Show ingredients&quot; / &quot;What ingredients&quot;</div>
                   <p className="text-sm text-muted-foreground">Display and read all ingredients</p>
                 </div>
                 
                 <div className="bg-card rounded-lg p-3 border border-border">
-                  <div className="font-medium mb-1">"Read ingredient [number]" / "Tell me about ingredient [number]"</div>
+                  <div className="font-medium mb-1">&quot;Read ingredient [number]&quot; / &quot;Tell me about ingredient [number]&quot;</div>
                   <p className="text-sm text-muted-foreground">Read a specific ingredient by its number</p>
                 </div>
               </div>
@@ -118,12 +118,12 @@ export default function CookingCommandsPage() {
               
               <div className="space-y-3">
                 <div className="bg-card rounded-lg p-3 border border-border">
-                  <div className="font-medium mb-1">"Start timer [number] minutes" / "Set timer for [number] minutes"</div>
+                  <div className="font-medium mb-1">&quot;Start timer [number] minutes&quot; / &quot;Set timer for [number] minutes&quot;</div>
                   <p className="text-sm text-muted-foreground">Start a countdown timer for the specified minutes</p>
                 </div>
                 
                 <div className="bg-card rounded-lg p-3 border border-border">
-                  <div className="font-medium mb-1">"Stop timer" / "Cancel timer" / "End timer"</div>
+                  <div className="font-medium mb-1">&quot;Stop timer&quot; / &quot;Cancel timer&quot; / &quot;End timer&quot;</div>
                   <p className="text-sm text-muted-foreground">Stop the currently running timer</p>
                 </div>
               </div>
@@ -137,12 +137,12 @@ export default function CookingCommandsPage() {
               
               <div className="space-y-3">
                 <div className="bg-card rounded-lg p-3 border border-border">
-                  <div className="font-medium mb-1">"Fullscreen" / "Full screen"</div>
+                  <div className="font-medium mb-1">&quot;Fullscreen&quot; / &quot;Full screen&quot;</div>
                   <p className="text-sm text-muted-foreground">Toggle fullscreen mode</p>
                 </div>
                 
                 <div className="bg-card rounded-lg p-3 border border-border">
-                  <div className="font-medium mb-1">"Exit cooking" / "Close cooking" / "Quit cooking"</div>
+                  <div className="font-medium mb-1">&quot;Exit cooking&quot; / &quot;Close cooking&quot; / &quot;Quit cooking&quot;</div>
                   <p className="text-sm text-muted-foreground">Exit the cooking mode</p>
                 </div>
               </div>

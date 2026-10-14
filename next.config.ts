@@ -7,8 +7,8 @@ const config: NextConfig = {
     unoptimized: true,
   },
   eslint: {
-    // `next lint` crashes with "Invalid Options" against this ESLint setup, and there are ~140 existing
-    // lint errors, so linting stays out of the build for now. Run `npm run lint` directly instead.
+    // Next's built-in lint step crashes with "Invalid Options" against this ESLint version (it logs the error and
+    // lints nothing), so the build skips it. Run `npm run lint` instead; it is clean of errors.
     ignoreDuringBuilds: true,
   },
   typescript: {

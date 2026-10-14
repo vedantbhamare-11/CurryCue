@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Mic, MicOff, VolumeX, Volume2, ChevronLeft, ChevronRight, X, Clock, Maximize, Minimize, Play, Pause, List, MessageSquare } from 'lucide-react';
 import { Recipe } from '@/types';
 import { cn } from '@/lib/utils';
@@ -26,7 +26,6 @@ export function CookingMode({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isSpeechEnabled, setIsSpeechEnabled] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const [timer, setTimer] = useState<number | null>(null);
   const [timerRunning, setTimerRunning] = useState(false);
   const [timerRemaining, setTimerRemaining] = useState(0);
   const [showAssistant, setShowAssistant] = useState(false);
@@ -310,10 +309,6 @@ export function CookingMode({
       }
       // Show celebration when recipe is completed
       setShowCelebration(true);
-      // Complete recipe for rewards system
-      if (typeof window !== 'undefined' && (window as any).completeRecipe) {
-        (window as any).completeRecipe();
-      }
     }
   };
 
@@ -336,7 +331,6 @@ export function CookingMode({
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
     }
-    setTimer(seconds);
     setTimerRemaining(seconds);
     setTimerRunning(true);
     const minutes = Math.floor(seconds / 60);
@@ -539,15 +533,15 @@ export function CookingMode({
                 <div className="space-y-1">
                   <div className="text-xs font-medium text-muted-foreground mb-1">Steps</div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">"Next step"</span>
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">&quot;Next step&quot;</span>
                     <span className="text-muted-foreground text-xs">Next step</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">"Go to step 3"</span>
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">&quot;Go to step 3&quot;</span>
                     <span className="text-muted-foreground text-xs">Jump to step</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">"Read step"</span>
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">&quot;Read step&quot;</span>
                     <span className="text-muted-foreground text-xs">Read current step</span>
                   </div>
                 </div>
@@ -555,15 +549,15 @@ export function CookingMode({
                 <div className="space-y-1">
                   <div className="text-xs font-medium text-muted-foreground mb-1">Ingredients</div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">"Next ingredient"</span>
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">&quot;Next ingredient&quot;</span>
                     <span className="text-muted-foreground text-xs">Next ingredient</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">"List ingredients"</span>
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">&quot;List ingredients&quot;</span>
                     <span className="text-muted-foreground text-xs">Show all</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">"Read ingredient 2"</span>
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">&quot;Read ingredient 2&quot;</span>
                     <span className="text-muted-foreground text-xs">Specific ingredient</span>
                   </div>
                 </div>
@@ -571,11 +565,11 @@ export function CookingMode({
                 <div className="space-y-1">
                   <div className="text-xs font-medium text-muted-foreground mb-1">Timer</div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">"Start timer 5 minutes"</span>
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">&quot;Start timer 5 minutes&quot;</span>
                     <span className="text-muted-foreground text-xs">Set timer</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">"Stop timer"</span>
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">&quot;Stop timer&quot;</span>
                     <span className="text-muted-foreground text-xs">Cancel timer</span>
                   </div>
                 </div>
@@ -583,11 +577,11 @@ export function CookingMode({
                 <div className="space-y-1">
                   <div className="text-xs font-medium text-muted-foreground mb-1">Other</div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">"Fullscreen"</span>
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">&quot;Fullscreen&quot;</span>
                     <span className="text-muted-foreground text-xs">Toggle fullscreen</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">"Exit cooking"</span>
+                    <span className="bg-muted px-2 py-1 rounded font-mono text-xs">&quot;Exit cooking&quot;</span>
                     <span className="text-muted-foreground text-xs">Close cooking mode</span>
                   </div>
                 </div>
