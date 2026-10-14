@@ -21,12 +21,13 @@ function gradientFor(title: string): string {
 const isLegacyStockPhoto = (src: string) => src.includes('images.unsplash.com');
 
 // Fills its (relative) parent. Shows the recipe's photo when it really has one, otherwise a plain placeholder.
-export function RecipeImage({ src, title, sizes }: { src?: string; title: string; sizes?: string }) {
+// `iconTop` keeps the icon clear of text laid over the bottom of the image (the recipe modal's title and tags).
+export function RecipeImage({ src, title, sizes, iconTop }: { src?: string; title: string; sizes?: string; iconTop?: boolean }) {
   if (src && !isLegacyStockPhoto(src)) {
     return <Image src={src} alt={title} fill className="object-cover" sizes={sizes} />;
   }
   return (
-    <div className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${gradientFor(title)}`} role="img" aria-label={title}>
+    <div className={`absolute inset-0 flex justify-center bg-gradient-to-br ${gradientFor(title)} ${iconTop ? 'items-start pt-6 sm:pt-10' : 'items-center'}`} role="img" aria-label={title}>
       <ChefHat className="w-12 h-12 text-white/70 dark:text-white/40" aria-hidden="true" />
     </div>
   );
