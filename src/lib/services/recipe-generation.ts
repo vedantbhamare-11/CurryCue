@@ -3,7 +3,7 @@ import { Ingredient, Recipe, UserPreferences } from '@/types';
 import { RateLimiter } from '@/lib/services/rate-limiter';
 import { stripStepLabel } from '@/lib/utils';
 import { namesMatch, nameWords, staplesMatch } from '@/lib/ingredient-names';
-import { asList, asText, normalizeCookTime, normalizeDifficulty, normalizeTags } from '@/lib/recipe-fields';
+import { asList, asText, keepRecipesUsingPantry, normalizeCookTime, normalizeDifficulty, normalizeTags } from '@/lib/recipe-fields';
 
 export interface RecipeGenerationOptions {
   ingredients: Ingredient[];
@@ -415,12 +415,14 @@ export async function generateRecipes(
         };
       });
 
+      const shown = keepRecipesUsingPantry(recipes, ingredients.length);
+
       // Recipes that use up more of what is about to expire come first (stable for equal counts)
       if (useSoon.length > 0) {
-        recipes.sort((a, b) => (b.usesExpiring?.length ?? 0) - (a.usesExpiring?.length ?? 0));
+        shown.sort((a, b) => (b.usesExpiring?.length ?? 0) - (a.usesExpiring?.length ?? 0));
       }
       
-      return recipes;
+      return shown;
     } catch (parseError) {
       console.error("Failed to parse recipe JSON:", parseError);
       throw new Error("Failed to parse AI response into valid recipe format");

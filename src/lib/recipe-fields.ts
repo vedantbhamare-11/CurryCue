@@ -34,3 +34,11 @@ export function asText(value: unknown, fallback = ''): string {
 }
 
 export const asList = (value: unknown): unknown[] => (Array.isArray(value) ? value : []);
+
+// Dishes that use nothing from the pantry (0% match) are noise when the user asked for what they can cook.
+// If that would leave nothing, keep them all: an imperfect list beats an error, and the matcher can miss synonyms.
+export function keepRecipesUsingPantry<T extends { usedIngredients?: unknown[] }>(recipes: T[], pantrySize: number): T[] {
+  if (pantrySize === 0) return recipes;
+  const relevant = recipes.filter((recipe) => (recipe.usedIngredients?.length ?? 0) > 0);
+  return relevant.length > 0 ? relevant : recipes;
+}

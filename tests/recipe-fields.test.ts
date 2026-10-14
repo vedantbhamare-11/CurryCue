@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeDifficulty, normalizeCookTime, normalizeTags, asText, asList } from '@/lib/recipe-fields';
+import { normalizeDifficulty, normalizeCookTime, normalizeTags, asText, asList, keepRecipesUsingPantry } from '@/lib/recipe-fields';
 
 test('normalizeDifficulty maps the words models use onto easy | medium | hard', () => {
   assert.equal(normalizeDifficulty('intermediate'), 'medium');
@@ -32,4 +32,13 @@ test('asText and asList never throw on odd input', () => {
   assert.equal(asText('   ', 'x'), 'x');
   assert.deepEqual(asList('abc'), []);
   assert.deepEqual(asList([1]), [1]);
+});
+
+test('keepRecipesUsingPantry drops dishes that use nothing from the pantry, but never returns an empty list', () => {
+  const uses = { title: 'Palak Paneer', usedIngredients: ['paneer'] };
+  const unrelated = { title: 'Pasta', usedIngredients: [] };
+  assert.deepEqual(keepRecipesUsingPantry([unrelated, uses], 1), [uses]);
+  assert.deepEqual(keepRecipesUsingPantry([unrelated], 1), [unrelated]);
+  assert.deepEqual(keepRecipesUsingPantry([unrelated, uses], 0), [unrelated, uses]);
+  assert.deepEqual(keepRecipesUsingPantry([], 3), []);
 });
