@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { ChefHat } from 'lucide-react';
+import { hasRealPhoto } from '@/lib/dish-photo';
 
 // Warm gradients, picked by title so a row of cards is not one flat colour but a dish never changes colour
 const GRADIENTS = [
@@ -16,14 +17,10 @@ function gradientFor(title: string): string {
   return GRADIENTS[hash % GRADIENTS.length];
 }
 
-// Early versions attached one of five unrelated Unsplash stock photos to every recipe (a curry could get a
-// pasta photo). Saved recipes may still carry those, so they are treated as "no photo".
-const isLegacyStockPhoto = (src: string) => src.includes('images.unsplash.com');
-
 // Fills its (relative) parent. Shows the recipe's photo when it really has one, otherwise a plain placeholder.
 // `iconTop` keeps the icon clear of text laid over the bottom of the image (the recipe modal's title and tags).
 export function RecipeImage({ src, title, sizes, iconTop }: { src?: string; title: string; sizes?: string; iconTop?: boolean }) {
-  if (src && !isLegacyStockPhoto(src)) {
+  if (hasRealPhoto(src)) {
     return <Image src={src} alt={title} fill className="object-cover" sizes={sizes} />;
   }
   return (

@@ -15,6 +15,8 @@ interface RecipeState {
   addRecentRecipe: (recipe: Recipe) => void;
   setIsLoading: (isLoading: boolean) => void;
   clearSuggestedRecipes: () => void;
+  // A photo arrives after the recipe is shown, so it is attached to every saved copy of that recipe
+  setRecipePhoto: (id: string, image: string, imageCredit: Recipe['imageCredit']) => void;
 }
 
 export const useRecipeStore = create<RecipeState>()(
@@ -46,6 +48,11 @@ export const useRecipeStore = create<RecipeState>()(
         set({ isLoading }),
       clearSuggestedRecipes: () => 
         set({ suggestedRecipes: [] }),
+      setRecipePhoto: (id, image, imageCredit) =>
+        set((state) => {
+          const attach = (recipes: Recipe[]) => recipes.map((recipe) => (recipe.id === id ? { ...recipe, image, imageCredit } : recipe));
+          return { suggestedRecipes: attach(state.suggestedRecipes), favoriteRecipes: attach(state.favoriteRecipes), recentRecipes: attach(state.recentRecipes) };
+        }),
     }),
     {
       name: 'recipe-storage',

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { RecipeImage } from '@/components/recipe-image';
+import { hasRealPhoto } from '@/lib/dish-photo';
 import { Clock, Utensils, Users, Heart, Share, X, ChevronRight, PlayCircle } from 'lucide-react';
 import { Recipe } from '@/types';
 import { useRecipeStore } from '@/store/recipe-store';
@@ -82,6 +83,7 @@ export function RecipeDetail({
           <div className="relative h-48 sm:h-56 md:h-80">
             <RecipeImage src={recipe.image} title={recipe.title} iconTop sizes="(max-width: 768px) 95vw, (max-width: 1200px) 80vw, 1200px" />
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent"></div>
+            {hasRealPhoto(recipe.image) && recipe.imageCredit && <a href={recipe.imageCredit.url} target="_blank" rel="noopener noreferrer" className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-black/50 text-white text-[10px] sm:text-xs rounded-full px-2 py-1 hover:bg-black/70 transition-colors z-10">Photo by {recipe.imageCredit.name} on Pexels</a>}
             
             <button onClick={onClose} className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-card/80 backdrop-blur-sm rounded-full p-2 hover:bg-card transition-colors z-10" aria-label="Close recipe">
               <X className="w-4 h-4 sm:w-5 sm:h-5" />

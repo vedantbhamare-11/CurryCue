@@ -28,6 +28,8 @@ export type Recipe = {
   cookTime: number;
   difficulty: 'easy' | 'medium' | 'hard';
   image: string;
+  // Who took the photo, when `image` is a real photo (shown as a credit)
+  imageCredit?: { name: string; url: string };
   ingredients: Ingredient[];
   steps: string[];
   cuisine: string;

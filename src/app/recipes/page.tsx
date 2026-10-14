@@ -8,6 +8,7 @@ import { Recipe } from '@/types';
 import { cn } from '@/lib/utils';
 import { useRecipeStore } from '@/store/recipe-store';
 import { RecipeDetail } from '@/components/recipe-detail';
+import { useDishPhotos } from '@/hooks/use-dish-photos';
 // import { Footer } from '@/components/footer';
 export default function RecipesPage() {
   const {
@@ -15,6 +16,8 @@ export default function RecipesPage() {
     recentRecipes
   } = useRecipeStore();
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  useDishPhotos(favoriteRecipes);
+  useDishPhotos(recentRecipes);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'favorites' | 'recent'>('favorites');
   const handleSelectRecipe = (recipe: Recipe) => {

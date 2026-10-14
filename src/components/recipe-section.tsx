@@ -9,6 +9,7 @@ import { useRecipeStore } from '@/store/recipe-store';
 import { RecipeDetail } from './recipe-detail';
 import { RecipeGenerator } from './recipe-generator';
 import { useIngredientStore } from '@/store/ingredient-store';
+import { useDishPhotos } from '@/hooks/use-dish-photos';
 export function RecipeSection() {
   const {
     suggestedRecipes,
@@ -18,6 +19,7 @@ export function RecipeSection() {
     ingredients
   } = useIngredientStore();
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  useDishPhotos(suggestedRecipes);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
