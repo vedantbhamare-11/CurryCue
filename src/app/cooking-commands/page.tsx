@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Mic, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 export default function CookingCommandsPage() {
-  return <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 dark:from-zinc-900 dark:to-amber-950">
+  return <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 dark:from-background dark:to-[#2a1b10]">
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4">

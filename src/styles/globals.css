@@ -55,33 +55,34 @@
 }
 
 .dark {
-	--background: #1A1D21;
-	--foreground: #ECF0F1;
-	--card: #2C3E50;
-	--card-foreground: #ECF0F1;
-	--popover: #2C3E50;
-	--popover-foreground: #ECF0F1;
-	--primary: #F39C12;
-	--primary-foreground: #1A1D21;
-	--secondary: #27AE60;
-	--secondary-foreground: #ECF0F1;
-	--muted: #34495E;
-	--muted-foreground: #BDC3C7;
-	--accent: #D35400;
-	--accent-foreground: #ECF0F1;
-	--destructive: #C0392B;
-	--destructive-foreground: #ECF0F1;
-	--border: rgba(236, 240, 241, 0.2);
-	--input: #34495E;
-	--input-background: #243241;
-	--ring: #F39C12;
+	/* Warm espresso palette: the light theme's orange brand on dark brown, not blue-grey */
+	--background: #17120E;
+	--foreground: #F3EBE2;
+	--card: #221A15;
+	--card-foreground: #F3EBE2;
+	--popover: #261D17;
+	--popover-foreground: #F3EBE2;
+	--primary: #F59E3B;
+	--primary-foreground: #1A110A;
+	--secondary: #34B36B;
+	--secondary-foreground: #0E1A12;
+	--muted: #2E241D;
+	--muted-foreground: #B3A495;
+	--accent: #E0701F;
+	--accent-foreground: #FFF7EE;
+	--destructive: #E5533F;
+	--destructive-foreground: #FFF7EE;
+	--border: rgba(243, 235, 226, 0.12);
+	--input: #2A211A;
+	--input-background: #2A211A;
+	--ring: #F59E3B;
 	
 	/* Food theme colors - dark mode */
-	--spice: #C0392B;
-	--herb: #27AE60;
-	--curry: #D35400;
-	--umami: #ECF0F1;
-	--cream: #2C3E50;
+	--spice: #E5533F;
+	--herb: #34B36B;
+	--curry: #E0701F;
+	--umami: #F3EBE2;
+	--cream: #2E241D;
 }
 
 @theme inline {

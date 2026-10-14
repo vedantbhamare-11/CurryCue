@@ -34,7 +34,7 @@ export default function RecipesPage() {
 
     return true;
   });
-  return <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 dark:from-zinc-900 dark:to-amber-950">
+  return <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 dark:from-background dark:to-[#2a1b10]">
       <main className="container mx-auto px-4 py-8">
         <motion.div initial={{
         opacity: 0,
