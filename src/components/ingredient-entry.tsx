@@ -91,13 +91,13 @@ export function IngredientEntry() {
       <div
         className="absolute -z-10 top-0 right-0 w-1/3 h-32 bg-secondary/10 dark:bg-secondary/20 transform -rotate-12 rounded-3xl"
       ></div>
-      <h3
+      <h2
         className="text-2xl font-bold mb-4"
       >
         
           Your Ingredients
         
-      </h3>
+      </h2>
 
       <div
         className="bg-card rounded-2xl p-6 shadow-sm dark:shadow-secondary/5 border border-border"

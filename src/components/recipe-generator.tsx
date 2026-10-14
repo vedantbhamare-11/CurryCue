@@ -95,7 +95,7 @@ export function RecipeGenerator() {
   return <div className="bg-card rounded-2xl p-6 shadow-sm dark:shadow-primary/5 border border-border">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h3 className="text-xl font-bold">Generate Recipes</h3>
+          <h2 className="text-xl font-bold">Generate Recipes</h2>
           <div className="flex lg:flex-row flex-col items-center gap-3">
           </div>
         </div>
@@ -142,7 +142,7 @@ export function RecipeGenerator() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <label className="block text-sm font-medium">Cuisine Type</label>
-                    <select value={cuisineType} onChange={e => setCuisineType(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20">
+                    <select aria-label="Cuisine type" value={cuisineType} onChange={e => setCuisineType(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20">
                       <option value="">Any Cuisine</option>
                       <option value="Italian">Italian</option>
                       <option value="Mexican">Mexican</option>
@@ -155,7 +155,7 @@ export function RecipeGenerator() {
                   
                   <div className="space-y-2">
                     <label className="block text-sm font-medium">Meal Type</label>
-                    <select value={mealType} onChange={e => setMealType(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20">
+                    <select aria-label="Meal type" value={mealType} onChange={e => setMealType(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20">
                       <option value="">Any Meal</option>
                       <option value="Breakfast">Breakfast</option>
                       <option value="Lunch">Lunch</option>
@@ -167,7 +167,7 @@ export function RecipeGenerator() {
                   
                   <div className="space-y-2">
                     <label className="block text-sm font-medium">Difficulty</label>
-                    <select value={difficulty} onChange={e => setDifficulty(e.target.value as typeof difficulty)} className="w-full px-3 py-2 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20">
+                    <select aria-label="Difficulty" value={difficulty} onChange={e => setDifficulty(e.target.value as typeof difficulty)} className="w-full px-3 py-2 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20">
                       <option value="">Any Difficulty</option>
                       <option value="easy">Easy</option>
                       <option value="medium">Medium</option>
@@ -178,7 +178,7 @@ export function RecipeGenerator() {
                   <div className="space-y-2">
                     <label className="block text-sm font-medium">Max Cooking Time (minutes)</label>
                     <div className="flex items-center gap-2">
-                      <input type="range" min="15" max="120" step="5" value={maxCookingTime} onChange={e => setMaxCookingTime(parseInt(e.target.value))} className="flex-1 h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary" />
+                      <input type="range" aria-label="Maximum cooking time in minutes" min="15" max="120" step="5" value={maxCookingTime} onChange={e => setMaxCookingTime(parseInt(e.target.value))} className="flex-1 h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary" />
                       <span className="w-12 text-center">{maxCookingTime}</span>
                     </div>
                   </div>
@@ -186,13 +186,13 @@ export function RecipeGenerator() {
                   <div className="space-y-2 flex flex-row gap-4  items-center justify-start">
                     <label className="block text-sm font-medium">Servings:</label>
                     <div className="flex items-center">
-                      <button onClick={() => setServings(Math.max(1, servings - 1))} className="px-3 py-2 bg-muted hover:bg-muted/80 rounded-l-lg border border-border">
+                      <button aria-label="Fewer servings" onClick={() => setServings(Math.max(1, servings - 1))} className="px-3 py-2 bg-muted hover:bg-muted/80 rounded-l-lg border border-border">
                         -
                       </button>
                       <div className="px-4 py-2 border-t border-b border-border bg-input-background dark:bg-input">
                         {servings}
                       </div>
-                      <button onClick={() => setServings(servings + 1)} className="px-3 py-2 bg-muted hover:bg-muted/80 rounded-r-lg border border-border">
+                      <button aria-label="More servings" onClick={() => setServings(servings + 1)} className="px-3 py-2 bg-muted hover:bg-muted/80 rounded-r-lg border border-border">
                         +
                       </button>
                     </div>

@@ -55,14 +55,14 @@ export function RecipeSection() {
           scale: 1.05
         }} whileTap={{
           scale: 0.95
-        }} onClick={scrollLeft} className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors">
+        }} onClick={scrollLeft} aria-label="Scroll recipes left" className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors">
               <ChevronLeft className="w-5 h-5" />
             </motion.button>
             <motion.button whileHover={{
           scale: 1.05
         }} whileTap={{
           scale: 0.95
-        }} onClick={scrollRight} className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors">
+        }} onClick={scrollRight} aria-label="Scroll recipes right" className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors">
               <ChevronRight className="w-5 h-5" />
             </motion.button>
           </div>}

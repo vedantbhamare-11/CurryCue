@@ -16,7 +16,7 @@ export function MLDetectionSettings({
 }: MLDetectionSettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
   return <div className={cn("relative mb-4", className)}>
-      <button onClick={() => setIsOpen(!isOpen)} className="flex items-center gap-2 px-3  h-12 rounded-lg border border-border hover:bg-muted/50 transition-colors">
+      <button onClick={() => setIsOpen(!isOpen)} aria-expanded={isOpen} className="flex items-center gap-2 px-3  h-12 rounded-lg border border-border hover:bg-muted/50 transition-colors">
         <Settings className="w-4 h-4" />
         <span className="text-sm">ML Settings</span>
       </button>
@@ -41,7 +41,7 @@ export function MLDetectionSettings({
               <label className="block text-sm font-medium mb-1">
                 Confidence Threshold: {confidenceThreshold}%
               </label>
-              <input type="range" min="50" max="95" step="5" value={confidenceThreshold} onChange={e => onConfidenceChange(parseInt(e.target.value))} className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary" />
+              <input type="range" aria-label="Confidence threshold" min="50" max="95" step="5" value={confidenceThreshold} onChange={e => onConfidenceChange(parseInt(e.target.value))} className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary" />
               <div className="flex justify-between text-xs text-muted-foreground mt-1">
                 <span>50%</span>
                 <span>95%</span>
