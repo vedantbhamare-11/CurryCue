@@ -28,7 +28,7 @@ Everything you add (pantry, shopping list, saved recipes, preferences) is stored
 * Traditional, known dishes rather than invented ones. Basics like salt, oil and turmeric are assumed to be available.
 * Each recipe shows what you have, what is assumed, and what is missing.
 * Favourites and recently viewed recipes.
-* **Dish photos (optional):** with a free `PEXELS_API_KEY`, recipes get a real photo found by dish name. A photo is only used when its description names the dish; otherwise the recipe keeps a neutral placeholder. The photographer is credited in the recipe view.
+* **Dish photos (optional):** with a free `UNSPLASH_ACCESS_KEY`, recipes get a real photo found by dish name. A photo is only used when its description names the dish; otherwise the recipe keeps a neutral placeholder. The photographer is credited in the recipe view.
 
 ### Cooking mode
 
@@ -73,7 +73,7 @@ Which provider and which models are used is set in `.env.local`, not in code. Se
 | `AI_PROVIDERS` | Order to try providers, default `groq,gemini`. A provider without a key is skipped |
 | `GROQ_TEXT_MODELS`, `GROQ_VISION_MODELS`, `GEMINI_MODELS` | Optional comma-separated model lists, tried in order. Use these when a provider retires a model |
 | `<NAME>_API_KEY`, `<NAME>_TEXT_MODELS`, `<NAME>_VISION_MODELS` | Add any other OpenAI-compatible provider (presets: cerebras, openrouter, together, mistral, openai) without code changes |
-| `PEXELS_API_KEY` | Optional. Enables dish photos (see Recipes above) |
+| `UNSPLASH_ACCESS_KEY` | Optional. Enables dish photos (see Recipes above) |
 | `AI_RATE_LIMIT_PER_MIN`, `AI_SCAN_RATE_LIMIT_PER_MIN`, `AI_RATE_LIMIT_GLOBAL_PER_MIN` | Per-IP and global request limits so strangers cannot burn your quota. `0` disables |
 
 If a model gets retired, run `npm run check:models` (add `-- --probe` to send real test requests) to see which names are missing, then update the model list in `.env.local`.
