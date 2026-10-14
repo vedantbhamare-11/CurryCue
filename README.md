@@ -42,7 +42,7 @@ Everything you add (pantry, shopping list, saved recipes, preferences) is stored
 
 ## Tech stack
 
-* **Framework:** Next.js 15 (App Router), React 18, TypeScript
+* **Framework:** Next.js 16 (App Router, Turbopack), React 18, TypeScript
 * **State:** Zustand with `persist` (localStorage)
 * **Styling and UI:** Tailwind CSS v4, Radix UI, Framer Motion, Lucide icons, Sonner toasts
 * **AI:** Groq (primary) and Google Gemini (fallback), called from server routes only so keys never reach the browser
