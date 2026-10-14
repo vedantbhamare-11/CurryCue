@@ -19,7 +19,7 @@ export const useShoppingListStore = create<ShoppingListState>()(
       addItems: (incoming, options = {}) => {
         const result = addItems(get().items, incoming, options);
         set({ items: result.items });
-        return { added: result.added, merged: result.merged, skippedInPantry: result.skippedInPantry };
+        return { added: result.added, merged: result.merged, skippedInPantry: result.skippedInPantry, alreadyListed: result.alreadyListed };
       },
       toggleItem: (id) =>
         set((state) => ({ items: state.items.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item)) })),

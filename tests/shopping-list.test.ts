@@ -69,9 +69,21 @@ test('addItems: add, merge duplicates and amounts, record recipes', () => {
   assert.deepEqual(result.items[0].recipes, ['Tomato Rice', 'Chutney']);
   assert.deepEqual(result.merged, ['Tomato']);
 
-  result = addItems(result.items, [{ name: 'Tomato', quantity: '1', unit: 'kg' }], { recipeTitle: 'Chutney', now: 3, makeId });
-  assert.deepEqual(result.items[0].recipes, ['Tomato Rice', 'Chutney'], 'the same recipe is not listed twice');
+  // A different recipe still adds its amount (and converts units)
+  result = addItems(result.items, [{ name: 'Tomato', quantity: '1', unit: 'kg' }], { recipeTitle: 'Salad', now: 3, makeId });
+  assert.deepEqual(result.items[0].recipes, ['Tomato Rice', 'Chutney', 'Salad']);
   assert.deepEqual([result.items[0].quantity, result.items[0].unit], ['1.35', 'kg']);
+});
+
+test('addItems: adding the same recipe twice (a double tap) does not double the amounts', () => {
+  const first = addItems([], [{ name: 'Garlic', quantity: '2' }, { name: 'Cream', quantity: '2', unit: 'tbsp' }], { recipeTitle: 'Palak Paneer', now: 1 });
+  assert.equal(first.alreadyListed.length, 0);
+
+  const second = addItems(first.items, [{ name: 'Garlic', quantity: '2' }, { name: 'Cream', quantity: '2', unit: 'tbsp' }], { recipeTitle: 'Palak Paneer', now: 2 });
+  assert.deepEqual(second.items.map((i) => [i.name, i.quantity, i.unit]), [['Garlic', '2', undefined], ['Cream', '2', 'tbsp']]);
+  assert.deepEqual(second.alreadyListed, ['Garlic', 'Cream']);
+  assert.deepEqual(second.merged, []);
+  assert.deepEqual(second.added, []);
 });
 
 test('addItems: a bought item is a past purchase, so buying it again adds a fresh entry', () => {

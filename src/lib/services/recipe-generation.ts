@@ -3,6 +3,7 @@ import { Ingredient, Recipe, UserPreferences } from '@/types';
 import { RateLimiter } from '@/lib/services/rate-limiter';
 import { stripStepLabel } from '@/lib/utils';
 import { namesMatch, nameWords, staplesMatch } from '@/lib/ingredient-names';
+import { asList, asText, normalizeCookTime, normalizeDifficulty, normalizeTags } from '@/lib/recipe-fields';
 
 export interface RecipeGenerationOptions {
   ingredients: Ingredient[];
@@ -144,10 +145,17 @@ function getAssumedIngredientsForCuisine(cuisineType: string): string[] {
  * "Olive Oil" and "Cumin" covers "Cumin Seeds", but "Black Pepper" does not cover "Bell Pepper".
  */
 // The shape of a recipe in the model's JSON reply; every field is optional because the model can omit any
-type AIRecipe = Partial<Pick<Recipe, 'title' | 'description' | 'cookTime' | 'difficulty' | 'cuisine' | 'tags' | 'steps'>> & {
-  usedIngredients?: unknown[];
-  assumedIngredients?: unknown[];
-  missingIngredients?: unknown[];
+type AIRecipe = {
+  title?: unknown;
+  description?: unknown;
+  cookTime?: unknown;
+  difficulty?: unknown;
+  cuisine?: unknown;
+  tags?: unknown;
+  steps?: unknown;
+  usedIngredients?: unknown;
+  assumedIngredients?: unknown;
+  missingIngredients?: unknown;
 };
 
 const PANTRY_STAPLES = [
@@ -346,9 +354,15 @@ export async function generateRecipes(
     }
     
     try {
-      const aiRecipes = JSON.parse(jsonText) as AIRecipe[];
-      
-      if (!Array.isArray(aiRecipes) || aiRecipes.length === 0) {
+      const parsed: unknown = JSON.parse(jsonText);
+
+      // A recipe without a title or any steps cannot be shown or cooked, so it is dropped rather than displayed broken
+      const aiRecipes = (Array.isArray(parsed) ? parsed : []).filter((entry): entry is AIRecipe =>
+        typeof entry === 'object' && entry !== null &&
+        asText((entry as AIRecipe).title) !== '' && asList((entry as AIRecipe).steps).some((step) => asText(step) !== '')
+      );
+
+      if (aiRecipes.length === 0) {
         throw new Error("No valid recipes returned from AI service");
       }
       
@@ -356,9 +370,9 @@ export async function generateRecipes(
       const recipes: Recipe[] = aiRecipes.map((aiRecipe, index) => {
         const { used, assumed, missing } = classifyIngredients(
           [
-            ...(aiRecipe.usedIngredients || []),
-            ...(aiRecipe.assumedIngredients || []),
-            ...(aiRecipe.missingIngredients || [])
+            ...asList(aiRecipe.usedIngredients),
+            ...asList(aiRecipe.assumedIngredients),
+            ...asList(aiRecipe.missingIngredients)
           ],
           ingredients
         );
@@ -381,17 +395,18 @@ export async function generateRecipes(
           // Always generate our own id: the LLM echoes the prompt's example ("1", "2", ...),
           // which collides across generations and breaks favorites/recents/cooking lookups.
           id: `recipe-${Date.now()}-${index}-${Math.random().toString(36).slice(2, 8)}`,
-          title: aiRecipe.title ?? 'Untitled recipe',
-          description: aiRecipe.description ?? '',
+          title: asText(aiRecipe.title),
+          description: asText(aiRecipe.description),
           matchPercentage,
-          cookTime: aiRecipe.cookTime || 30,
-          difficulty: aiRecipe.difficulty || 'medium',
+          cookTime: normalizeCookTime(aiRecipe.cookTime),
+          // The model says "intermediate", "beginner", ...: map to the three values the UI knows
+          difficulty: normalizeDifficulty(aiRecipe.difficulty) ?? 'medium',
           // No photo: the AI only writes text, and unrelated stock photos misled more than they helped
           image: '',
           ingredients: allIngredients,
-          steps: (Array.isArray(aiRecipe.steps) ? aiRecipe.steps : []).map(stripStepLabel).filter(Boolean),
-          cuisine: aiRecipe.cuisine || cuisineType || 'General',
-          tags: aiRecipe.tags || ['authentic'],
+          steps: asList(aiRecipe.steps).map(stripStepLabel).filter(Boolean),
+          cuisine: asText(aiRecipe.cuisine, cuisineType || 'General'),
+          tags: normalizeTags(aiRecipe.tags, ['authentic']),
           usedIngredients: used,
           assumedIngredients: assumed,
           missingIngredients: missing,

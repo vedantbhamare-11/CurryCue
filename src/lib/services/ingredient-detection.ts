@@ -1,4 +1,5 @@
 import { generateTextWithImages } from '@/lib/api/util';
+import { sanitizeScanResults } from '@/lib/scan-image';
 
 export interface DetectedIngredient {
   name: string;
@@ -16,11 +17,9 @@ export async function detectIngredientsFromImage(
   imageBase64: string
 ): Promise<DetectedIngredient[]> {
   try {
-    // Ensure image is properly formatted for the API
-    const base64Data = imageBase64.includes('base64,') 
-      ? imageBase64
-      : `data:image/jpeg;base64,${imageBase64}`;
-    
+    // The route has already validated this as a base64 image data URL (see validateScanImage)
+    const base64Data = imageBase64;
+
     // Create a detailed prompt for the ML model to analyze the image
     const prompt = `
       Analyze this food image and identify all ingredients visible.
@@ -58,14 +57,8 @@ export async function detectIngredientsFromImage(
     }
     
     try {
-      const ingredients = JSON.parse(jsonText) as DetectedIngredient[];
-      
-      // Sort ingredients by confidence level (if available)
-      return ingredients.sort((a, b) => {
-        const confA = a.confidence || 0;
-        const confB = b.confidence || 0;
-        return confB - confA;
-      });
+      // Model output is untrusted: keep only well-formed entries, most confident first
+      return sanitizeScanResults(JSON.parse(jsonText));
     } catch (parseError) {
       console.error("Failed to parse ingredient JSON:", parseError);
       return [];

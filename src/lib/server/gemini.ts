@@ -6,11 +6,12 @@ import { GEMINI_BASE_URL, resolveGeminiModels } from '@/lib/server/ai-config';
 
 const ATTEMPT_TIMEOUT_MS = 45_000; // full recipe prompts can legitimately take 30s+ on thinking models
 
-// Only data URLs are accepted: fetching arbitrary remote image URLs from the server would be an SSRF vector.
+// Only image data URLs are accepted: fetching arbitrary remote URLs from the server would be an SSRF vector,
+// and a non-image payload (text/html, ...) just makes the model invent a description of it.
 function toInlineData(dataUrl: string) {
-  const match = /^data:([\w.+-]+\/[\w.+-]+);base64,([\s\S]+)$/.exec(dataUrl);
+  const match = /^data:(image\/[\w.+-]+);base64,([\s\S]+)$/.exec(dataUrl);
   if (!match) {
-    throw new AIProviderError('Images must be base64 data URLs', 400, 'gemini');
+    throw new AIProviderError('Images must be base64 image data URLs', 400, 'gemini');
   }
   return { mime_type: match[1], data: match[2] };
 }

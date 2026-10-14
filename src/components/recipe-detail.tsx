@@ -38,7 +38,7 @@ export function RecipeDetail({
     const parts: string[] = [];
     if (result.added.length > 0) parts.push(`Added ${result.added.length} ${result.added.length === 1 ? 'item' : 'items'} to your shopping list`);
     if (result.merged.length > 0) parts.push(`${parts.length ? 'updated' : 'Updated'} ${result.merged.length} already on it`);
-    if (parts.length === 0) parts.push('Everything is already in your pantry');
+    if (parts.length === 0) parts.push(result.alreadyListed.length > 0 ? 'Already on your shopping list' : 'Everything is already in your pantry');
     toast.success(parts.join(', '), { action: { label: 'View list', onClick: () => router.push('/shopping-list') } });
   };
   const handleAddToFavorites = () => {

@@ -163,7 +163,8 @@ export function groupByCategory<T extends { name: string }>(items: T[]): { categ
 
 // ---------- adding items ----------
 
-export type AddResult = { items: ShoppingItem[]; added: string[]; merged: string[]; skippedInPantry: string[] };
+// alreadyListed: this recipe's amount for the item is already on the list, so nothing was added again
+export type AddResult = { items: ShoppingItem[]; added: string[]; merged: string[]; skippedInPantry: string[]; alreadyListed: string[] };
 
 const titleCase = (name: string) => name.trim().replace(/^./, (c) => c.toUpperCase());
 
@@ -181,6 +182,7 @@ export function addItems(
   const added: string[] = [];
   const merged: string[] = [];
   const skippedInPantry: string[] = [];
+  const alreadyListed: string[] = [];
 
   for (const raw of incoming) {
     const name = raw.name?.trim();
@@ -194,6 +196,11 @@ export function addItems(
     // Merge into an item still to buy; a bought (checked) one is a past purchase, so add a fresh entry
     const existing = items.find((item) => !item.checked && namesMatch(item.name, name));
     if (existing) {
+      // The same recipe added twice (a double tap, or coming back to it later) must not double the amounts
+      if (options.recipeTitle && existing.recipes.includes(options.recipeTitle)) {
+        alreadyListed.push(existing.name);
+        continue;
+      }
       const combined = mergeAmounts(existing, raw);
       existing.quantity = combined.quantity;
       existing.unit = combined.unit;
@@ -214,7 +221,7 @@ export function addItems(
     added.push(titleCase(name));
   }
 
-  return { items, added, merged, skippedInPantry };
+  return { items, added, merged, skippedInPantry, alreadyListed };
 }
 
 // ---------- sharing ----------

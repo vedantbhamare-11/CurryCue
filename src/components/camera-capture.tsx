@@ -63,7 +63,10 @@ export function CameraCapture({
         return;
       }
       if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+        // The server's message is already user-friendly (bad image, provider down, ...)
+        const body = await response.json().catch(() => null);
+        toast.error(body?.error ?? "Failed to process image");
+        return;
       }
       const data = await response.json();
       if (data.success && data.ingredients) {

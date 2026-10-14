@@ -318,9 +318,11 @@ export function IngredientEntry() {
                   )}
                   <PantryExpiry ingredient={ingredient} />
                 </div>
+                {/* Always visible: a hover-only button cannot be found or tapped on a phone */}
                 <button
                   onClick={() => handleRemoveIngredient(ingredient.id)}
-                  className="opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                  aria-label={`Remove ${ingredient.name}`}
+                  className="-mr-2 p-2 rounded-full text-muted-foreground/70 hover:text-destructive hover:bg-destructive/10 focus-visible:text-destructive transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
