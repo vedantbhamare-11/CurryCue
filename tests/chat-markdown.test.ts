@@ -7,7 +7,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 (globalThis as { React?: unknown }).React = React;
 const { ChatMarkdown } = await import('@/components/chat-markdown');
 
-const html = (text: string) => renderToStaticMarkup(React.createElement(ChatMarkdown, { text })).replace(/^<div class="space-y-2 break-words">|<\/div>$/g, '');
+const html = (text: string) => renderToStaticMarkup(React.createElement(ChatMarkdown, { text })).replace(/^<div class="[^"]*">|<\/div>$/g, '');
 
 test('bold, italic and inline code', () => {
   assert.match(html('you can **skip Step 1** entirely'), /<strong>skip Step 1<\/strong>/);
