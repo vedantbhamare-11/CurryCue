@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Mic, MicOff, VolumeX, Volume2, ChevronLeft, ChevronRight, X, Clock, Maximize, Minimize, Play, Pause, List, MessageSquare } from 'lucide-react';
+import { Mic, MicOff, VolumeX, Volume2, ChevronLeft, ChevronRight, X, Clock, Maximize, Minimize, Play, Pause, List, MessageSquare, BellRing } from 'lucide-react';
 import { Recipe } from '@/types';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -10,6 +10,8 @@ import { VoiceCommandParser, VoiceCommandAction, isSpeechRecognitionSupported } 
 import { CookingAssistant } from './cooking-assistant';
 import { CompletionCelebration } from './completion-celebration';
 import { toSpeech, pickPreferredVoice } from '@/lib/speech-text';
+import { remainingSeconds } from '@/lib/timer';
+import { startAlarm, stopAlarm, unlockAlarm } from '@/lib/alarm';
 interface CookingModeProps {
   recipe: Recipe;
   onClose: () => void;
@@ -28,6 +30,8 @@ export function CookingMode({
   const [isListening, setIsListening] = useState(false);
   const [timerRunning, setTimerRunning] = useState(false);
   const [timerRemaining, setTimerRemaining] = useState(0);
+  // Set when a timer reaches zero; the banner and the alarm stay up until the user dismisses it
+  const [timerDone, setTimerDone] = useState(false);
   const [showAssistant, setShowAssistant] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -35,7 +39,8 @@ export function CookingMode({
   const speechSynthRef = useRef<SpeechSynthesis | null>(null);
   // Best installed English (India) voice, if the device has one; otherwise the browser default is used
   const preferredVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
-  const timerIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // When the running timer ends, as a real clock time (see lib/timer.ts for why it is not a ticking counter)
+  const timerEndRef = useRef<number | null>(null);
 
   // Text-to-speech. Speech *recognition* lives in VoiceCommandParser (a second recognizer here
   // used to fight it for the mic and fired READ_STEP on any speech).
@@ -61,10 +66,30 @@ export function CookingMode({
         speechSynthRef.current.cancel();
       }
 
-      // Clean up timer
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
+      // A timer left ringing must not outlive the screen
+      stopAlarm();
+    };
+  }, []);
+
+  // Keep the screen awake while cooking: a phone that locks mid-recipe suspends the page and its timer. Browsers
+  // release the lock when the tab is hidden, so it is requested again when the user comes back.
+  useEffect(() => {
+    let lock: WakeLockSentinel | null = null;
+    const acquire = async () => {
+      try {
+        if (document.visibilityState !== 'visible' || !('wakeLock' in navigator)) return;
+        await lock?.release().catch(() => {});
+        lock = await navigator.wakeLock.request('screen');
+      } catch {
+        // Not supported, or refused (e.g. battery saver): cooking still works, the screen just may dim
       }
+    };
+    void acquire();
+    const onVisible = () => { if (document.visibilityState === 'visible') void acquire(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      void lock?.release().catch(() => {});
     };
   }, []);
 
@@ -79,32 +104,38 @@ export function CookingMode({
     };
   }, []);
 
-  // Timer effect
+  // Timer effect: recompute the time left from the real clock on every tick (and the moment the tab is visible
+  // again) instead of subtracting 1 per tick, so throttling or a suspended page cannot make it run slow.
   useEffect(() => {
-    if (timerRunning && timerRemaining > 0) {
-      timerIntervalRef.current = setInterval(() => {
-        setTimerRemaining(prev => {
-          if (prev <= 1) {
-            if (timerIntervalRef.current) {
-              clearInterval(timerIntervalRef.current);
-            }
-            setTimerRunning(false);
-            speak("Timer complete!", true);
-            toast.success("Timer complete!");
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else if (!timerRunning && timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-    }
-    return () => {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
+    if (!timerRunning) return;
+    const tick = () => {
+      const endAt = timerEndRef.current;
+      if (endAt === null) return;
+      const left = remainingSeconds(endAt, Date.now());
+      setTimerRemaining(left);
+      if (left <= 0) {
+        timerEndRef.current = null;
+        setTimerRunning(false);
+        setTimerDone(true);
       }
     };
-  }, [timerRunning, timerRemaining]);
+    tick();
+    const id = setInterval(tick, 500);
+    const onVisible = () => { if (document.visibilityState === 'visible') tick(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [timerRunning]);
+
+  // The timer reached zero: ring (beeps + vibration), say so, and show the banner until dismissed
+  useEffect(() => {
+    if (!timerDone) return;
+    startAlarm();
+    speak("Timer complete!", true);
+    toast.success("Timer complete!");
+  }, [timerDone]);
 
   // Toggle fullscreen mode
   const toggleFullscreen = () => {
@@ -328,9 +359,11 @@ export function CookingMode({
 
   // Start a timer
   const startTimer = (seconds: number, announce = false) => {
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-    }
+    // Starting a timer is a tap, the one moment a browser lets us unlock audio for the alarm later
+    unlockAlarm();
+    stopAlarm();
+    setTimerDone(false);
+    timerEndRef.current = Date.now() + seconds * 1000;
     setTimerRemaining(seconds);
     setTimerRunning(true);
     const minutes = Math.floor(seconds / 60);
@@ -339,12 +372,17 @@ export function CookingMode({
     toast.success(`Timer set for ${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`);
   };
 
+  // Silence the alarm and hide the "time's up" banner
+  const dismissTimerAlert = () => {
+    stopAlarm();
+    setTimerDone(false);
+  };
+
   // Stop the timer
   const stopTimer = (announce = false) => {
+    timerEndRef.current = null;
     setTimerRunning(false);
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-    }
+    dismissTimerAlert();
     speak("Timer stopped.", announce);
     toast.info("Timer stopped");
   };
@@ -425,6 +463,17 @@ export function CookingMode({
               </button>
             </div>
           </div>
+
+          {/* Stays until dismissed: a 4-second toast is easy to miss when you are across the kitchen */}
+          {timerDone && <div role="alert" className="w-full max-w-3xl mb-4 flex items-center justify-between gap-3 rounded-lg bg-primary text-primary-foreground px-4 py-3 shadow-md">
+              <span className="flex items-center gap-2 font-medium">
+                <BellRing className="w-5 h-5" aria-hidden="true" />
+                Time&apos;s up!
+              </span>
+              <button onClick={dismissTimerAlert} className="rounded-md bg-primary-foreground/20 hover:bg-primary-foreground/30 px-3 py-1 text-sm font-medium transition-colors">
+                Dismiss
+              </button>
+            </div>}
 
           {/* What the microphone just heard, so a command that did nothing is explainable */}
           {isListening && <div className="w-full max-w-3xl mb-4 flex items-center gap-2 text-sm rounded-lg bg-muted/50 px-3 py-2" aria-live="polite">
