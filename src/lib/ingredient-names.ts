@@ -9,7 +9,30 @@ export function singularize(word: string): string {
   return word;
 }
 
-export function nameWords(name: string): string[] {
+// Names that mean the same ingredient, written one canonical way so "Palak" and "Spinach" compare equal.
+// Deliberately stricter than the search-box aliases: only true equivalents (lime is not a lemon, and chana dal
+// is not chickpeas), because this decides what you "already have". [canonical name, other names]
+const SYNONYMS: [string, string[]][] = [
+  ['spinach', ['palak']], ['onion', ['pyaz', 'pyaaz', 'kanda']], ['potato', ['aloo', 'batata']], ['tomato', ['tamatar']],
+  ['garlic', ['lehsun', 'lasan']], ['ginger', ['adrak']], ['coriander', ['cilantro', 'dhania']], ['mint', ['pudina']],
+  ['chilli', ['chili', 'chile', 'mirchi']], ['green chilli', ['hari mirch']], ['red chilli', ['lal mirch']],
+  ['eggplant', ['brinjal', 'aubergine', 'baingan']], ['capsicum', ['bell pepper', 'shimla mirch']],
+  ['okra', ['bhindi', 'ladyfinger', 'lady finger']], ['pea', ['matar']], ['lemon', ['nimbu']],
+  ['yogurt', ['curd', 'dahi', 'yoghurt']], ['egg', ['anda']], ['paneer', ['cottage cheese']], ['prawn', ['shrimp']],
+  ['cumin', ['jeera']], ['turmeric', ['haldi']], ['mustard', ['rai']], ['asafoetida', ['hing', 'asafetida']],
+  ['fenugreek', ['methi']], ['cardamom', ['elaichi']], ['clove', ['laung']], ['cinnamon', ['dalchini']],
+  ['bay leaf', ['tej patta']], ['curry leaf', ['kadi patta', 'kadipatta', 'kari patta']], ['fennel', ['saunf']],
+  ['carom', ['ajwain']], ['black pepper', ['kali mirch', 'peppercorn']], ['sugar', ['cheeni']], ['jaggery', ['gur']],
+  ['honey', ['shahad']], ['tamarind', ['imli']], ['wheat flour', ['atta']], ['gram flour', ['besan']],
+  ['all purpose flour', ['maida']], ['semolina', ['sooji', 'suji', 'rava', 'rawa']], ['flattened rice', ['poha', 'beaten rice']],
+  ['sago', ['sabudana']], ['toor dal', ['arhar dal', 'tur dal']], ['chickpea', ['chole', 'garbanzo']],
+  ['kidney bean', ['rajma']], ['ghee', ['clarified butter']], ['milk', ['doodh']], ['rice', ['chawal']], ['salt', ['namak']],
+  ['zucchini', ['courgette']], ['spring onion', ['scallion', 'green onion']], ['carrot', ['gajar']], ['cucumber', ['kheera']],
+  ['beetroot', ['beet', 'chukandar']], ['bottle gourd', ['lauki', 'doodhi']], ['bitter gourd', ['karela', 'bitter melon']],
+  ['pumpkin', ['kaddu']], ['radish', ['mooli']], ['peanut', ['moongfali', 'groundnut']], ['cashew', ['kaju']], ['almond', ['badam']],
+];
+
+function tokens(name: string): string[] {
   return name
     .toLowerCase()
     .replace(/\(.*?\)/g, ' ')
@@ -17,6 +40,34 @@ export function nameWords(name: string): string[] {
     .split(/\s+/)
     .filter(Boolean)
     .map(singularize);
+}
+
+type Synonym = { other: string[]; canonical: string[] };
+// First word of the other name -> its entries, longest first so "hari mirch" wins over "mirch"
+const SYNONYM_INDEX = new Map<string, Synonym[]>();
+for (const [canonical, others] of SYNONYMS) {
+  for (const other of others) {
+    const entry = { other: tokens(other), canonical: tokens(canonical) };
+    SYNONYM_INDEX.set(entry.other[0], [...(SYNONYM_INDEX.get(entry.other[0]) ?? []), entry].sort((a, b) => b.other.length - a.other.length));
+  }
+}
+
+function canonicalise(words: string[]): string[] {
+  const result: string[] = [];
+  for (let i = 0; i < words.length; ) {
+    const hit = SYNONYM_INDEX.get(words[i])?.find((entry) => entry.other.every((word, j) => words[i + j] === word));
+    if (hit) {
+      result.push(...hit.canonical);
+      i += hit.other.length;
+    } else {
+      result.push(words[i++]);
+    }
+  }
+  return result;
+}
+
+export function nameWords(name: string): string[] {
+  return canonicalise(tokens(name));
 }
 
 function containsPhrase(haystack: string[], needle: string[]): boolean {

@@ -70,3 +70,9 @@ test('addManyToPantry merges within the batch too, and counts merges', () => {
   assert.equal(result.items[1].quantity, '5');
   assert.equal(result.mergedCount, 2);
 });
+
+test('another name for what you already have merges into it: Pyaz adds to Onion', () => {
+  const result = addToPantry([I('1', 'Onion', { quantity: '2', unit: 'nos' })], I('2', 'Pyaz', { quantity: '3', unit: 'nos' }));
+  assert.equal(result.merged, true);
+  assert.deepEqual(result.items.map((i) => [i.name, i.quantity]), [['Onion', '5']]);
+});

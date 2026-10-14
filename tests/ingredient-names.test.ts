@@ -56,3 +56,30 @@ test('cleanUnit drops preparation words but keeps real units', () => {
   assert.equal(cleanUnit(''), undefined);
   assert.equal(cleanUnit(undefined), undefined);
 });
+
+// Other names for the same ingredient match; look-alikes and derived products do not
+const synonymPairs: [string, string, boolean][] = [
+  ['Palak', 'Spinach', true], ['Pyaz', 'Onions', true], ['Aloo', 'Potatoes', true], ['Chili', 'Chilli', true],
+  ['Hari mirch', 'Green chilli', true], ['Cilantro', 'Coriander leaves', true], ['Brinjal', 'Eggplant', true],
+  ['Dahi', 'Yogurt', true], ['Curd', 'Yoghurt', true], ['Jeera', 'Cumin seeds', true], ['Bhindi', 'Okra', true],
+  ['Shrimp', 'Prawns', true], ['Atta', 'Whole wheat flour', true], ['Asafetida', 'Hing', true], ['Bell pepper', 'Capsicum', true],
+  ['Kadi patta', 'Curry leaves', true], ['Anda', 'Eggs', true], ['Dhania powder', 'Coriander powder', true], ['Maida', 'All-purpose flour', true],
+  ['Palak', 'Spinach puree', false], ['Dhania', 'Coriander powder', false], ['Lime', 'Lemon', false], ['Chana dal', 'Chickpeas', false],
+  ['Bell pepper', 'Black pepper', false], ['Kali mirch', 'Bell pepper', false], ['Jeera', 'Cumin powder', false], ['Aloo', 'Sweet potato powder', false],
+];
+
+for (const [a, b, expected] of synonymPairs) {
+  test(`synonyms: namesMatch("${a}", "${b}") is ${expected}`, () => {
+    assert.equal(namesMatch(a, b), expected);
+    assert.equal(namesMatch(b, a), expected, 'must be symmetric');
+  });
+}
+
+test('nameWords writes other names the canonical way, and doing it twice changes nothing', () => {
+  assert.deepEqual(nameWords('Palak'), ['spinach']);
+  assert.deepEqual(nameWords('Hari mirch'), ['green', 'chilli']);
+  assert.deepEqual(nameWords('Kadi patta'), ['curry', 'leaf']);
+  for (const name of ['Palak Paneer', 'Hari mirch', 'Shimla mirch', 'Bell pepper', 'Atta', 'Lal mirch powder']) {
+    assert.deepEqual(nameWords(nameWords(name).join(' ')), nameWords(name), name);
+  }
+});

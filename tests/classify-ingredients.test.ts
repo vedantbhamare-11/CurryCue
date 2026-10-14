@@ -47,3 +47,9 @@ test('classifyIngredients cleans notes out of names and units', () => {
   assert.deepEqual(missing.map((i) => [i.name, i.quantity, i.unit]), [['Cream', '2', 'tbsp'], ['Ginger', '1', 'tsp'], ['Lemon', '1', undefined]]);
   assert.equal('unit' in missing[2], false);
 });
+
+test('classifyIngredients knows other names: a pantry with Palak has the Spinach a recipe asks for', () => {
+  const { used, missing } = classifyIngredients([{ name: 'Spinach', quantity: '250', unit: 'gm' }, { name: 'Cream' }], [{ id: 'p1', name: 'Palak' }]);
+  assert.deepEqual(used.map((i) => [i.id, i.name]), [['p1', 'Palak']]);
+  assert.deepEqual(missing.map((i) => i.name), ['Cream']);
+});

@@ -138,3 +138,13 @@ test('notes in AI ingredient names and units never reach the list or the pantry'
   const again = addItems(result.items, [{ name: 'Cream', quantity: '1', unit: 'tbsp' }], { recipeTitle: 'Kheer' });
   assert.equal(again.items.filter((i) => /cream/i.test(i.name)).length, 1);
 });
+
+test('other names count as the same item: pantry Palak skips Spinach, and Pyaz joins Onion on the list', () => {
+  const skipped = addItems([], [{ name: 'Spinach' }], { pantry: [{ name: 'Palak' }] });
+  assert.deepEqual(skipped.skippedInPantry, ['Spinach']);
+
+  const first = addItems([], [{ name: 'Onion', quantity: '2', unit: 'nos' }], { recipeTitle: 'A' });
+  const second = addItems(first.items, [{ name: 'Pyaz', quantity: '1', unit: 'nos' }], { recipeTitle: 'B' });
+  assert.equal(second.items.length, 1);
+  assert.deepEqual([second.items[0].quantity, second.items[0].unit], ['3', 'nos']);
+});
