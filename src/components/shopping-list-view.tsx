@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useShoppingListStore } from '@/store/shopping-list-store';
 import { useIngredientStore } from '@/store/ingredient-store';
+import { IngredientAutocomplete } from '@/components/ingredient-autocomplete';
+import type { IngredientSuggestion } from '@/lib/ingredient-catalogue';
 import { describeAmount, formatForSharing, groupByCategory, parseQuantityText, planPantryMove } from '@/lib/shopping-list';
 
 export function ShoppingListView() {
@@ -21,15 +23,23 @@ export function ShoppingListView() {
   const toBuy = items.filter((item) => !item.checked);
   const bought = items.filter((item) => item.checked);
 
-  const handleAdd = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!name.trim()) return;
-    // No pantry check here: someone typing an item by hand may well be restocking it
-    const result = addItems([{ name, ...parseQuantityText(quantity) }]);
+  // No pantry check here: someone adding an item by hand may well be restocking it
+  const addByHand = (itemName: string, amount: { quantity?: string; unit?: string }) => {
+    const result = addItems([{ name: itemName, ...amount }]);
     if (result.merged.length > 0) toast.info(`${result.merged[0]} was already on your list, so its amount was updated`);
     setName('');
     setQuantity('');
   };
+
+  const handleAdd = (event?: React.FormEvent) => {
+    event?.preventDefault();
+    if (!name.trim()) return;
+    addByHand(name, parseQuantityText(quantity));
+  };
+
+  // A suggestion brings its own usual amount ("Onion (2 nos)"), like in the pantry
+  const handleSelectSuggestion = (suggestion: IngredientSuggestion) =>
+    addByHand(suggestion.name, { quantity: suggestion.quantity, unit: suggestion.unit });
 
   const moveBoughtToPantry = () => {
     const plan = planPantryMove(bought, pantry);
@@ -60,13 +70,18 @@ export function ShoppingListView() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <form onSubmit={handleAdd} className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row gap-3">
-        <input
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Add an item (e.g. tomato)"
-          aria-label="Item name"
-          className="flex-1 px-4 py-3 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20"
-        />
+        <div className="flex-1">
+          <IngredientAutocomplete
+            value={name}
+            onChange={setName}
+            onSelect={handleSelectSuggestion}
+            onAddTyped={handleAdd}
+            enterAddsTyped={false}
+            placeholder="Add an item (e.g. tomato)"
+            ariaLabel="Item name"
+            inputClassName="w-full px-4 py-3 rounded-lg bg-input-background dark:bg-input border border-border outline-none focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
         <input
           value={quantity}
           onChange={(event) => setQuantity(event.target.value)}
