@@ -18,9 +18,10 @@ test('hasRealPhoto rejects only empty values and the six old fake stock photos',
 });
 
 test('significantWords keeps what names the dish and drops generic words', () => {
-  assert.deepEqual(significantWords('Spicy Palak Paneer Masala'), ['palak', 'paneer']);
+  assert.deepEqual(significantWords('Spicy Palak Paneer Masala'), ['palak', 'paneer', 'masala']);
   assert.deepEqual(significantWords('Crème Brûlée'), ['creme', 'brulee']);
-  assert.deepEqual(significantWords('Indian Curry'), []);
+  assert.deepEqual(significantWords('Indian Food'), []);
+  assert.deepEqual(significantWords('Egg Curry'), ['egg', 'curry']);
 });
 
 test('buildPhotoQuery adds the cuisine but not the "General" placeholder', () => {
@@ -41,7 +42,13 @@ test('pickPhoto also reads the description and tags', () => {
 
 test('pickPhoto prefers no photo over a weak match', () => {
   assert.equal(pickPhoto({ results: [photo({ alt_description: 'a bowl of curry' }), photo({ alt_description: 'paneer cubes' })] }, 'Palak Paneer'), null);
+  // The dish type matters: egg biryani is not egg curry, and dry tikka is not tikka masala
+  assert.equal(pickPhoto({ results: [photo({ alt_description: 'egg biryani in a bowl' })] }, 'Egg Curry'), null);
+  assert.equal(pickPhoto({ results: [photo({ alt_description: 'green chicken tikka kebabs' })] }, 'Chicken Tikka Masala'), null);
+  assert.ok(pickPhoto({ results: [photo({ alt_description: 'egg curry' })] }, 'Egg Curry'));
+  // A long name may miss one word
   assert.ok(pickPhoto({ results: [photo({ alt_description: 'chicken tikka masala with naan' })] }, 'Chicken Tikka Masala Curry'));
+  assert.equal(pickPhoto({ results: [photo({ alt_description: 'chicken tikka' })] }, 'Chicken Tikka Masala Curry'), null);
 });
 
 test('pickPhoto refuses other hosts, missing descriptions and a title with no distinctive word', () => {
@@ -50,7 +57,7 @@ test('pickPhoto refuses other hosts, missing descriptions and a title with no di
   assert.equal(pickPhoto({ results: [photo({ ...match, urls: { regular: 'http://images.unsplash.com/a.jpg' } })] }, 'Palak Paneer'), null);
   assert.equal(pickPhoto({ results: [photo({ ...match, links: { download_location: 'https://evil.example/d' } })] }, 'Palak Paneer'), null);
   assert.equal(pickPhoto({ results: [photo()] }, 'Palak Paneer'), null);
-  assert.equal(pickPhoto({ results: [photo({ alt_description: 'indian curry' })] }, 'Indian Curry'), null);
+  assert.equal(pickPhoto({ results: [photo({ alt_description: 'indian food' })] }, 'Indian Food'), null);
   for (const bad of [null, undefined, {}, { results: 'x' }, []]) assert.equal(pickPhoto(bad, 'Palak Paneer'), null);
 });
 

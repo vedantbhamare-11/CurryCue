@@ -14,10 +14,11 @@ const LEGACY_STOCK_PHOTOS = [
 ];
 export const hasRealPhoto = (src?: string): src is string => Boolean(src) && !LEGACY_STOCK_PHOTOS.some((id) => src!.includes(id));
 
-// Words that describe a dish in general, not which dish it is: matching on these alone proves nothing
+// Words that say nothing about which dish it is. "curry" and "masala" are deliberately not here: they separate
+// "egg curry" from egg biryani and "tikka masala" from dry tikka kebabs.
 const GENERIC_WORDS = new Set([
   'the', 'and', 'with', 'style', 'recipe', 'homemade', 'easy', 'quick', 'simple', 'classic', 'spicy', 'special',
-  'curry', 'masala', 'indian', 'food', 'dish', 'traditional', 'authentic', 'fresh', 'hot', 'sweet',
+  'indian', 'food', 'dish', 'traditional', 'authentic', 'fresh', 'hot', 'sweet',
 ]);
 
 const words = (text: string) => text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').match(/[a-z]+/g) ?? [];
@@ -51,12 +52,12 @@ function describe(photo: UnsplashPhoto): Set<string> {
   return new Set(words(text));
 }
 
-// The first search result that is described as the dish, or null. Short names (one or two distinctive words)
-// must match fully, so "paneer cubes" is not accepted for "palak paneer"; longer ones may miss a word.
+// The first search result that is described as the dish, or null. Names of up to three distinctive words must
+// match fully, so "paneer cubes" is not accepted for "palak paneer"; longer ones may miss a word.
 export function pickPhoto(response: unknown, title: string): PickedPhoto | null {
   const wanted = significantWords(title);
   if (wanted.length === 0) return null;
-  const needed = wanted.length <= 2 ? wanted.length : Math.ceil(wanted.length / 2);
+  const needed = wanted.length <= 3 ? wanted.length : Math.ceil(wanted.length * 0.75);
   const results = (response as { results?: unknown })?.results;
   if (!Array.isArray(results)) return null;
 
