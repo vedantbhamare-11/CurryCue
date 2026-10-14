@@ -1,6 +1,6 @@
 // Shopping list logic: merging duplicates and quantities, grouping by aisle, sharing text, and moving
 // bought items to the pantry. Pure functions (no React, no storage) so they are tested in Node.
-import { namesMatch, nameWords } from '@/lib/ingredient-names';
+import { cleanIngredientName, cleanUnit, namesMatch, nameWords } from '@/lib/ingredient-names';
 
 export type ShoppingItem = {
   id: string;
@@ -129,8 +129,9 @@ export const CATEGORY_ORDER = [
 export type ShoppingCategory = (typeof CATEGORY_ORDER)[number];
 
 const CATEGORY_KEYWORDS: [ShoppingCategory, string[]][] = [
-  // Phrases that would otherwise be caught by a more general keyword below (bell pepper is not a spice)
-  ['Fruits & vegetables', ['bell pepper', 'green pepper', 'curry leaf', 'coriander leaf', 'mint leaf']],
+  // Phrases that would otherwise be caught by a more general keyword below (bell pepper is not a spice,
+  // and garlic cloves are not the spice "clove")
+  ['Fruits & vegetables', ['bell pepper', 'green pepper', 'curry leaf', 'coriander leaf', 'mint leaf', 'garlic clove']],
   // Checked in this order, so "coriander powder" is a spice before "coriander" can be a vegetable
   ['Spices & masalas', ['powder', 'masala', 'seed', 'salt', 'pepper corn', 'peppercorn', 'pepper', 'turmeric', 'haldi', 'cumin', 'jeera', 'mustard', 'cardamom', 'elaichi', 'clove', 'cinnamon', 'bay', 'fenugreek', 'methi seed', 'asafoetida', 'hing', 'saffron', 'oregano', 'thyme', 'paprika', 'spice', 'chaat', 'dried']],
   ['Meat & fish', ['chicken', 'mutton', 'lamb', 'beef', 'pork', 'fish', 'prawn', 'shrimp', 'crab', 'keema', 'salmon', 'tuna', 'sausage', 'bacon', 'ham', 'turkey']],
@@ -184,9 +185,10 @@ export function addItems(
   const skippedInPantry: string[] = [];
   const alreadyListed: string[] = [];
 
-  for (const raw of incoming) {
-    const name = raw.name?.trim();
-    if (!name) continue;
+  for (const original of incoming) {
+    if (!original.name?.trim()) continue;
+    const name = cleanIngredientName(original.name);
+    const raw = { ...original, name, unit: cleanUnit(original.unit) };
 
     if (options.pantry?.some((pantryItem) => namesMatch(pantryItem.name, name))) {
       skippedInPantry.push(name);
@@ -260,7 +262,8 @@ export function planPantryMove(
       const combined = mergeAmounts(existing, item);
       toUpdate.push({ id: existing.id, name: existing.name, quantity: combined.quantity, unit: combined.unit });
     } else {
-      toAdd.push({ name: item.name, quantity: item.quantity, unit: item.unit });
+      // Items saved before names were cleaned may still carry a note like "(optional)"
+      toAdd.push({ name: cleanIngredientName(item.name), quantity: item.quantity, unit: cleanUnit(item.unit) });
     }
   }
   return { toAdd, toUpdate };

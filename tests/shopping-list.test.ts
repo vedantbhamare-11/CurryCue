@@ -47,6 +47,7 @@ test('categorize puts common (Indian) ingredients in the right aisle', () => {
     ['Basmati rice', 'Grains, pulses & flour'], ['Moong dal', 'Grains, pulses & flour'], ['Whole wheat atta', 'Grains, pulses & flour'], ['Poha', 'Grains, pulses & flour'],
     ['Vegetable oil', 'Oils, sauces & pantry'], ['Soy sauce', 'Oils, sauces & pantry'], ['Peanut butter', 'Oils, sauces & pantry'], ['Coconut milk', 'Oils, sauces & pantry'],
     ['Dish soap', 'Other'], ['', 'Other'],
+    ['Garlic', 'Fruits & vegetables'], ['Garlic cloves', 'Fruits & vegetables'], ['Cloves', 'Spices & masalas'], ['Garlic powder', 'Spices & masalas'],
   ];
   for (const [name, expected] of cases) assert.equal(categorize(name), expected, name);
 });
@@ -123,4 +124,17 @@ test('planPantryMove tops up an existing pantry item and adds new ones', () => {
   );
   assert.deepEqual(plan.toUpdate, [{ id: 'p1', name: 'Tomatoes', quantity: '750', unit: 'gm' }]);
   assert.deepEqual(plan.toAdd, [{ name: 'Spinach', quantity: '1', unit: 'bunch' }]);
+});
+
+test('notes in AI ingredient names and units never reach the list or the pantry', () => {
+  const result = addItems([], [{ name: 'Cream (optional)', quantity: '2', unit: 'tbsp' }, { name: 'Ginger', quantity: '1', unit: 'tsp grated' }], { recipeTitle: 'Palak Paneer' });
+  assert.deepEqual(result.items.map((i) => [i.name, i.quantity, i.unit]), [['Cream', '2', 'tbsp'], ['Ginger', '1', 'tsp']]);
+
+  // Items saved before the cleaning existed are cleaned on the way into the pantry
+  const old: ShoppingItem[] = [{ id: 'a', name: 'Cream (optional)', quantity: '1', unit: 'tsp grated', checked: true, addedAt: 0, recipes: [] }];
+  assert.deepEqual(planPantryMove(old, []).toAdd, [{ name: 'Cream', quantity: '1', unit: 'tsp' }]);
+
+  // The same ingredient with and without a note is one item, not two
+  const again = addItems(result.items, [{ name: 'Cream', quantity: '1', unit: 'tbsp' }], { recipeTitle: 'Kheer' });
+  assert.equal(again.items.filter((i) => /cream/i.test(i.name)).length, 1);
 });

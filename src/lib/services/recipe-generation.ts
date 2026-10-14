@@ -2,7 +2,7 @@ import { generateText, TextGenerationResult } from '@/lib/api/util';
 import { Ingredient, Recipe, UserPreferences } from '@/types';
 import { RateLimiter } from '@/lib/services/rate-limiter';
 import { stripStepLabel } from '@/lib/utils';
-import { namesMatch, nameWords, staplesMatch } from '@/lib/ingredient-names';
+import { cleanIngredientName, cleanUnit, namesMatch, nameWords, staplesMatch } from '@/lib/ingredient-names';
 import { asList, asText, keepRecipesUsingPantry, normalizeCookTime, normalizeDifficulty, normalizeTags } from '@/lib/recipe-fields';
 
 export interface RecipeGenerationOptions {
@@ -177,7 +177,9 @@ export function classifyIngredients(llmIngredients: unknown[], pantry: Ingredien
 
   for (const raw of llmIngredients) {
     if (!raw || typeof (raw as { name?: unknown }).name !== 'string') continue;
-    const item = raw as Ingredient;
+    const original = raw as Ingredient;
+    const item: Ingredient = { ...original, name: cleanIngredientName(original.name), unit: cleanUnit(original.unit) };
+    if (!item.unit) delete item.unit;
     const key = nameWords(item.name).join(' ');
     if (!key || seen.has(key)) continue;
     seen.add(key);

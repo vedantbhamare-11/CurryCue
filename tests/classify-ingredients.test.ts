@@ -41,3 +41,9 @@ test('duplicates collapse, and junk entries are skipped', () => {
   const { used } = classifyIngredients([{ name: 'Onion' }, { name: 'onions' }, null, { name: 42 }, {}], pantry);
   assert.deepEqual(names(used), ['Onion']);
 });
+
+test('classifyIngredients cleans notes out of names and units', () => {
+  const { missing } = classifyIngredients([{ name: 'Cream (optional)', quantity: '2', unit: 'tbsp' }, { name: 'Ginger', quantity: '1', unit: 'tsp grated' }, { name: 'Lemon', quantity: '1', unit: 'optional' }], []);
+  assert.deepEqual(missing.map((i) => [i.name, i.quantity, i.unit]), [['Cream', '2', 'tbsp'], ['Ginger', '1', 'tsp'], ['Lemon', '1', undefined]]);
+  assert.equal('unit' in missing[2], false);
+});

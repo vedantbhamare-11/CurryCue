@@ -72,3 +72,26 @@ export function staplesMatch(staple: string, name: string): boolean {
   if (wordsA.length === 0 || wordsB.length === 0) return false;
   return containsPhrase(wordsA, wordsB) || containsPhrase(wordsB, wordsA);
 }
+
+// Models write notes into the name or unit: "Cream (optional)", "Onion, finely chopped", unit "tsp grated".
+// The note is not part of what you buy or store, so it is dropped before an ingredient reaches a list.
+export function cleanIngredientName(name: string): string {
+  const cleaned = name.replace(/\([^)]*\)/g, ' ').replace(/,.*$/, '').replace(/\s+/g, ' ').trim();
+  return cleaned || name.trim();
+}
+
+const PREPARATION_WORDS = new Set([
+  'grated', 'chopped', 'minced', 'sliced', 'diced', 'crushed', 'ground', 'finely', 'roughly', 'peeled', 'optional',
+  'fresh', 'beaten', 'shredded', 'cubed', 'mashed', 'melted', 'softened', 'boiled', 'cooked', 'toasted', 'roasted',
+]);
+
+export function cleanUnit(unit?: string): string | undefined {
+  if (!unit) return undefined;
+  const kept = unit
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/,/g, ' ')
+    .split(/\s+/)
+    .filter((word) => word && !PREPARATION_WORDS.has(word.toLowerCase()))
+    .join(' ');
+  return kept || undefined;
+}

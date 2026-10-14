@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { namesMatch, staplesMatch, nameWords } from '@/lib/ingredient-names';
+import { namesMatch, staplesMatch, nameWords, cleanIngredientName, cleanUnit } from '@/lib/ingredient-names';
 
 // [a, b, same ingredient?]. The "false" rows are the ones the first, too-generous matcher got wrong:
 // a derived product (flour, puree, milk, paste...) is not the plain ingredient.
@@ -36,4 +36,23 @@ test('staplesMatch is lenient on purpose: oil covers mustard oil, cumin covers c
 test('"leaves" singularises to "leaf"', () => {
   assert.deepEqual(nameWords('Curry leaves'), ['curry', 'leaf']);
   assert.deepEqual(nameWords('Tomatoes (ripe)'), ['tomato']);
+});
+
+test('cleanIngredientName drops notes a model wrote into the name', () => {
+  assert.equal(cleanIngredientName('Cream (optional)'), 'Cream');
+  assert.equal(cleanIngredientName('Onion, finely chopped'), 'Onion');
+  assert.equal(cleanIngredientName('Oil (vegetable/sunflower/ghee)'), 'Oil');
+  assert.equal(cleanIngredientName('  Green   chilli  '), 'Green chilli');
+  assert.equal(cleanIngredientName('(optional)'), '(optional)'); // never end up with an empty name
+});
+
+test('cleanUnit drops preparation words but keeps real units', () => {
+  assert.equal(cleanUnit('tsp grated'), 'tsp');
+  assert.equal(cleanUnit('cup finely chopped'), 'cup');
+  assert.equal(cleanUnit('tbsp (optional)'), 'tbsp');
+  assert.equal(cleanUnit('fl oz'), 'fl oz');
+  assert.equal(cleanUnit('gm'), 'gm');
+  assert.equal(cleanUnit('grated'), undefined);
+  assert.equal(cleanUnit(''), undefined);
+  assert.equal(cleanUnit(undefined), undefined);
 });
