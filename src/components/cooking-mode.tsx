@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Mic, MicOff, VolumeX, Volume2, ChevronLeft, ChevronRight, X, Clock, Maximize, Minimize, Play, Pause, List, MessageSquare, BellRing } from 'lucide-react';
+import { Mic, MicOff, VolumeX, Volume2, ChevronLeft, ChevronRight, X, Clock, Maximize, Minimize, Check, Play, Pause, List, MessageSquare, BellRing } from 'lucide-react';
 import { Recipe } from '@/types';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -327,6 +327,8 @@ export function CookingMode({
     }
   };
 
+  const isLastStep = currentStep === recipe.steps.length - 1;
+
   // Navigate to next step
   const handleNextStep = () => {
     if (currentStep < recipe.steps.length - 1) {
@@ -644,18 +646,17 @@ export function CookingMode({
         
         {/* Navigation footer */}
         <div className="sticky bottom-0 z-10 bg-card/95 backdrop-blur-md border-t border-border p-4 flex justify-between items-center">
-          <button onClick={handlePreviousStep} aria-label="Previous step" className={cn("flex items-center gap-2 px-4 py-2 rounded-lg transition-colors", currentStep === 0 ? "bg-accent" : "bg-muted hover:bg-muted/80")}>
+          <button onClick={handlePreviousStep} disabled={currentStep === 0} aria-label="Previous step" className={cn("flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-muted", currentStep === 0 ? "opacity-50 cursor-not-allowed" : "hover:bg-muted/80")}>
             <ChevronLeft className="w-5 h-5" />
-            <span><span className="editable-text hidden lg:block">Previous</span></span>
+            <span className="hidden lg:block">Previous</span>
           </button>
           
           <div className="flex gap-1">
             {recipe.steps.map((_, index) => <button key={index} onClick={() => setCurrentStep(index)} className={cn("w-2 h-2 rounded-full transition-all", currentStep === index ? "bg-primary w-4" : "bg-muted hover:bg-muted-foreground/50")} aria-label={`Go to step ${index + 1}`} />)}
           </div>
           
-          <button onClick={handleNextStep} aria-label="Next step" className={cn("flex items-center gap-2 px-4 py-2 rounded-lg transition-colors", currentStep === recipe.steps.length - 1 ? "bg-accent" : "bg-primary text-primary-foreground hover:bg-primary/90")}>
-            <span><span className="editable-text hidden lg:block">Next</span></span>
-            <ChevronRight className="w-5 h-5" />
+          <button onClick={handleNextStep} aria-label={isLastStep ? "Finish recipe" : "Next step"} className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors bg-primary text-primary-foreground hover:bg-primary/90">
+            {isLastStep ? <><span>Finish</span><Check className="w-5 h-5" /></> : <><span className="hidden lg:block">Next</span><ChevronRight className="w-5 h-5" /></>}
           </button>
         </div>
       </div>

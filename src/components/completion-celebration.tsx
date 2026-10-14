@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Star, Award, ChefHat } from 'lucide-react';
+import { X, ChefHat } from 'lucide-react';
 interface CompletionCelebrationProps {
   isOpen: boolean;
   onClose: () => void;
@@ -111,65 +111,9 @@ export function CompletionCelebration({
             delay: 0.4
           }}>
                 <h2 className="text-3xl font-bold text-primary mb-2">🎉 Congratulations!</h2>
-                <p className="text-lg mb-4">
+                <p className="text-lg">
                   You&apos;ve completed <span className="font-semibold text-primary">{recipeName}</span>
                 </p>
-                <p className="text-muted-foreground mb-6">It looks absolutely delicious!</p>
-              </motion.div>
-
-              {/* Cooked Dish Image */}
-              <motion.div initial={{
-            opacity: 0,
-            scale: 0.8
-          }} animate={{
-            opacity: 1,
-            scale: 1
-          }} transition={{
-            delay: 0.6
-          }} className="mb-6">
-                <div className="relative w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-primary/20 shadow-lg">
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-900/60 dark:to-orange-800/60">
-                    <ChefHat className="w-14 h-14 text-white/80 dark:text-white/50" aria-hidden="true" />
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Stars Animation */}
-              <motion.div initial={{
-            opacity: 0
-          }} animate={{
-            opacity: 1
-          }} transition={{
-            delay: 0.8
-          }} className="flex justify-center gap-1 mb-6">
-                {Array.from({
-              length: 5
-            }).map((_, i) => <motion.div key={i} initial={{
-              scale: 0,
-              rotate: -180
-            }} animate={{
-              scale: 1,
-              rotate: 0
-            }} transition={{
-              delay: 0.8 + i * 0.1,
-              type: 'spring'
-            }}>
-                    <Star className="w-6 h-6 text-accent fill-accent" />
-                  </motion.div>)}
-              </motion.div>
-
-              {/* Achievement Badge */}
-              <motion.div initial={{
-            opacity: 0,
-            y: 20
-          }} animate={{
-            opacity: 1,
-            y: 0
-          }} transition={{
-            delay: 1
-          }} className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 to-secondary/10 px-4 py-2 rounded-full border border-primary/20">
-                <Award className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-primary">Recipe Master</span>
               </motion.div>
 
               {/* Close Button */}
@@ -178,7 +122,7 @@ export function CompletionCelebration({
           }} animate={{
             opacity: 1
           }} transition={{
-            delay: 1.2
+            delay: 0.8
           }} onClick={onClose} className="mt-6 w-full bg-primary text-primary-foreground rounded-lg py-3 font-medium hover:bg-primary/90 transition-colors">
                 Continue Cooking! 👨‍🍳
               </motion.button>

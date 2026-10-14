@@ -38,7 +38,7 @@ export function HeroSection() {
               className="text-2xl md:text-5xl lg:text-6xl font-semibold text-center leading-tight lg:mb-4"
             >
               
-                Dont Know What to Cook?
+                Don&apos;t Know What to Cook?
               
               <span
                 className="text-primary block"

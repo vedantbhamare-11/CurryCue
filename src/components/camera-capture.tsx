@@ -120,7 +120,7 @@ export function CameraCapture({
             {useML ? <>
                 <Scan className="w-5 h-5 text-primary" />
                 ML Ingredient Detection
-              </> : <span className="editable-text">Scan Ingredients</span>}
+              </> : <span>Scan Ingredients</span>}
           </h3>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-muted transition-colors">
             <X className="w-5 h-5" />
