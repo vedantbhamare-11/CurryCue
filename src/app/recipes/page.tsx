@@ -140,7 +140,7 @@ export default function RecipesPage() {
       }} exit={{
         opacity: 0
       }} className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto" onClick={closeRecipeDetails}>
-            <div onClick={e => e.stopPropagation()}>
+            <div className="w-full flex justify-center self-start sm:self-center" onClick={e => e.stopPropagation()}>
               <RecipeDetail recipe={selectedRecipe} onClose={closeRecipeDetails} />
             </div>
           </motion.div>}

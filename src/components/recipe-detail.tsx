@@ -129,7 +129,19 @@ export function RecipeDetail({
             </div>
           </div>
       
-          <div className="flex border-b border-border">
+          {/* Outside the tabs so it is one tap away from either of them */}
+          <div className="px-3 sm:px-4 pt-3">
+            <motion.button whileHover={{
+          scale: 1.02
+        }} whileTap={{
+          scale: 0.98
+        }} onClick={startCookingMode} className="w-full bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-lg py-3 flex items-center justify-center gap-2 hover:shadow-md transition-all">
+              <PlayCircle className="w-5 h-5" />
+              <span className="font-medium">Start Cooking Mode</span>
+            </motion.button>
+          </div>
+
+          <div className="flex border-b border-border mt-3">
             <button onClick={() => setActiveTab('ingredients')} className={cn("flex-1 py-2 sm:py-3 text-center font-medium transition-colors text-sm sm:text-base", activeTab === 'ingredients' ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground")}>
               Ingredients
             </button>
@@ -206,15 +218,6 @@ export function RecipeDetail({
                   </div>
                 </div>
                 
-                <motion.button whileHover={{
-            scale: 1.02
-          }} whileTap={{
-            scale: 0.98
-          }} onClick={startCookingMode} className="w-full bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-lg py-3 mb-4 flex items-center justify-center gap-2 hover:shadow-md transition-all">
-                  <PlayCircle className="w-5 h-5" />
-                  <span className="font-medium">Start Cooking Mode</span>
-                </motion.button>
-                
                 <div className="bg-muted rounded-lg p-3 sm:p-4">
                   <motion.div key={currentStep} initial={{
               opacity: 0,
@@ -255,7 +258,7 @@ export function RecipeDetail({
                         <div className={cn("rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center flex-shrink-0", currentStep === index ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>
                           {index + 1}
                         </div>
-                        <p className="text-xs sm:text-sm line-clamp-1">{step}</p>
+                        <p className={cn("text-xs sm:text-sm", currentStep !== index && "line-clamp-2")}>{step}</p>
                       </button>)}
                   </div>
                 </div>
