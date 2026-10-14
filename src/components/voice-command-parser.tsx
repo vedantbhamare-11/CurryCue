@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-import { parseVoiceCommand, speechNetworkErrorMessage, type VoiceCommandAction } from '@/lib/voice-commands';
+import { parseVoiceCommands, speechNetworkErrorMessage, type VoiceCommandAction } from '@/lib/voice-commands';
 
 export type { VoiceCommandAction } from '@/lib/voice-commands';
 
@@ -28,6 +28,8 @@ interface VoiceCommandParserProps {
 const RESTART_DELAY_MS = 300;
 const MAX_RESTARTS_IN_WINDOW = 8;
 const RESTART_WINDOW_MS = 10_000;
+// Gap between commands said in one breath ("next next"): each one must see the screen the previous one produced
+const COMBINED_COMMAND_GAP_MS = 450;
 
 export function VoiceCommandParser({
   isListening,
@@ -42,6 +44,7 @@ export function VoiceCommandParser({
   const wantListeningRef = useRef(false);
   const restartTimesRef = useRef<number[]>([]);
   const restartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const queuedCommandTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // The recognizer's handlers are created once, so they must read the LATEST props through a ref.
   // Capturing props directly froze them at their first-render values: "next step" always acted on
@@ -67,6 +70,7 @@ export function VoiceCommandParser({
   useEffect(() => {
     if (!isSpeechRecognitionSupported()) return;
 
+    const queuedCommandTimers = queuedCommandTimersRef.current;
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognitionAPI() as unknown as SpeechRecognition;
     recognition.continuous = true;
@@ -78,12 +82,21 @@ export function VoiceCommandParser({
         const result = event.results[i];
         if (!result.isFinal) continue;
 
-        const { onCommand, totalSteps, totalIngredients, onHeard } = latest.current;
+        const { totalSteps, totalIngredients, onHeard } = latest.current;
         const transcript = result[0].transcript;
-        const parsed = parseVoiceCommand(transcript, { totalSteps, totalIngredients });
-        onHeard?.(transcript.trim(), parsed.kind);
-        if (parsed.kind === 'action') onCommand(parsed.action);
-        else if (parsed.kind === 'error') toast.error(parsed.message);
+        const results = parseVoiceCommands(transcript, { totalSteps, totalIngredients });
+        onHeard?.(transcript.trim(), results[0].kind);
+        results.forEach((parsed, index) => {
+          if (parsed.kind === 'error') {
+            toast.error(parsed.message);
+          } else if (parsed.kind === 'action') {
+            // Read the newest handler when each command runs: it closes over the current step, so the
+            // second "next" has to wait for the screen the first one produced
+            const run = () => latest.current.onCommand(parsed.action);
+            if (index === 0) run();
+            else queuedCommandTimersRef.current.push(setTimeout(run, index * COMBINED_COMMAND_GAP_MS));
+          }
+        });
       }
     };
 
@@ -126,6 +139,7 @@ export function VoiceCommandParser({
     return () => {
       wantListeningRef.current = false;
       if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
+      queuedCommandTimers.forEach(clearTimeout);
       recognition.onend = null;
       try {
         recognition.abort();

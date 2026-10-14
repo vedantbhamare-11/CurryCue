@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseVoiceCommand, speechNetworkErrorMessage, type VoiceParseResult } from '@/lib/voice-commands';
+import { parseVoiceCommand, parseVoiceCommands, speechNetworkErrorMessage, VOICE_UNSUPPORTED_MESSAGE, type VoiceParseResult } from '@/lib/voice-commands';
 
 const ctx = { totalSteps: 6, totalIngredients: 8 };
 const A = (type: string, extra: object = {}): VoiceParseResult => ({ kind: 'action', action: { type, ...extra } as never });
@@ -54,4 +54,34 @@ test('the speech-service error names Brave instead of blaming the connection', (
   assert.match(speechNetworkErrorMessage({}), /Chrome or Edge/);
   assert.doesNotMatch(speechNetworkErrorMessage({}), /Brave/);
   assert.match(speechNetworkErrorMessage(undefined), /speech service/);
+});
+
+test('stepping commands said in one breath become several commands', () => {
+  assert.deepEqual(parseVoiceCommands('next next', ctx), [A('NEXT_STEP'), A('NEXT_STEP')]);
+  assert.deepEqual(parseVoiceCommands('Next step, next step!', ctx), [A('NEXT_STEP'), A('NEXT_STEP')]);
+  assert.deepEqual(parseVoiceCommands('back back back', ctx), [A('PREVIOUS_STEP'), A('PREVIOUS_STEP'), A('PREVIOUS_STEP')]);
+  assert.deepEqual(parseVoiceCommands('next ingredient next ingredient', ctx), [A('NEXT_INGREDIENT'), A('NEXT_INGREDIENT')]);
+  assert.deepEqual(parseVoiceCommands('go back next step', ctx), [A('PREVIOUS_STEP'), A('NEXT_STEP')]);
+});
+
+test('a single command, or an error, is still exactly one result', () => {
+  assert.deepEqual(parseVoiceCommands('next step', ctx), [A('NEXT_STEP')]);
+  assert.deepEqual(parseVoiceCommands('go to step 99', ctx), [E('Step 99 is out of range. There are 6 steps.')]);
+  assert.deepEqual(parseVoiceCommands('exit cooking', ctx), [A('EXIT')]);
+  assert.deepEqual(parseVoiceCommands('', ctx), [IGNORED]);
+});
+
+test('ordinary talk and risky commands are never combined', () => {
+  for (const phrase of ['next the oven is hot', 'read next', 'next exit cooking', 'next fullscreen', 'next list ingredients', 'next stop timer', 'we should go next and then relax', 'close the oven']) {
+    assert.deepEqual(parseVoiceCommands(phrase, ctx), [IGNORED], phrase);
+  }
+});
+
+test('too many commands in one go are ignored rather than run in a burst', () => {
+  assert.deepEqual(parseVoiceCommands('next next next next next', ctx).length, 5);
+  assert.deepEqual(parseVoiceCommands('next next next next next next', ctx), [IGNORED]);
+});
+
+test('the unsupported-browser message points to Chrome or Edge', () => {
+  assert.match(VOICE_UNSUPPORTED_MESSAGE, /Chrome or Edge/);
 });

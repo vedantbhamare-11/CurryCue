@@ -24,6 +24,9 @@ export default function CookingCommandsPage() {
           <p className="text-muted-foreground">
             Complete list of voice commands available in cooking mode
           </p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Voice commands work in Chrome and Edge. Other browsers, including Firefox and Brave, don&apos;t include the speech service they need. You can say &quot;next&quot; or &quot;back&quot; a few times in a row, like &quot;next next&quot;.
+          </p>
         </div>
         
         <motion.div initial={{

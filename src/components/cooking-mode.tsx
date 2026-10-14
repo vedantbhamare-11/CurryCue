@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { Mic, MicOff, VolumeX, Volume2, ChevronLeft, ChevronRight, X, Clock, Maximize, Minimize, Check, Play, Pause, List, MessageSquare, BellRing } from 'lucide-react';
 import { Recipe } from '@/types';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { VoiceCommandParser, VoiceCommandAction, isSpeechRecognitionSupported } from './voice-command-parser';
+import { VOICE_UNSUPPORTED_MESSAGE } from '@/lib/voice-commands';
 import { CookingAssistant } from './cooking-assistant';
 import { CompletionCelebration } from './completion-celebration';
 import { toSpeech, pickPreferredVoice } from '@/lib/speech-text';
@@ -28,6 +29,8 @@ export function CookingMode({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isSpeechEnabled, setIsSpeechEnabled] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  // The server cannot know the browser, so it renders "supported"; the client then says what is true (no hydration mismatch)
+  const voiceSupported = useSyncExternalStore(() => () => {}, isSpeechRecognitionSupported, () => true);
   const [timerRunning, setTimerRunning] = useState(false);
   const [timerRemaining, setTimerRemaining] = useState(0);
   // Set when a timer reaches zero; the banner and the alarm stay up until the user dismisses it
@@ -185,7 +188,7 @@ export function CookingMode({
   // Start voice commands (the recognizer itself lives in VoiceCommandParser, driven by isListening)
   const startListening = () => {
     if (!isSpeechRecognitionSupported()) {
-      toast.error("Voice commands aren't supported in this browser. Try Chrome or Edge.");
+      toast.error(VOICE_UNSUPPORTED_MESSAGE);
       return;
     }
     setIsListening(true);
@@ -430,7 +433,7 @@ export function CookingMode({
               {isSpeechEnabled ? <Volume2 className="lg:w-5 lg:h-5 w-4 h-4" /> : <VolumeX className="lg:w-5 lg:h-5 w-4 h-4" />}
             </button>
             
-            <button onClick={toggleSpeechRecognition} className={cn("p-2 rounded-full transition-colors", isListening ? "bg-primary text-primary-foreground" : "hover:bg-muted")} aria-label={isListening ? "Disable voice commands" : "Enable voice commands"}>
+            <button onClick={toggleSpeechRecognition} title={voiceSupported ? undefined : VOICE_UNSUPPORTED_MESSAGE} aria-disabled={!voiceSupported} className={cn("p-2 rounded-full transition-colors", isListening ? "bg-primary text-primary-foreground" : "hover:bg-muted", !voiceSupported && "opacity-40")} aria-label={isListening ? "Disable voice commands" : voiceSupported ? "Enable voice commands" : "Voice commands are not available in this browser"}>
               {isListening ? <Mic className="lg:w-5 lg:h-5 w-4 h-4" /> : <MicOff className="lg:w-5 lg:h-5 w-4 h-4" />}
             </button>
             

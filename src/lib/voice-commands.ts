@@ -146,6 +146,35 @@ export function parseVoiceCommand(transcript: string, context: VoiceContext): Vo
   return IGNORED;
 }
 
+// Said fast, "next next" arrives as ONE transcript, which is not one command and used to be dropped. Only the
+// four stepping commands may be repeated this way: splitting anything else would let ordinary kitchen talk
+// trigger actions ("read next" is not "read" then "next"), and every word has to belong to a command.
+const REPEATABLE = new Set<VoiceCommandAction['type']>(['NEXT_STEP', 'PREVIOUS_STEP', 'NEXT_INGREDIENT', 'PREVIOUS_INGREDIENT']);
+const MAX_COMBINED_COMMANDS = 5;
+const MAX_WORDS_PER_COMMAND = 3; // "previous ingredient", "next step"
+
+function splitRepeatable(words: string[], context: VoiceContext): VoiceCommandAction[] | null {
+  if (words.length === 0) return [];
+  for (let end = Math.min(words.length, MAX_WORDS_PER_COMMAND); end >= 1; end--) {
+    const parsed = parseVoiceCommand(words.slice(0, end).join(' '), context);
+    if (parsed.kind !== 'action' || !REPEATABLE.has(parsed.action.type)) continue;
+    const rest = splitRepeatable(words.slice(end), context);
+    if (rest) return [parsed.action, ...rest];
+  }
+  return null;
+}
+
+// One transcript can hold several stepping commands; everything else is exactly one result
+export function parseVoiceCommands(transcript: string, context: VoiceContext): VoiceParseResult[] {
+  const whole = parseVoiceCommand(transcript, context);
+  if (whole.kind !== 'ignored') return [whole];
+  const words = normalize(transcript).split(' ').filter(Boolean);
+  const actions = splitRepeatable(words, context);
+  return actions && actions.length >= 2 && actions.length <= MAX_COMBINED_COMMANDS ? actions.map(action) : [whole];
+}
+
+export const VOICE_UNSUPPORTED_MESSAGE = "Voice commands need Chrome or Edge. This browser doesn't support them.";
+
 // The browser's speech recognition reports "network" when it can't reach its speech service.
 // That is usually NOT the user's internet: Brave ships without Google's speech service, so
 // recognition starts, permission is granted, and then it fails with "network". Say so.
