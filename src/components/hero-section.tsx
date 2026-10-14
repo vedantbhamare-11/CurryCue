@@ -63,7 +63,7 @@ export function HeroSection() {
               className="flex flex-col lg:flex-row gap-4 mb-8"
             >
               <motion.div
-                className="p-4 bg-accent-foreground  rounded-xl shadow-sm flex items-center gap-3"
+                className="p-4 bg-card  rounded-xl shadow-sm flex items-center gap-3"
                 initial={{
                   opacity: 0,
                   x: -20,
@@ -89,7 +89,7 @@ export function HeroSection() {
               </motion.div>
 
               <motion.div
-                className="flex shadow-sm p-4 bg-accent-foreground rounded-xl items-center gap-3"
+                className="flex shadow-sm p-4 bg-card rounded-xl items-center gap-3"
                 initial={{
                   opacity: 0,
                   x: -20,
@@ -114,7 +114,7 @@ export function HeroSection() {
                 </span>
               </motion.div>
               <motion.div
-                className="flex shadow-sm p-4 bg-accent-foreground rounded-xl items-center gap-3"
+                className="flex shadow-sm p-4 bg-card rounded-xl items-center gap-3"
                 initial={{
                   opacity: 0,
                   x: -20,

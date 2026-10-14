@@ -3,7 +3,7 @@ import React from "react";
 import { Quicksand, Nunito } from "next/font/google";
 import { type Metadata } from "next";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "sonner";
+import { ThemedToaster } from "@/components/themed-toaster";
 import { NavBar } from "@/components/nav-bar";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -74,7 +74,7 @@ export default function RootLayout({
           {children}
           <Analytics />
           <SpeedInsights />
-          <Toaster position="top-center" richColors />
+          <ThemedToaster />
         </ThemeProvider>
       </body>
     </html>

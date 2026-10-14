@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Menu, ShoppingBag, X } from 'lucide-react';
 import { useShoppingListStore } from '@/store/shopping-list-store';
+import { ThemeToggle } from '@/components/theme-toggle';
 export function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
   const toBuyCount = useShoppingListStore((state) => state.items.filter((item) => !item.checked).length);
@@ -54,7 +55,7 @@ export function NavBar() {
           
           {/* Action buttons */}
           <div className="flex items-center gap-3">
-            
+            <ThemeToggle />
             <button className="p-2 rounded-full hover:bg-muted transition-colors md:hidden" onClick={toggleMenu} aria-label={isOpen ? "Close menu" : "Open menu"} aria-expanded={isOpen}>
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
