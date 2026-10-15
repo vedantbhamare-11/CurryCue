@@ -10,6 +10,8 @@ const securityHeaders = [
 ];
 
 const config: NextConfig = {
+  // The browser tests build into their own folder so they never disturb a running `next dev`
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   trailingSlash: true,
   poweredByHeader: false,
   headers: async () => [{ source: '/:path*', headers: securityHeaders }],

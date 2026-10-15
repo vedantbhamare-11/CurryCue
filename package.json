@@ -13,7 +13,8 @@
         "dev": "next dev",
         "start": "next start",
         "lint": "eslint src",
-        "test": "tsx --test tests/*.test.ts"
+        "test": "tsx --test tests/*.test.ts",
+        "test:e2e": "playwright test"
     },
     "dependencies": {
         "@tailwindcss/postcss": "^4.1.7",
@@ -34,6 +35,7 @@
         "zustand": "^5.0.5"
     },
     "devDependencies": {
+        "@playwright/test": "^1.64.1",
         "@types/dom-speech-recognition": "^0.0.6",
         "@types/eslint": "^8.56.10",
         "@types/node": "^20.14.10",
