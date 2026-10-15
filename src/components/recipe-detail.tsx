@@ -13,6 +13,7 @@ import { useIngredientStore } from '@/store/ingredient-store';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { buildShareUrl, recipeShareText } from '@/lib/share-recipe';
 import { CookingMode } from './cooking-mode';
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -50,19 +51,25 @@ export function RecipeDetail({
     addRecentRecipe(recipe);
     toast.success(`Added "${recipe.title}" to favorites!`);
   };
-  const handleShare = () => {
+  // Shares the recipe itself: a link that opens it for the other person, plus the readable text, so it still
+  // works where a link does not (or is too long). Opening the link needs no account.
+  const handleShare = async () => {
+    const link = await buildShareUrl(window.location.origin, recipe);
+    const text = recipeShareText(recipe, link);
     if (navigator.share) {
-      navigator.share({
-        title: recipe.title,
-        text: `Check out this recipe: ${recipe.title}`,
-        url: window.location.href
-      }).catch(error => {
-        console.error('Error sharing:', error);
-      });
-    } else {
-      // Fallback for browsers that don't support the Web Speech API
-      navigator.clipboard.writeText(`${recipe.title} - ${window.location.href}`);
-      toast.success('Recipe link copied to clipboard!');
+      try {
+        await navigator.share({ title: recipe.title, text });
+      } catch (error) {
+        // Closing the share sheet is not an error
+        if ((error as Error).name !== 'AbortError') console.error('Error sharing:', error);
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(link ? 'Recipe and link copied to the clipboard!' : 'Recipe copied to the clipboard!');
+    } catch {
+      toast.error("Couldn't copy the recipe. Please try again.");
     }
   };
   const handleNextStep = () => {
