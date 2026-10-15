@@ -5,7 +5,7 @@ import { ChefHat, Clock, RefreshCw } from "lucide-react";
 export function HeroSection() {
   return (
     <section
-      className="relative overflow-hidden h-screen"
+      className="relative overflow-hidden"
     >
       {/* Gradient background */}
       <div
@@ -142,15 +142,7 @@ export function HeroSection() {
 
             {/* CTA Button */}
             <motion.button
-             onClick={() => {
-  const el = document.getElementById("ingredient-entry");
-  if (el) {
-    const yOffset = -80; // adjust this based on your header height
-    const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-
-    window.scrollTo({ top: y, behavior: "smooth" });
-  }
-}}
+             onClick={() => document.getElementById("ingredient-entry")?.scrollIntoView({ behavior: "smooth", block: "start" })}
 
               className="bg-primary text-primary-foreground rounded-full px-8 py-4 text-lg font-medium hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/20"
               whileHover={{ scale: 1.05 }}

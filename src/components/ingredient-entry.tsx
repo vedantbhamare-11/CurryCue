@@ -81,7 +81,7 @@ export function IngredientEntry() {
   return (
     <section
       id="ingredient-entry"
-      className="relative"
+      className="relative scroll-mt-24"
     >
       <div
         className="mb-8"
@@ -283,7 +283,7 @@ export function IngredientEntry() {
 
         {/* Ingredients list */}
         <div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-start"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-start max-h-80 overflow-y-auto pr-1"
         >
           <AnimatePresence>
             {ingredients.map((ingredient) => (

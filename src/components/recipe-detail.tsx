@@ -82,7 +82,7 @@ export function RecipeDetail({
     setCookingModeActive(false);
   };
   return <>
-      {cookingModeActive ? <CookingMode recipe={recipe} onClose={closeCookingMode} /> : <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={recipe.title} tabIndex={-1} className="bg-card rounded-2xl overflow-hidden shadow-lg border border-border w-[95%] max-w-4xl max-h-[90vh] flex flex-col outline-none">
+      {cookingModeActive ? <CookingMode recipe={recipe} onClose={closeCookingMode} /> : <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={recipe.title} tabIndex={-1} className="bg-card rounded-2xl overflow-hidden shadow-lg border border-border w-[95%] max-w-4xl max-h-[90dvh] flex flex-col outline-none">
           <div className="relative h-48 sm:h-56 md:h-80">
             <RecipeImage src={recipe.image} title={recipe.title} iconTop sizes="(max-width: 768px) 95vw, (max-width: 1200px) 80vw, 1200px" />
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent"></div>

@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { VoiceCommandParser, VoiceCommandAction, isSpeechRecognitionSupported } from './voice-command-parser';
 import { VOICE_UNSUPPORTED_MESSAGE } from '@/lib/voice-commands';
 import { CookingAssistant } from './cooking-assistant';
+import { createPortal } from 'react-dom';
 import { CompletionCelebration } from './completion-celebration';
 import { toSpeech, pickPreferredVoice } from '@/lib/speech-text';
 import { remainingSeconds } from '@/lib/timer';
@@ -413,8 +414,33 @@ export function CookingMode({
   const toggleAssistant = () => {
     setShowAssistant(!showAssistant);
   };
+  // Fullscreen shows only the fullscreen element, so overlays must be drawn inside it; otherwise the page body
+  const portalTarget = isFullscreen && containerRef.current ? containerRef.current : document.body;
+  const ingredientsPanel = <>
+      <div className="flex items-center justify-between mb-3">
+        <h4 className="font-medium flex items-center gap-2">
+          <List className="w-4 h-4 text-primary" />
+          Ingredients ({recipe.ingredients.length})
+        </h4>
+        <button onClick={() => setShowIngredients(false)} className="p-1.5 rounded-full hover:bg-muted transition-colors" aria-label="Close ingredients">
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+      <ul className="relative space-y-1 overflow-y-auto pr-1 md:max-h-[40vh]">
+        {recipe.ingredients.map((ingredient, index) => <li key={`${ingredient.id}-${index}`} ref={index === currentIngredient ? (el) => {
+            // keep the highlighted row visible inside the scrolling list (without scrolling the page)
+            const list = el?.parentElement;
+            if (el && list && (el.offsetTop < list.scrollTop || el.offsetTop + el.offsetHeight > list.scrollTop + list.clientHeight)) {
+              list.scrollTop = el.offsetTop - list.clientHeight / 2;
+            }
+          } : undefined} className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sm md:text-base", index === currentIngredient ? "bg-primary/10 font-medium" : "")}>
+            <span className="w-6 text-muted-foreground tabular-nums">{index + 1}</span>
+            <span>{ingredient.quantity && ingredient.unit ? `${ingredient.quantity} ${ingredient.unit} ${ingredient.name}` : ingredient.quantity ? `${ingredient.quantity} ${ingredient.name}` : ingredient.name}</span>
+          </li>)}
+      </ul>
+    </>;
   return <VoiceCommandParser isListening={isListening} onCommand={handleVoiceCommandAction} totalSteps={recipe.steps.length} totalIngredients={recipe.ingredients.length} onListeningStopped={() => setIsListening(false)} onHeard={(text, kind) => setLastHeard({ text, kind })}>
-      <div ref={containerRef} className={cn(" bg-gradient-to-b from-background to-muted/30 text-foreground flex flex-col", "w-full min-h-screen relative", isFullscreen && "fixed inset-0 z-[100] max-h-screen overflow-y-auto")}>
+      <div ref={containerRef} className={cn(" bg-gradient-to-b from-background to-muted/30 text-foreground flex flex-col", "w-full min-h-dvh relative", isFullscreen && "fixed inset-0 z-[100] max-h-dvh overflow-y-auto")}>
         {/* Header */}
         <div className="bg-card/80 mt-4 backdrop-blur-md border-b border-border p-2 lg:p-4 flex justify-between items-center">
           <div className="flex min-w-0 items-center gap-3">
@@ -492,25 +518,20 @@ export function CookingMode({
                 </span> : <span className="text-muted-foreground">Listening… try &ldquo;next step&rdquo; or &ldquo;list ingredients&rdquo;</span>}
             </div>}
 
-          {/* Ingredients (button, or the voice commands "list ingredients" / "next ingredient") */}
-          {showIngredients && <div className="w-full max-w-3xl mb-6 bg-card border border-border rounded-2xl p-4 md:p-6 shadow-sm">
-              <h4 className="font-medium mb-3 flex items-center gap-2">
-                <List className="w-4 h-4 text-primary" />
-                Ingredients ({recipe.ingredients.length})
-              </h4>
-              <ul className="relative space-y-1 max-h-[40vh] overflow-y-auto pr-1">
-                {recipe.ingredients.map((ingredient, index) => <li key={`${ingredient.id}-${index}`} ref={index === currentIngredient ? (el) => {
-                    // keep the highlighted row visible inside the scrolling list (without scrolling the page)
-                    const list = el?.parentElement;
-                    if (el && list && (el.offsetTop < list.scrollTop || el.offsetTop + el.offsetHeight > list.scrollTop + list.clientHeight)) {
-                      list.scrollTop = el.offsetTop - list.clientHeight / 2;
-                    }
-                  } : undefined} className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sm md:text-base", index === currentIngredient ? "bg-primary/10 font-medium" : "")}>
-                    <span className="w-6 text-muted-foreground tabular-nums">{index + 1}</span>
-                    <span>{ingredient.quantity && ingredient.unit ? `${ingredient.quantity} ${ingredient.unit} ${ingredient.name}` : ingredient.quantity ? `${ingredient.quantity} ${ingredient.name}` : ingredient.name}</span>
-                  </li>)}
-              </ul>
-            </div>}
+          {/* Ingredients (button, or the voice commands "list ingredients" / "next ingredient").
+              Phones get a bottom sheet over the step; larger screens keep the card above it. */}
+          {showIngredients && <>
+              <div className="hidden md:block w-full max-w-3xl mb-6 bg-card border border-border rounded-2xl p-4 md:p-6 shadow-sm">
+                {ingredientsPanel}
+              </div>
+              {createPortal(<div className="md:hidden fixed inset-0 z-[110]" role="dialog" aria-label="Ingredients">
+                  <div className="absolute inset-0 bg-black/40" onClick={() => setShowIngredients(false)} />
+                  <div className="absolute inset-x-0 bottom-0 max-h-[70dvh] flex flex-col bg-card border-t border-border rounded-t-2xl shadow-2xl p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+                    <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-muted-foreground/30" />
+                    {ingredientsPanel}
+                  </div>
+                </div>, portalTarget)}
+            </>}
 
           {/* Progress indicator */}
           <div className="w-full max-w-3xl mb-6">
@@ -665,6 +686,6 @@ export function CookingMode({
       </div>
       
       {/* Completion Celebration */}
-      <CompletionCelebration isOpen={showCelebration} onClose={() => setShowCelebration(false)} recipeName={recipe.title} />
+      <CompletionCelebration isOpen={showCelebration} onClose={() => setShowCelebration(false)} recipeName={recipe.title} portalTarget={portalTarget} />
     </VoiceCommandParser>;
 }

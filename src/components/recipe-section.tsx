@@ -96,7 +96,7 @@ export function RecipeSection() {
     }}>
           {suggestedRecipes.map(recipe => <motion.div key={recipe.id} whileHover={{
         y: -5
-      }} className="recipe-card flex-shrink-0 w-[300px] bg-card rounded-xl overflow-hidden shadow-sm dark:shadow-primary/5 border border-border snap-start">
+      }} onClick={() => handleSelectRecipe(recipe)} className="recipe-card flex-shrink-0 w-[300px] bg-card rounded-xl overflow-hidden shadow-sm dark:shadow-primary/5 border border-border snap-start cursor-pointer">
               <div className="relative h-40">
                 <RecipeImage src={recipe.image} title={recipe.title} />
                 <div className="absolute top-2 right-2 bg-card/90 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-medium">
@@ -148,7 +148,7 @@ export function RecipeSection() {
         opacity: 1
       }} exit={{
         opacity: 0
-      }} className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto" onClick={closeRecipeDetails}>
+      }} className="fixed inset-x-0 top-0 h-dvh bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto" onClick={closeRecipeDetails}>
             <div className="w-full flex justify-center self-start sm:self-center" onClick={e => e.stopPropagation()}>
               <RecipeDetail recipe={selectedRecipe} onClose={closeRecipeDetails} />
             </div>

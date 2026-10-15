@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Menu, ShoppingBag, X } from 'lucide-react';
+import { BookOpen, Carrot, Home, Menu, ShoppingBag, X } from 'lucide-react';
 import { useShoppingListStore } from '@/store/shopping-list-store';
 import { ThemeToggle } from '@/components/theme-toggle';
 export function NavBar() {
@@ -56,9 +56,6 @@ export function NavBar() {
           {/* Action buttons */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <button className="p-2 rounded-full hover:bg-muted transition-colors md:hidden" onClick={toggleMenu} aria-label={isOpen ? "Close menu" : "Open menu"} aria-expanded={isOpen}>
-              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
             
             <div className="flex items-center gap-2">
               
@@ -68,6 +65,9 @@ export function NavBar() {
               </Link>
               
             </div>
+            <button className="p-2 rounded-full hover:bg-muted transition-colors md:hidden" onClick={toggleMenu} aria-label={isOpen ? "Close menu" : "Open menu"} aria-expanded={isOpen}>
+              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
         
@@ -83,14 +83,17 @@ export function NavBar() {
         height: 0
       }} className="md:hidden mt-4 bg-card rounded-lg shadow-lg">
             <nav className="flex flex-col py-2">
-              <Link href="/" className="px-4 py-3 hover:bg-muted rounded-md transition-colors" onClick={() => setIsOpen(false)}>
-                Home
+              <Link href="/" className="px-4 py-3 hover:bg-muted rounded-md transition-colors flex items-center gap-2" onClick={() => setIsOpen(false)}>
+                <Home className="w-5 h-5" />
+                <span>Home</span>
               </Link>
-              <Link href="/ingredients" className="px-4 py-3 hover:bg-muted rounded-md transition-colors" onClick={() => setIsOpen(false)}>
-                My Ingredients
+              <Link href="/ingredients" className="px-4 py-3 hover:bg-muted rounded-md transition-colors flex items-center gap-2" onClick={() => setIsOpen(false)}>
+                <Carrot className="w-5 h-5" />
+                <span>My Ingredients</span>
               </Link>
-              <Link href="/recipes" className="px-4 py-3 hover:bg-muted rounded-md transition-colors" onClick={() => setIsOpen(false)}>
-                Recipes
+              <Link href="/recipes" className="px-4 py-3 hover:bg-muted rounded-md transition-colors flex items-center gap-2" onClick={() => setIsOpen(false)}>
+                <BookOpen className="w-5 h-5" />
+                <span>Recipes</span>
               </Link>
               <div className="px-4 py-3 flex items-center justify-between">
                 <Link href="/shopping-list" onClick={() => setIsOpen(false)} className="flex items-center gap-2">

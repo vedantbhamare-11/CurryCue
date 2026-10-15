@@ -1,17 +1,21 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChefHat } from 'lucide-react';
 interface CompletionCelebrationProps {
   isOpen: boolean;
   onClose: () => void;
   recipeName: string;
+  // Where to draw it. In browser fullscreen only the fullscreen element is visible, so it must go inside that container, otherwise the page body
+  portalTarget?: HTMLElement | null;
 }
 export function CompletionCelebration({
   isOpen,
   onClose,
-  recipeName
+  recipeName,
+  portalTarget
 }: CompletionCelebrationProps) {
   const [showConfetti, setShowConfetti] = useState(false);
   useEffect(() => {
@@ -31,14 +35,17 @@ export function CompletionCelebration({
     rotation: Math.random() * 360,
     x: Math.random() * 100
   }));
-  return <AnimatePresence>
+  // Drawn on the page body: inside the recipe overlay (which blurs its background) a `fixed` element is positioned
+  // against that scrolling overlay instead of the screen, so on a phone it landed off-screen above the cooking steps
+  if (typeof document === 'undefined') return null;
+  return createPortal(<AnimatePresence>
       {isOpen && <motion.div initial={{
       opacity: 0
     }} animate={{
       opacity: 1
     }} exit={{
       opacity: 0
-    }} className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm" onClick={onClose}>
+    }} className="fixed inset-x-0 top-0 h-dvh z-[120] flex items-center justify-center bg-background/80 backdrop-blur-sm" onClick={onClose}>
           {/* Confetti Animation */}
           {showConfetti && <div className="absolute inset-0 pointer-events-none overflow-hidden">
               {confettiPieces.map(piece => <motion.div key={piece.id} initial={{
@@ -129,5 +136,5 @@ export function CompletionCelebration({
             </div>
           </motion.div>
         </motion.div>}
-    </AnimatePresence>;
+    </AnimatePresence>, portalTarget ?? document.body);
 }
