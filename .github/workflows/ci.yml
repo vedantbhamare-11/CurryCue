@@ -28,7 +28,7 @@ jobs:
           set +e
           npm ci 2>&1 | tee install.log
           status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then echo "::error::npm ci failed: $(tail -n 12 install.log | tr '\n' ' ')"; fi
+          if [ "$status" -ne 0 ]; then echo "::error::npm ci failed: $(head -n 10 install.log | tr '\n' ' ')"; fi
           exit "$status"
 
       - name: Type check
